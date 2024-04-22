@@ -1,0 +1,640 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/productLayout}">
+
+<div class="container" layout:fragment="content">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+    <style>
+
+        #color {
+            width: 100%;
+            height: 50px;
+        }
+
+        #size {
+            width: 100%;
+            height: 50px;
+        }
+
+        .prodReview {
+            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
+            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
+            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+        }
+
+        .prodReviewHeader {
+            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
+            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
+            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+        }
+
+        .head {
+            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
+            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
+            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+        }
+
+        .PageBox {
+            display: flex;
+            justify-content: center;
+        }
+
+        .PageBox ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .PageBox ul li {
+            display: inline-block;
+            margin: 0 5px; /* 필요한 여백 설정 */
+        }
+
+        .detail {
+            border-top: 1px solid #000000; /* 구분 선 스타일 및 색상 지정 */
+            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
+            margin-bottom: 20px;;
+        }
+
+        .count {
+            display: flex;
+            justify-content: space-between; /* 요소들을 동일한 간격으로 분산 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
+        }
+
+        .selectDelete {
+            margin-left: auto;
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .quantity-container input[type="number"] {
+            width: 30px;
+            text-align: center;
+            border: none;
+        }
+
+        .quantity-container input[type="text"] {
+            width: 10px;
+            flex-grow: 1;
+            border: none;
+            text-align: center;
+        }
+
+        .quantity-container button {
+            background-color: #d2d2d2;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            text-decoration: none;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+
+        .quantity-container button:hover {
+            background-color: #606060;
+        }
+    </style>
+
+    <main id="product">
+        <aside>
+            <ul class="category">
+                <li><i class="fa fa-bars" aria-hidden="true"></i>카테고리</li>
+                <li>
+                    <a href="#"><i class="fas fa-tshirt"></i>패션·의류·뷰티</a>
+                    <ol>
+                        <li><a href="#">남성의류</a></li>
+                        <li><a href="#">여성의류</a></li>
+                        <li><a href="#">잡화</a></li>
+                        <li><a href="#">뷰티</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-laptop"></i>가전·디지털</a>
+                    <ol>
+                        <li><a href="#">노트북/PC</a></li>
+                        <li><a href="#">가전</a></li>
+                        <li><a href="#">휴대폰</a></li>
+                        <li><a href="#">기타</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-utensils"></i>식품·생필품</a>
+                    <ol>
+                        <li><a href="#">신선식품</a></li>
+                        <li><a href="#">가공식품</a></li>
+                        <li><a href="#">건강식품</a></li>
+                        <li><a href="#">생필품</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-home"></i>홈·문구·취미</a>
+                    <ol>
+                        <li><a href="#">가구/DIY</a></li>
+                        <li><a href="#">침구·커튼</a></li>
+                        <li><a href="#">생활용품</a></li>
+                        <li><a href="#">사무용품</a></li>
+                    </ol>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 상품 상세페이지 시작 -->
+        <section class="view">
+
+            <!-- 제목, 페이지 네비게이션 -->
+            <nav>
+                <h1>상품보기</h1>
+                <p>
+                    HOME > <span>[[${product.cateName1}]]</span> >
+                    <span>[[${product.cateName2}]]</span> > <strong>[[${product.cateName3}]]</strong>
+                </p>
+            </nav>
+
+            <!-- 상품 전체 정보 내용 -->
+            <article class="info">
+                <div class="image">
+                    <img th:src="@{/uploads/__${product.image1}__}" th:alt="${product.prodName}" alt="">
+                </div>
+                <div class="summary">
+                    <nav>
+                        <p>
+                            <span style="font-size: larger; font-weight: bold;">(주)</span>
+                            <span th:text="${product.sellerName}" style="font-size: larger; font-weight: bold;"></span>
+                        </p>
+                        <h2>상품번호&nbsp;:&nbsp;<span id="prodId" th:text="${product.prodNo}">10010118412</span></h2>
+                    </nav>
+                    <nav>
+                        <h3 th:text="${product.prodName}">상품명</h3>
+                        <p th:text="${product.etc}">상품설명 출력</p>
+                        <h5>
+                            <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;"><a href="#">상품평보기</a></h5>
+                    </nav>
+                    <nav>
+                        <div class="org_price">
+                            <del th:text="${product.prodPrice}" id="ori_price">45,000</del>
+                            <span th:text="${product.prodDiscount}+'%'"></span>
+                        </div>
+                        <div class="dis_price">
+                            <ins id="disCount"
+                                 th:text="${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1, 0 )}">할인된 가격
+                            </ins>
+                        </div>
+                    </nav>
+                    <nav>
+                        <span class="delivery">무료배송</span>
+                        <span>
+                            <b class="arrival"
+                               th:text="${#temporals.format(#temporals.createNow().plusDays(2), 'MM-dd')}"
+                               style="font-size: 20px"></b> 도착
+                            예정
+                        </span>
+                        <span class="desc">본 상품은 국내배송만 가능합니다.</span>
+                    </nav>
+                    <nav>
+                        <span class="card cardfree"><i>아이콘</i>무이자할부</span>
+                        <span class="card cardadd"><i>아이콘</i>카드추가혜택</span>
+                    </nav>
+                    <nav>
+                        <span class="origin">원산지-상세설명 참조</span>
+                    </nav>
+                    <!-- 만약에 옵션이 있는 경우-->
+                    <script>
+                        window.onload=function () {
+                            const color = document.getElementById('color');
+                            const size = document.getElementById('size');
+                            const totalPrice = document.getElementById('total_price');
+                            const prodNo = [[${product.prodNo}]];
+                            const prodDiscount = [[${product.prodDiscount}]];
+                            var price = [[${product.prodPrice}]];
+                        try{
+                            color.onchange = async function () {
+                                sCor = this.value;
+
+                                // 옵션 사이즈를 추가
+                                const result = await fetchGet('/lotteshop/product/optionSelect?color=' + this.value + '&prodNo=' + prodNo);
+                                console.log(result.sub);
+                                // 기존의 옵션을 제거
+                                size.innerHTML = '';
+                                // 새로운 옵션을 추가
+                                const defaultOption = document.createElement('option');
+                                defaultOption.style.fontSize = 'x-large';
+                                defaultOption.value = "";
+                                defaultOption.disabled = true;
+                                defaultOption.selected = true;
+                                defaultOption.textContent = "::(필수)옵션 사이즈 선택";
+                                size.appendChild(defaultOption);
+
+                                result.sub.forEach(item => {
+                                    console.log(item.size);
+                                    const optionSize = document.createElement('option');
+                                    optionSize.value = item.size;
+                                    optionSize.text = item.size + ' (' + item.prodPrice + ')';
+                                    optionSize.dataset.subNo = item.subProdNo;
+                                    optionSize.dataset.color = item.color;
+                                    optionSize.dataset.size = item.size;
+                                    optionSize.dataset.price = item.prodPrice;
+                                    size.appendChild(optionSize);
+
+
+                                });
+                            };
+                        }catch (e){
+
+                        }
+
+
+                            document.addEventListener('change', function (e) {
+                                if (e.target.matches('.size')) {
+                                    const plus = document.getElementById('plus');
+                                    const targetDiv = document.getElementById('option-container');
+                                    const newPlus = plus.cloneNode(true);
+                                    newPlus.style.removeProperty('display');
+                                    const select = e.target.selectedOptions[0];
+                                    newPlus.querySelector('#optionNo').value = select.dataset.subNo;
+                                    newPlus.querySelector('#optionColor').value = select.dataset.color;
+                                    newPlus.querySelector('#optionSize').value = select.dataset.size;
+                                    newPlus.querySelector('#optionPrice').value = select.dataset.price;
+                                    targetDiv.appendChild(newPlus);
+                                    totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(select.dataset.price * (100 - prodDiscount) * 0.01);
+
+                                }
+                            });
+                            const productPriceForNo = [[${product.prodPrice}]];
+                            const productDiscountForNo = [[${product.prodDiscount}]];
+                            var priceForMe = parseInt(parseInt(productPriceForNo) * (100 - productDiscountForNo) * 0.01);
+                            document.addEventListener('click', async function (event) {
+                                if (event.target.matches('.plus')) {
+                                    const element = event.target.parentNode.querySelector('input[type="number"]');
+                                    const optionPrice = event.target.parentNode.querySelector('#optionPrice');
+                                  try{ totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);}
+                                  catch(e){
+                                        totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(priceForMe);
+                                    }
+                                    element.stepUp();
+                                }
+                                if (event.target.matches('.minus')) {
+                                    const element = event.target.parentNode.querySelector('input[type="number"]');
+                                    const optionPrice = event.target.parentNode.querySelector('#optionPrice');
+                                    if (element.value > 1) {
+                                       try{totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);}
+                                       catch (e){
+                                           totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(priceForMe);
+                                       }
+                                    }
+
+                                    element.stepDown();
+                                }
+
+                                if (event.target.matches('.delete')) {
+                                    const element = event.target.parentNode;
+                                    const optionPrice = event.target.parentNode.querySelector('#optionPrice');
+                                    const optionCount = event.target.parentNode.querySelector('#optionCount');
+                                   totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01 * optionCount.value);
+
+                                    element.remove();
+                                }
+
+                                if (event.target.matches('#cartSub')) {
+                                    try {
+                                        const userID = document.getElementById('userId').value;
+                                        const quantityContainers = document.querySelectorAll('.quantity-container');
+                                        const itemsCounts = [];
+                                        const itemsNos = [];
+
+                                        quantityContainers.forEach(container => {
+                                            if (container.querySelector('#optionNo').value == "") {
+
+                                            } else {
+                                                itemsCounts.push(parseInt(container.querySelector('#optionCount').value));
+                                                itemsNos.push(parseInt(container.querySelector('#optionNo').value));
+                                            }
+
+                                        });
+                                        if (itemsCounts.length < 1) {
+                                            alert('상품을 선택해주세요');
+                                        } else {
+                                            const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
+                                            console.log(json);
+                                            const result = await fetchPost('/lotteshop/product/view', json);
+                                            if(result.result === 'success'){
+                                                alert('장바구니로 상품이 담겼습니다.')
+                                                //추후에 장바구니 이동 추가
+                                            }
+                                        }
+                                    } catch (e) {
+                                        console.log(e.toString())
+                                        alert('로그인 후 이용해주세요');
+                                    }
+                                }
+
+                                if(event.target.matches('#cartSub2')){
+
+                                        const userID = document.getElementById('userId').value;
+                                        const quantityContainers = document.querySelectorAll('.quantity-container');
+                                        const itemsCounts = [];
+                                        const itemsNos = [];
+
+                                        quantityContainers.forEach(container => {
+                                            if (container.querySelector('#optionNo').value == "") {
+
+                                            } else {
+                                                itemsCounts.push(parseInt(container.querySelector('#optionCount').value));
+                                                itemsNos.push(parseInt(container.querySelector('#optionNo').value));
+                                            }
+
+                                        });
+                                        if (itemsCounts.length < 1) {
+                                            alert('상품을 선택해주세요');
+                                        } else {
+                                            const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
+                                            console.log(json);
+                                            const result = await fetchPost('/lotteshop/product/view', json);
+                                            if(result.result === 'success'){
+                                                alert('장바구니로 상품이 담겼습니다.')
+                                                //추후에 장바구니 이동 추가
+                                            }
+                                        }
+
+                                }
+
+                            });
+
+                        }
+                    </script>
+                    <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                        <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
+                    </th:block>
+
+                    <div class="quantity-container" id="plus" style="display: none">
+                        <button class="minus">-</button>
+                        <input type="number" id="optionCount" min="1" value="1">
+                        <button class="plus">+</button>
+                        <input type="text" id="optionColor" readonly value="">
+                        <input type="text" id="optionSize" readonly value="">
+                        <input type="text" id="optionPrice" readonly value="">
+                        <input type="hidden"  id="optionNo" readonly value="">
+                        <button class="delete">삭제</button>
+                    </div>
+                    <th:block th:if="${options.size()>1}">
+                        <nav id="choiceBox">
+                            <label for="color" style="font-size: medium"></label>
+                            <select id="color" name="color">
+                                <option style="font-size: x-large" value="" disabled selected>::(필수)옵션 색상 선택</option>
+                                <th:block th:each="option : ${options}">
+                                    <option th:value="${option.color}" th:text="${option.color}" style="font-size: x-large"></option>
+                            </th:block>
+                        </select>
+                        <br>
+                        <br>
+                        <label for="size" style="font-size: medium"></label>
+                        <select id="size" name="size" class="size">
+                            <option style="font-size: x-large" value="" disabled selected>::(필수)옵션 사이즈 선택</option>
+                        </select>
+                    </nav>
+                        <img th:src="@{/images/vip_plcc_banner.png}" alt="100원만 결제해도 1만원 적립!" class="banner"/>
+
+
+                            <div class="option-container" id="option-container">
+
+                            </div>
+                        <div class="button">
+                            <input type="button" class="cart" id="cartSub" value="장바구니"/>
+                            <input type="button" class="order"   id="cartOrder" value="구매하기"/>
+                        </div>
+                        <div class="total">
+                        <span id="total_price"
+                              th:text="${0}"></span>
+                            <em>총 상품금액</em>
+                        </div>
+                </th:block>
+
+                    <th:block th:if="${options.size()==1}" th:each="option , index:${options}">
+
+                        <img th:src="@{/images/vip_plcc_banner.png}" alt="100원만 결제해도 1만원 적립!" class="banner"/>
+                        <div class="option-container" id="option-container">
+                            <div class="quantity-container" id="plus" >
+                                <button class="minus">-</button>
+                                <input type="number" id="optionCount" min="1" value="1">
+                                <button class="plus">+</button>
+                                <input type="hidden"  id="optionNo" readonly th:value="${option.subProdNo}">
+                                <input type="text" th:value="${product.getProdName()}">
+                            </div>
+                        </div>
+                        <div class="button">
+                            <input type="button" class="cart"  id="cartSub2" value="장바구니"/>
+                            <input type="button" class="order" value="구매하기"/>
+                        </div>
+                        <div class="total">
+                        <span id="total_price"
+                              th:text="${#numbers.formatDecimal( product.prodPrice * (100 - product.getProdDiscount()) * 0.01 , 1, 0)}"></span>
+                            <em>총 상품금액</em>
+                        </div>
+                    </th:block>
+
+
+
+
+                </div>
+            </article>
+
+            <!-- 상품 정보 내용 -->
+            <article class="detail">
+                <nav>
+                    <a href="#" style="font-size: xx-large">상세정보</a>&nbsp;&nbsp;
+                    <a href="#" style="font-size: xx-large">리뷰</a>&nbsp;&nbsp;
+                </nav>
+                <!-- 상품상세페이지 이미지 -->
+                <img th:src="@{/uploads/__${product.image4}__}" th:alt="${product.prodName}" alt="상세페이지1">
+            </article>
+
+            <!-- 상품 정보 제공 고시 내용 -->
+            <article class="notice">
+                <nav>
+                    <h1>상품 정보 제공 고시</h1>
+                    <p>[전자상거래에 관한 상품정보 제공에 관한 고시] 항목에 의거 등록된 정보입니다.</p>
+                </nav>
+                <table border="0">
+                    <tr>
+                        <td>상품번호</td>
+                        <td>10110125435</td>
+                    </tr>
+                    <tr>
+                        <td>상품상태</td>
+                        <td>새상품</td>
+                    </tr>
+                    <tr>
+                        <td>부가세 면세여부</td>
+                        <td>과세상품</td>
+                    </tr>
+                    <tr>
+                        <td>영수증발행</td>
+                        <td>발행가능 - 신용카드 전표, 온라인 현금영수증</td>
+                    </tr>
+                    <tr>
+                        <td>사업자구분</td>
+                        <td>사업자 판매자</td>
+                    </tr>
+                    <tr>
+                        <td>브랜드</td>
+                        <td>블루포스</td>
+                    </tr>
+                    <tr>
+                        <td>원산지</td>
+                        <td>국내생산</td>
+                    </tr>
+                </table>
+                <table border="0">
+                    <tr>
+                        <td>제품소재</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>색상</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>치수</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>제조자/수입국</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>제조국</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>취급시 주의사항</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>제조연월</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>품질보증기준</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>A/S 책임자와 전화번호</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td>주문후 예상 배송기간</td>
+                        <td>상세정보 직접입력</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">구매, 교환, 반품, 배송, 설치 등과 관련하여 추가비용, 제한조건 등의 특이사항이 있는 경우</td>
+                    </tr>
+                </table>
+                <p class="notice">
+                    소비자가 전자상거래등에서 소비자 보호에 관한 법률 제 17조 제1항 또는 제3항에 따라 청약철회를 하고
+                    동법 제 18조 제1항 에 따라 청약철회한 물품을 판매자에게 반환하였음에도 불구 하고 결제 대금의
+                    환급이 3영업일을 넘게 지연된 경우, 소비자 는 전자상거래등에서 소비자보호에 관한 법률 제18조
+                    제2항 및 동법 시행령 제21조 2에 따라 지연일수에 대하여 전상법 시행령으로 정하는 이율을 곱하여
+                    산정한 지연이자(“지연배상금”)를 신청할 수 있습니다. 아울러, 교환∙반품∙보증 및 결제대금의
+                    환급신청은 [나의쇼핑정보]에서 하실 수 있으며, 자세한 문의는 개별 판매자에게 연락하여 주시기 바랍니다.
+                </p>
+            </article>
+
+            <!-- 상품 리뷰 내용 -->
+            <div class="prodReviewBox">
+                <div class="prodReviewHeader">
+                    <div>
+                        <p class="head" style="font-size: xx-large">리뷰(<span style="font-size: xx-large"
+                                                                             th:text="${reviewPage.dtoList.size()}"></span>)
+                        </p>
+                        <br>
+                        <h3>평균</h3>
+
+                        <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 2, 'POINT')}"> 점</h1>
+                        <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}" alt="oneStar"
+                             style="max-width: 80px; height: auto;">
+                        <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}" alt="oneStar"
+                             style="max-width: 80px; height: auto;">
+                        <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}" alt="oneStar"
+                             style="max-width: 80px; height: auto;">
+                        <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}" alt="oneStar"
+                             style="max-width: 80px; height: auto;">
+                        <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}" alt="oneStar"
+                             style="max-width: 80px; height: auto;">
+                    </div>
+                </div>
+
+                <ul>
+                    <li th:each="review, loop:${reviewPage.dtoList}">
+                        <div class="prodReview">
+                            <p><b>[[${review.uid}]]</b>
+                                <img th:if="${review.score} == 1 " th:src="@{/review/review_star1.png}" alt="oneStar"
+                                     style="max-width: 80px; height: auto;">
+                                <img th:if="${review.score} == 2 " th:src="@{/review/review_star2.png}" alt="oneStar"
+                                     style="max-width: 80px; height: auto;">
+                                <img th:if="${review.score} == 3 " th:src="@{/review/review_star3.png}" alt="oneStar"
+                                     style="max-width: 80px; height: auto;">
+                                <img th:if="${review.score} == 4 " th:src="@{/review/review_star4.png}" alt="oneStar"
+                                     style="max-width: 80px; height: auto;">
+                                <img th:if="${review.score} == 5 " th:src="@{/review/review_star5.png}" alt="oneStar"
+                                     style="max-width: 80px; height: auto;">
+                                <span th:text="${#temporals.format(review.rdate,'yyyy-MM-dd')}">24.03.22</span></p>
+                            <div>
+                                <img th:if="${review.thumbnail} != null" th:src="@{/uploads/__${review.thumbnail}__}"
+                                     th:alt="${review.rno}" style="width: 120px; height: 120px ">
+                                <img th:if="${review.thumbnail} == null" th:src="@{/newimage/noReview.png}"
+                                     th:alt="${review.rno}" style="width: 120px; height: 120px ">
+                                <p>[[${review.comment}]]</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="PageBox" th:if="${!reviewPage.dtoList.isEmpty()}">
+                    <ul>
+                        <li th:if="${reviewPage.prev}">
+                            <a th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1}, aa='a')}">이전</a>
+                        </li>
+                        <li th:each="n : ${#numbers.sequence(reviewPage.start, reviewPage.end)}">
+                            <a th:href="@{/product/view(prodno=${product.prodNo}, rpg=${n}, aa='a')}"
+                               th:classappend="${reviewPage.rpg == n} ? 'pageOn' : 'page-link'" th:text="${n}"></a>
+                        </li>
+                        <li th:if="${reviewPage.next}">
+                            <a th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.end + 1}, aa='a')}">다음</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+        <!-- 상품 상세페이지 끝 -->
+    </main>
+</div>
+</html>

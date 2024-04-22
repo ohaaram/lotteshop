@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+<section id="admin-cs-notice" layout:fragment="content">
+    <nav>
+        <h3>고객센터</h3>
+        <p>
+            HOME > 고객센터 > <strong>공지사항</strong>
+        </p>
+    </nav>
+
+    <section>
+        <div>
+            <select name="search">
+                <option value="search1">전체</option>
+                <option value="search2">고객서비스</option>
+                <option value="search3">안전거래</option>
+                <option value="search4">위해상품</option>
+                <option value="search5">이벤트당첨</option>
+            </select>
+            <input type="text" name="search">
+
+            <span >#</span>
+            <table border="0">
+                <tr>
+                    <th><input type="checkbox"></th>
+                    <th>번호</th>
+                    <th>유형</th>
+                    <th>제목</th>
+                    <th>조회</th>
+                    <th>날짜</th>
+                    <th>관리</th>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
+                    <td>#</td>
+                    <td>2022.11.21</td>
+                    <td>
+                        <a>수정</a>
+                        <a>삭제</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
+                    <td>#</td>
+                    <td>2022.11.21</td>
+                    <td>#</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
+                    <td>#</td>
+                    <td>2022.11.21</td>
+                    <td>#</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>#</td>
+                    <td>#</td>
+                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
+                    <td>#</td>
+                    <td>2022.11.21</td>
+                    <td>#</td>
+                </tr>
+
+
+            </table>
+
+            <div>
+                <input type="button" value="선택삭제" id="selectDelete" style="float: left; margin-right: 10px;"/>
+            </div>
+            <div>
+                <input  type="button" value="공지작성" id="#" style="float: right; "/>
+            </div>
+
+        </div>
+
+    </section>
+</section>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+<section id="admin-product-register" layout:fragment="content" >
+    <script>
+        let optionList = [];
+
+        window.onload=function (){
+            const cateName1 = document.getElementById('cateName1');
+            const cateName2 = document.getElementById('cateName2');
+            const selectElement = document.querySelector('select[name="cateName2"]');
+            const selectElement2 = document.querySelector('select[name="cateName3"]');
+            cateName1.onchange=async function () {
+                var value = this.value;
+                console.log(value)
+                const jsondata = {cate: value}
+                const result1 = await fetchPost('/lotteshop/admin/product/selectSecondCate', jsondata);
+
+                for (let i = selectElement.options.length - 1; i >= 0; i--) {
+                    const option = selectElement.options[i];
+                    if (option.value !== "cate0") {
+                        selectElement.removeChild(option);
+                    }
+                }
+
+                result1.data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.textContent = item;
+                    selectElement.appendChild(option);
+                });
+            }
+
+            cateName2.onchange=async function () {
+                var value = this.value;
+                console.log(value)
+                const jsondata = {cate: value}
+                const result1 = await fetchPost('/lotteshop/admin/product/selectThridCate', jsondata);
+
+                for (let i = selectElement2.options.length - 1; i >= 0; i--) {
+                    const option = selectElement2.options[i];
+                    if (option.value !== "cate0") {
+                        selectElement2.removeChild(option);
+                    }
+                }
+
+                result1.data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.textContent = item;
+                    selectElement2.appendChild(option);
+                });
+
+
+            }
+
+
+            document.getElementById('addOption').addEventListener('click', function () {
+                // 테이블 요소 찾기
+                var table = document.querySelector('table[name="option"]');
+
+                // 새로운 행 생성
+                var newRow = document.createElement('tr');
+
+                // 새로운 행에 셀과 입력 필드 추가
+                newRow.innerHTML = `
+            <td class="label">가격 :</td>
+            <td><input type="text" name="prodPrice"/></td>
+            <td class="label">재고 :</td>
+            <td><input type="text" name="prodStock"/></td>
+            <td class="label">색상 :</td>
+            <td><input type="text" name="color" placeholder="필요시 입력"/></td>
+            <td class="label">사이즈 :</td>
+            <td><input type="text" name="size"  placeholder="필요시 입력"/></td>
+        `;
+
+                // 테이블에 새로운 행 추가
+                table.appendChild(newRow);
+            });
+
+
+            document.getElementById('minusOption').addEventListener('click', function () {
+                var table = document.querySelector('table[name="option"]');
+                var lastRow = table.rows[table.rows.length - 1];
+                table.removeChild(lastRow);
+            });
+
+            const submit= document.getElementById('submit');
+            submit.onclick=async function (e) {
+                e.preventDefault();
+                const formData = new FormData(document.getElementById('form'));
+                console.log(formData)
+
+            };
+
+
+            // 폼 제출 시 추가 옵션들을 리스트로 만들어서 JSON으로 변환하여 전송
+            document.getElementById('submit').addEventListener('click', async function (event) {
+                event.preventDefault(); // 기본 제출 행동 방지
+
+                // 추가 옵션들 초기화
+                optionList = [];
+
+                // 테이블의 각 행을 순회하며 옵션들을 추출하여 배열에 추가
+                var rows = document.getElementById('option').rows;
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    var option = {
+                        prodPrice: row.cells[1].querySelector('input[name="prodPrice"]').value,
+                        prodStock: row.cells[3].querySelector('input[name="prodStock"]').value,
+                        color: row.cells[5].querySelector('input[name="color"]').value,
+                        size: row.cells[7].querySelector('input[name="size"]').value
+                    };
+                    optionList.push(option);
+                }
+
+                // 옵션 리스트를 JSON으로 변환하여 서버로 전송
+                const response = await fetch('/lotteshop/admin/product/subOption', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(optionList),
+                });
+                const data = await response.json();
+                if(data.data===1){
+                    document.getElementById('form').submit();
+                }
+                console.log(data);
+            });
+        }
+    </script>
+    <nav>
+        <h3>상품수정</h3>
+        <p>
+            HOME > 상품관리 > <strong>상품수정</strong>
+        </p>
+    </nav>
+    <!-- 상품등록 컨텐츠 시작 -->
+    <article>
+        <form th:action="@{/}" method="post" enctype="multipart/form-data" id="form">
+            <!-- 상품분류 -->
+            <section>
+                <h4>상품분류</h4>
+
+                <table>
+                    <tr>
+                        <td>1차 분류</td>
+                        <td>
+                            <input type="text" name="cateName1" th:value="${products.cateName1}" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2차 분류</td>
+                        <td>
+                            <input type="text" name="cateName2" th:value="${products.cateName2}" readonly>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3차 분류</td>
+                        <td>
+                            <input type="text" name="cateName3" th:value="${products.cateName3}" readonly>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <!-- 기본정보 -->
+            <section>
+                <h4>기본정보</h4>
+                <p>
+                    기본정보는 반드시 입력해야 합니다.
+                </p>
+                <table>
+                    <tr>
+                        <td>상품명</td>
+                        <td><input type="text" name="prodName" th:value="${products.prodName}"/></td>
+                    </tr>
+                    <tr>
+                        <td>기본설명</td>
+                        <td>
+                            <span>상품명 하단에 상품에 대한 추가적인 설명이 필요한 경우에 입력</span>
+                            <input type="text" name="etc" th:value="${products.etc}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>제조사</td>
+                        <td><input type="text" name="manufacture" th:value="${products.manufacture}"/></td>
+                    </tr>
+                    <tr>
+                        <td>할인율</td>
+                        <td>
+                            <span>0을 입력하면 할인율 없음</span>
+                            <input type="text" name="prodDiscount" th:value="${products.getProdDiscount()}"/>%
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>포인트</td>
+                        <td>
+                            <span>정책에 따라 할인 전 금액의 1%를 적립합니다</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>배송비</td>
+                        <td>
+                            <span>0을 입력하면 배송비 무료</span>
+                            <input type="text" name="delivery" th:value="${products.delivery}"/>원
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>상품 썸네일</td>
+                        <td>
+                            <!--
+                            <span>크기 190 x 190, 상품 목록에 출력될 이미지 입니다. </span>
+                            <input type="file" name="#"/>
+
+                            <span>크기 230 x 230, 상품 메인에 출력될 이미지 입니다. </span>
+                            <input type="file" name="#"/>
+-->
+                            <span>크기 456 x 456, 상품 목록, 메인, 상세에 출력될 이미지 입니다. </span>
+                            <input type="file" name="multImage3"/>
+                            <a th:href="@{/uploads/__${products.image1}__}">기존 이미지 보기</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>상세 상품정보</td>
+                        <td>
+                            <span>크기 가로 940px 높이 제약없음, 크기 최대 1MB, 상세페이지 상품정보에 출력될 이미지 입니다.</span>
+                            <input type="file"  name="multImage4"/>
+                            <a th:href="@{/uploads/__${products.image4}__}">기존 이미지 보기</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>판매자 스토어 아이디</td>
+                        <td>
+                            <span>등록된 아이디로 정확히 입력해주세요</span>
+                            <input type="text" name="sellerUid" th:value="${products.sellerUid}"/>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- 상품정보 제공 고시 -->
+            <section>
+                <h4>상품정보 제공고시</h4>
+                <p>
+                    [전자상거래에 관한 상품정보 제공에 관한 고시] 항목에 의거 등록해야 되는 정보입니다.
+                </p>
+                <table>
+                    <tr>
+                        <td>상품상태</td>
+                        <td><input type="text" name="prodState" th:value="${products.prodState}"/></td>
+                    </tr>
+                    <tr>
+                        <td>부가세 면세여부</td>
+                        <td><input type="text" name="prodTax" th:value="${products.prodTax}"/></td>
+                    </tr>
+                    <tr>
+                        <td>영수증발행</td>
+                        <td><input type="text" name="prodReceipt" th:value="${products.prodReceipt}"/></td>
+                    </tr>
+                    <tr>
+                        <td>사업자구분</td>
+                        <td><input type="text" name="prodSa" th:value="${products.prodSa}"/></td>
+                    </tr>
+                    <tr>
+                        <td>원산지</td>
+                        <td><input type="text" name="prodWonsan" th:value="${products.prodWonsan}"/></td>
+                    </tr>
+                </table>
+            </section>
+        </form>
+
+        <form>
+            <section>
+                <h4>상품 옵션 기입 </h4>
+               <br>
+                <style>
+
+                    /* 입력 필드 스타일 */
+                    input[type="text"] {
+                        width: 150px;
+                        box-sizing: border-box;
+                        padding: 8px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                    }
+
+                    /* 레이블 스타일 */
+                    .label {
+                        width: 100px;
+                        text-align: right;
+                        padding-right: 10px;
+                    }
+                </style>
+
+                <table name="option" id="option">
+                    <tr th:each="sub, index:${subProducts}">
+                        <td class="label">가격 :</td>
+                        <td><input type="text" name="prodPrice" th:value="${sub.getProdPrice()}"/></td>
+                        <td class="label">재고 :</td>
+                        <td><input type="text" name="prodStock" th:value="${sub.prodStock}"/></td>
+                        <td class="label">색상 :</td>
+                        <td><input type="text" name="color" th:value="${sub.color}"/></td>
+                        <td class="label">사이즈 :</td>
+                        <td><input type="text" name="size"  th:value="${sub.size}"/>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </section>
+        </form>
+        <input type="submit" id="submit" value="수정하기"/>
+    </article>
+
+    <p class="ico alert">
+        <strong>Warning!</strong>
+        전자상거래 등에서의 상품 등의 정보제공에 관한 고시에 따라 총 35개 상품군에 대해 상품 특성 등을 양식에 따라 입력할 수 있습니다.
+    </p>
+    <!-- 상품등록 컨텐츠 끝 -->
+</section>
+</html>

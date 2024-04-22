@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+<section id="admin-cs-notice" layout:fragment="content">
+    <nav>
+        <h3>고객센터</h3>
+        <p>
+            HOME > 고객센터 > 공지사항 > <strong>공지 작성</strong>
+        </p>
+    </nav>
+
+    <section>
+        <article>
+            <form th:action="/admin/cs/notice/write" method="post">
+                <table class="notice-write">
+                    <tr>
+                        <td>공지유형</td>
+                        <td>
+                            <select name="type">
+                                <option value="0">선택</option>
+                                <option>안내</option>
+                                <option>발표</option>
+                                <option>점검</option>
+                                <option>뉴스</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>공지작성</td>
+                        <td>
+                            <input class="notice-write-title" type="text" name="noticeTitle" style="width: 200px; height: 33px; "  placeholder="제목을 입력하세요."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>공지내용</td>
+                        <td>
+                            <textarea name="notice-Content" cols="120" rows="20" placeholder="내용을 입력하세요."></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <a th:href="@{/admin/cs/notice/list}" class="btnList">취소하기</a>
+                    <input type="submit" class="btnSubmit" value="등록하기"/>
+                </div>
+            </form>
+        </article>
+    </section>
+</section>
+</html>

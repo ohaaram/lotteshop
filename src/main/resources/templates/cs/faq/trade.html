@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/cs/layouts/csLayout.html}">
+
+<main layout:fragment="content">
+    <section id="cs">
+        <div class="faq">
+            <nav>
+                <div>
+                    <p>홈<span>></span>자주묻는 질문</p>
+                </div>
+            </nav>
+            <section class="list">
+                <aside>
+                    <h2>자주묻는 질문</h2>
+                    <ul>
+                        <li><a th:href="@{/cs/faq/user}">회원</a></li>
+                        <li><a th:href="@{/cs/faq/eventCupon}">이벤트/쿠폰</a></li>
+                        <li><a th:href="@{/cs/faq/order}">주문/결제</a></li>
+                        <li><a th:href="@{/cs/faq/delivery}">배송</a></li>
+                        <li><a th:href="@{/cs/faq/cancel}">취소/반품/교환</a></li>
+                        <li class="on"><a th:href="@{/cs/faq/trade}">거래증빙서류</a></li>
+                    </ul>
+                </aside>
+                <article>
+                    <h2>거래증빙서류</h2>
+                    <nav id="navbar-example2" class="navbar bg-body-tertiary px-3 mb-3">
+                        <a class="navbar-brand" href="#">가장 자주 묻는 질문 입니다</a>
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading1">기타제증빙</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading2">신용카드매출전표</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading3">현금영수증</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading4">세금계산서</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="accordion" id="accordionEtcOrd">
+                        <h3 id="scrollspyHeading1" data-bs-smooth-scroll="true">기타제증빙</h3>
+                        <div th:each="etcord, iterStat : ${etcord}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseEtcOrd' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseEtcOrd' + ${iterStat.index}">
+                                    [[${etcord.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseEtcOrd' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionEtcOrd'">
+                                <div class="accordion-body">
+                                    [[${etcord.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionEtcCard">
+                        <h3 id="scrollspyHeading2" data-bs-smooth-scroll="true">신용카드매출전표</h3>
+                        <div th:each="etccard, iterStat : ${etccard}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseEtcCard' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseEtcCard' + ${iterStat.index}">
+                                    [[${etccard.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseEtcCard' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionEtcCard'">
+                                <div class="accordion-body">
+                                    [[${etccard.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionCashReceipt">
+                        <h3 id="scrollspyHeading3" data-bs-smooth-scroll="true">현금영수증</h3>
+                        <div th:each="cashreceipt, iterStat : ${cashreceipt}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseCashReceipt' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseCashReceipt' + ${iterStat.index}">
+                                    [[${cashreceipt.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseCashReceipt' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionCashReceipt'">
+                                <div class="accordion-body">
+                                    [[${cashreceipt.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionTaxReceipt">
+                        <h3 id="scrollspyHeading4" data-bs-smooth-scroll="true">세금계산서</h3>
+                        <div th:each="taxreceipt, iterStat : ${taxreceipt}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseTaxReceipt' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseTaxReceipt' + ${iterStat.index}">
+                                    [[${taxreceipt.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseTaxReceipt' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionTaxReceipt'">
+                                <div class="accordion-body">
+                                    [[${taxreceipt.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside>
+                        <a th:href="@{/cs}" id="btnHome">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-house-check" viewBox="0 0 16 16">
+                                <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514"/>
+                            </svg>
+                        </a>
+                        <a href="#" id="btnTop">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
+                                <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                            </svg>
+                        </a>
+                    </aside>
+                </article>
+            </section>
+        </div>
+    </section>
+
+</main>
+</html>

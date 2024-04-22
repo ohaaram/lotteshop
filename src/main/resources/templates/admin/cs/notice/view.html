@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+<section id="admin-cs-notice" layout:fragment="content">
+    <nav>
+        <h3>고객센터</h3>
+        <p>
+            HOME > 고객센터 > <strong>공지사항</strong>
+        </p>
+    </nav>
+
+    <section>
+        <div>
+            <select name="search">
+                <option value="search1">전체</option>
+                <option value="search2">고객서비스</option>
+                <option value="search3">안전거래</option>
+                <option value="search4">위해상품</option>
+                <option value="search5">이벤트당첨</option>
+            </select>
+            <input type="text" name="search">
+
+            <span >#</span>
+
+        </div>
+    </section>
+</section>
+</html>

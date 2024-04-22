@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{/member/layout/memberLayout.html}">
+
+
+<div class="signup" layout:fragment="content">
+
+    <script>
+        window.onload = function () {
+
+            const agree1 = document.getElementsByName('agree1')[0];
+            const agree2 = document.getElementsByName('agree2')[0];
+            const agree3 = document.getElementsByName('agree3')[0];
+            const agree = document.getElementsByClassName('agree')[0];
+
+            agree.onclick = function (e) {
+                if (agree1.checked && agree2.checked && agree3.checked) {
+                } else {
+                    e.preventDefault();
+                    alert("이용약관과 개인정보 취급방침은 필수 동의입니다.");
+                }
+            }
+        };
+    </script>
+
+    <nav>
+        <h1>약관동의</h1>
+    </nav>
+    <form th:action method="POST">
+        <section>
+            <h3><span class="essential">(필수)</span>케이마켓 이용약관</h3>
+            <textarea class="terms" readonly>[[${terms.terms}]]</textarea>
+            <label><input type="checkbox" name="agree1"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>전자금융거래 이용약관</h3>
+            <textarea class="financial" readonly>[[${terms.terms2}]]</textarea>
+            <label><input type="checkbox" name="agree2"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>개인정보 수집동의</h3>
+            <textarea class="privacy" readonly>[[${terms.privacy}]]</textarea>
+            <label><input type="checkbox" name="agree3"/>동의합니다.</label>
+        </section>
+
+        <section>
+            <h3><span class="optional">(선택)</span>위치정보 이용약관</h3>
+            <textarea class="location" readonly>[[${terms.sms}]]</textarea>
+            <label><input type="checkbox" name="agree4" value="Y"/>동의합니다.</label>
+        </section>
+
+        <div>
+            <input type="submit" class="agree" value="동의하기"/>
+        </div>
+    </form>
+</div>
+</html>

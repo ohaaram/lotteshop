@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/cs/layouts/csLayout.html}">
+
+<main layout:fragment="content">
+  <section id="cs">
+    <div class="qna">
+      <nav>
+        <div>
+          <p>홈<span>></span>공지사항</p>
+        </div>
+      </nav>
+      <section class="write">
+        <aside>
+          <h2>문의하기</h2>
+          <ul>
+            <li class="on"><a th:href="@{#}">전체</a></li>
+            <li><a th:href="@{#}">고객서비스</a></li>
+            <li><a th:href="@{#}">안전거래</a></li>
+            <li><a th:href="@{#}">위해상품</a></li>
+            <li><a th:href="@{#}">이벤트당첨</a></li>
+          </ul>
+        </aside>
+        <article>
+          <form action="#">
+            <table>
+              <tr>
+                <td>공지유형</td>
+                <td>
+                  <select name="type">
+                    <option value="0">선택</option>
+                    <option>안내</option>
+                    <option>발표</option>
+                    <option>점검</option>
+                    <option>뉴스</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>공지작성</td>
+                <td>
+                  <input type="text" name="title" placeholder="제목을 입력하세요."/>
+                </td>
+              </tr>
+              <tr>
+                <td>공지내용</td>
+                <td>
+                  <textarea name="content" placeholder="내용을 입력하세요."></textarea>
+                </td>
+              </tr>
+            </table>
+            <div>
+              <a th:href="@{/cs/notice/list}" class="btnList">취소하기</a>
+              <input type="submit" class="btnSubmit" value="등록하기"/>
+            </div>
+          </form>
+        </article>
+      </section>
+    </div>
+  </section>
+
+</main>
+</html>

@@ -1,0 +1,358 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/productLayout}">
+
+<div class="container" layout:fragment="content">
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+
+        window.onload = function (){
+
+        }
+
+
+        //우편번호 검색
+        function postcode() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                    // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    var addr = ''; // 주소 변수
+                    var extraAddr = ''; // 참고항목 변수
+
+                    //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                        addr = data.jibunAddress;
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById('inputZip').value = data.zonecode;
+                    document.getElementById("inputAddr1").value = addr;
+                    // 커서를 상세주소 필드로 이동한다.
+                    document.getElementById("inputAddr2").focus();
+                }
+            }).open();
+        }
+
+        //포인트 사용
+        let isPointOk = false;
+        function usingPoint(){
+            //alert('클릭이 되었습니다.');
+            //포인트를 사용한다고 적용 버튼을 눌렀을 때, 5000점 이상이면 현금처럼 사용가능
+            const curPoint = document.getElementsByClassName('curPoint')[0].textContent;
+            const usingPoint = document.getElementById('point').value;
+            const totalOrder = document.getElementById('totalOrder').textContent;
+            const order = totalOrder.replace(/,/g, '');
+            const result = document.getElementById('result');//적용했을때의 결과를 띄워줌
+
+
+
+            console.log('totalOrder'+total);//총 금액
+            console.log('curPoint : '+curPoint);//나의 포인트
+            console.log('usingPoint : '+usingPoint);//사용포인트
+
+
+            if(parseInt(curPoint)>=5000){
+
+                //1.나의 포인트 보다 사용포인트를 많이 입력했을 경우
+                if(curPoint<usingPoint){
+
+                    //result쪽에 사용이 불가능하다고 띄워줌
+                    result.innerText="포인트가 부족합니다!";
+                    result.style.color="red";
+                }
+                //2.사용할 포인트가 total금액보다 많은 경우
+                else if(usingPoint>parseInt(order)){
+                    result.innerText="결제금액보다 사용포인트가 많습니다!";
+                    result.style.color="red";
+                }else{
+                    result.innerText="사용 가능합니다!";
+                    result.style.color="green";
+                }
+
+            }else{
+                alert('현재 포인트가 5000점이상이여야 사용이 가능합니다.');
+                isPointOk = false;
+            }
+        }
+
+        //// 각 장바구니 품목 가격 합산하는 함수 ////
+        function orderPriceSub(usingPoint = 0) {
+
+            let totalProdPrice = 0;
+            let totalProdDisPrice = 0;
+            let totalProdDelCost = 0;
+            let totalProdPoint = 0;
+            let totalProdTotal = 0;
+
+
+
+            const totalPrice = document.getElementById('totalPrice');
+            const totalDiscount = document.getElementById('totalDiscount');
+            const totalDelCost = document.getElementById('totalDelCost');
+            const totalPoint = document.getElementById('totalPoint');
+            const totalOrder = document.getElementById('totalOrder');
+
+            const inputUsingPoint = document.getElementById('inputUsingPoint');
+            const prodCount = document.getElementsByName('prodCount');
+            const prodPrice = document.getElementsByName('prodPrice'); // 할인 전 가격
+            const prodPoint = document.getElementsByName('prodPoint');
+            const prodDisPrice = document.getElementsByName('prodDisPrice');
+
+            console.log("usingPoint : " + usingPoint);
+
+
+            // 각 포인트, 가격, 할인, 합계값 더하는 for문
+            for (let i = 0; i < prodPoint.length; i++) {
+
+                totalProdPrice += parseInt(prodPrice[i].innerText);
+                totalProdDisPrice += (parseInt(prodPrice[i].innerText) - parseInt(prodDisPrice[i].innerText));
+                totalProdTotal += parseInt(prodDisPrice[i].innerText);
+                totalProdPoint += (parseInt(prodDisPrice[i].innerText));
+
+                if (totalProdTotal >= 30000) {
+                    totalProdDelCost = 0;
+                } else {
+                    totalProdDelCost = 3000;
+                }
+            }
+            // 태그에 값 출력하기
+            totalPrice.innerText = totalProdPrice.toLocaleString();
+            totalDiscount.innerText = totalProdDisPrice.toLocaleString();
+            totalDelCost.innerText = totalProdDelCost.toLocaleString();
+            totalOrder.innerText = (totalProdTotal + parseInt(totalDelCost.innerText) - inputUsingPoint.innerText).toLocaleString();
+
+        }
+
+
+
+
+
+    </script>
+
+    <main id="product">
+        <aside>
+            <ul class="category">
+                <li><i class="fa fa-bars" aria-hidden="true"></i>카테고리</li>
+                <li>
+                    <a href="#"><i class="fas fa-tshirt"></i>패션·의류·뷰티</a>
+                    <ol>
+                        <li><a href="#">남성의류</a></li>
+                        <li><a href="#">여성의류</a></li>
+                        <li><a href="#">잡화</a></li>
+                        <li><a href="#">뷰티</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-laptop"></i>가전·디지털</a>
+                    <ol>
+                        <li><a href="#">노트북/PC</a></li>
+                        <li><a href="#">가전</a></li>
+                        <li><a href="#">휴대폰</a></li>
+                        <li><a href="#">기타</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-utensils"></i>식품·생필품</a>
+                    <ol>
+                        <li><a href="#">신선식품</a></li>
+                        <li><a href="#">가공식품</a></li>
+                        <li><a href="#">건강식품</a></li>
+                        <li><a href="#">생필품</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-home"></i>홈·문구·취미</a>
+                    <ol>
+                        <li><a href="#">가구/DIY</a></li>
+                        <li><a href="#">침구·커튼</a></li>
+                        <li><a href="#">생활용품</a></li>
+                        <li><a href="#">사무용품</a></li>
+                    </ol>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 주문 페이지 시작-->
+        <section class="order">
+
+            <!-- 제목, 페이지 네비게이션 -->
+            <nav>
+                <h1>주문결제</h1>
+                <p>
+                    HOME > 장바구니 > <strong>주문결제</strong>
+                </p>
+            </nav>
+
+            <form action="#">
+                <!-- 주문 상품 목록 -->
+                <table>
+                    <thead>
+                    <tr>
+                        <th>상품명</th>
+                        <th>총수량</th>
+                        <th>판매가</th>
+                        <th>배송비</th>
+                        <th>소계</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="empty">
+                        <td colspan="7">장바구니에 상품이 없습니다.</td>
+                    </tr>
+                    <tr th:each="order : ${ordersDTOS}">
+                        <td>
+                            <article class="orderProd">
+                                <a href="#"><img th:src="@{/uploads/__${product.image1}__}" alt=""></a>
+                                <div>
+                                    <h2 th:text="${product.prodName}"><a href="#">상품명</a></h2>
+                                    <p th:text="${order.size + ',' + order.color}">상품설명</p>
+                                </div>
+                            </article>
+                        </td>
+                        <td th:text="${order.quantity}">1</td>
+                        <td th:text="${product.prodPrice - (product.prodPrice * product.prodDiscount / 100)}">27,000</td>
+                        <td class="delivery">무료배송</td>
+                        <td th:text="${(product.prodPrice - (product.prodPrice * product.prodDiscount / 100)) * order.quantity}">27,000</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 최종 결제 정보 -->
+                <div class="final">
+                    <h2>최종결제 정보</h2>
+                    <table border="0">
+                        <tr>
+                            <td>주문 건수</td>
+                           <td id="totalCount" th:text="${ordersDTOS.size}+'건'"></td>
+                        </tr>
+                        <tr>
+                            <td>총 상품금액</td>
+                            <td id = totalPrice>27,000</td>
+                        </tr>
+                        <tr>
+                            <td>할인금액</td>
+                            <td id="totalDiscount">-1,000</td>
+                        </tr>
+                        <tr>
+                            <td>배송비</td>
+                            <td id="totalDelCost">0</td>
+                        </tr>
+                        <tr>
+                            <td>포인트 할인</td>
+                            <td id="inputUsingPoint">-1000</td>
+                        </tr>
+                        <tr>
+                            <td>포인트 적립</td>
+                            <td id="totalPoint">2000</td>
+                        </tr>
+                        <tr>
+                            <td>결제금액</td>
+                            <td id="totalOrder">25,000</td>
+                        </tr>
+                    </table>
+                    <input type="button" name="" value="결제하기">
+                </div>
+
+                <!-- 배송정보 -->
+                <article class="delivery">
+                    <h1>배송정보</h1>
+                    <table>
+                        <tr>
+                            <td>주문자</td>
+                            <td><input type="text" name="orderer" th:value="${userDTO.name}"/></td>
+                        </tr>
+                        <tr>
+                            <td>휴대폰</td>
+                            <td>
+                                <input type="text" name="hp" th:value="${userDTO.hp}"/>
+                                <span>- 포함 입력</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>우편번호</td>
+                            <td>
+                                <input type="text" id="inputZip" name="zip"/>
+                                <input type="button" id="findZip" value="검색" onclick="postcode()"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>기본주소</td>
+                            <td>
+                                <input type="text" id="inputAddr1" name="addr1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>상세주소</td>
+                            <td>
+                                <input type="text" id="inputAddr2" name="addr2"/>
+                            </td>
+                        </tr>
+                    </table>
+                </article>
+
+                <!-- 할인정보 -->
+                <article class="discount">
+                    <h1>할인정보</h1>
+
+                    <div>
+                        <p>현재 포인트 : <span class="curPoint" th:text="${userDTO.totalPoint}">7200</span>점</p>
+                        <label>
+                            <input type="text" id="point" name="point"/>점
+                            <input type="button" onclick="usingPoint()" value="적용"/><br>
+                            <span id="result"></span>
+                        </label>
+                        <span>포인트 5,000점 이상이면 현금처럼 사용 가능합니다.</span>
+                    </div>
+                </article>
+
+                <!-- 결제방법 -->
+                <article class="payment">
+                    <h1>결제방법</h1>
+                    <div>
+                        <span>신용카드</span>
+                        <p>
+                            <label><input type="radio" name="payment" value="type1"/>신용카드 결제</label>
+                            <label><input type="radio" name="payment" value="type2"/>체크카드 결제</label>
+                        </p>
+                    </div>
+                    <div>
+                        <span>계좌이체</span>
+                        <p>
+                            <label><input type="radio" name="payment" value="type3"/>실시간 계좌이체</label>
+                            <label><input type="radio" name="payment" value="type4"/>무통장 입금</label>
+                        </p>
+                    </div>
+                    <div>
+                        <span>기타</span>
+                        <p>
+                            <label><input type="radio" name="payment" value="type3"/>휴대폰결제</label>
+                            <label>
+                                <input type="radio" name="payment" value="type4"/>카카오페이
+                                <img src="../images/ico_kakaopay.gif" alt="카카오페이"/>
+                            </label>
+                        </p>
+                    </div>
+                </article>
+
+                <!-- 경고 -->
+                <article class="alert">
+                    <ul>
+                        <li><span>롯데ON의 모든 판매자는 안전거래를 위해 구매금액, 결제수단에 상관없이 모든거래에 대하여 롯데ON 유한책임회사의 구매안전서비스(에스크로)를 제공하고 있습니다.</span>
+                        </li>
+                        <li><span>롯데ON 유한책임회사의 전자금융거래법에 의해 결제대금예치업 등록번호는 02-006-00008 입니다.</span></li>
+                        <li><span>등록여부는 금융감독원 홈페이지(www.fss.or.kr)의 업무자료>인허가업무안내>전자금융업등록현황에서 확인하실수 있습니다.</span></li>
+                    </ul>
+                </article>
+
+            </form>
+
+        </section>
+        <!-- 주문 페이지 끝-->
+    </main>
+</div>
+</html>
