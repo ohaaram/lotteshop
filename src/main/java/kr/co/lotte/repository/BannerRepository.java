@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface BannerRepository extends JpaRepository<Banner, Integer> {
-    public List<Banner> findByPosition(String MAIN1);
+    List<Banner> findByPosition(String position);
 
-    public void deleteByBannerNo(int BNo);//배너 번호를 이용하여 삭제
+    void deleteByBannerNo(int bannerNo);
 
-    public int countstatus(String position);//같은 포지션에 있는 status가 몇개 있는지 count
+    Long countByPositionAndStatus(String position, int status); // 수정된 메서드 시그니처
 }

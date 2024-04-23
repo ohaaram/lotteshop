@@ -47,7 +47,6 @@ public class AdminService {
     private ProductsRepository productsRepository;
 
     private final BannerRepository bannerRepository;
-
     private final BannerImgRepository bannerImgRepository;
 
     @Autowired
@@ -351,7 +350,7 @@ public class AdminService {
 
         MultipartFile image1 = bannerDTO.getMultImage1();
 
-        BannerImgDTO uploadedImage = uploadBannerImage(image1,banner.getPosition());
+        BannerImgDTO uploadedImage = uploadBannerImage(image1, banner.getPosition());
 
         if (uploadedImage != null) {
 
@@ -361,10 +360,9 @@ public class AdminService {
                 banner.setImg_1200(uploadedImage.getSName());
             } else if (banner.getPosition().equals("MAIN2")) {
                 banner.setImg_985(uploadedImage.getSName());
-            }else if (banner.getPosition().equals("PRODUCT1")) {
+            } else if (banner.getPosition().equals("PRODUCT1")) {
                 banner.setImg_456(uploadedImage.getSName());
-            }
-            else if (banner.getPosition().equals("MEMBER1")) {
+            } else if (banner.getPosition().equals("MEMBER1")) {
                 banner.setImg_425(uploadedImage.getSName());
             } else {
                 banner.setImg_810(uploadedImage.getSName());
@@ -399,7 +397,7 @@ public class AdminService {
     }
 
 
-    public BannerImgDTO uploadBannerImage(MultipartFile file,String position) {
+    public BannerImgDTO uploadBannerImage(MultipartFile file, String position) {
         // 파일을 저장할 경로 설정
 
         String path = new File(fileUploadPath).getAbsolutePath();
@@ -418,32 +416,32 @@ public class AdminService {
                 File dest = new File(path, sName);
 
                 switch (position) {
-                    case "MAIN1" :
+                    case "MAIN1":
 
                         // 썸네일 생성 (이미지 크기를 1200x80으로 조정)
                         Thumbnails.of(file.getInputStream())
                                 .forceSize(1200, 80)//여기를 size에서 forceSize로 강제 사이즈 변환
                                 .toFile(dest);
                         break;
-                    case "MAIN2" :
+                    case "MAIN2":
                         // 썸네일 생성 (이미지 크기를 985 x 447으로 조정)
                         Thumbnails.of(file.getInputStream())
                                 .forceSize(985, 447)//여기를 size에서 forceSize로 강제 사이즈 변환
                                 .toFile(dest);
                         break;
-                    case "PRODUCT1" :
+                    case "PRODUCT1":
                         //456 x 60
                         Thumbnails.of(file.getInputStream())
                                 .forceSize(456, 60)//여기를 size에서 forceSize로 강제 사이즈 변환
                                 .toFile(dest);
                         break;
-                    case "MEMBER1" :
+                    case "MEMBER1":
                         //425 x 260
                         Thumbnails.of(file.getInputStream())
                                 .forceSize(425, 260)//여기를 size에서 forceSize로 강제 사이즈 변환
                                 .toFile(dest);
                         break;
-                    default :
+                    default:
                         //810 x 86(마이페이지)
                         Thumbnails.of(file.getInputStream())
                                 .forceSize(810, 86)//여기를 size에서 forceSize로 강제 사이즈 변환
@@ -532,12 +530,12 @@ public class AdminService {
         Optional<Banner> banner = bannerRepository.findById(bNo);
 
         BannerDTO bannerDTO = modelMapper.map(banner, BannerDTO.class);
-        
+
         //포지션을 불러옴. 포지션을 가지고 같은 포지션 중에 status가 1인게 몇개인지, count해서 status가 1이상이면 status값 주지 말기(단, position이 main2는 5개 이하)
 
         String position = bannerDTO.getPosition();
 
-        bannerRepository.countstatus(position);
+        Long count = bannerRepository.countByPositionAndStatus(position,1);
 
         // 현재 날짜
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -550,10 +548,10 @@ public class AdminService {
         LocalTime startTime = LocalTime.parse(bannerDTO.getT_begin());
         LocalTime endTime = LocalTime.parse(bannerDTO.getT_end());
 
-        log.info("currentDate : "+currentDateTime);
-        log.info("currentDateTime.toLocalDate() : "+currentDateTime.toLocalDate());
-        log.info("startDate : " +startDate);
-        log.info("endDate : " +endDate);
+        log.info("currentDate : " + currentDateTime);
+        log.info("currentDateTime.toLocalDate() : " + currentDateTime.toLocalDate());
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
 
         // 배너의 시작일과 종료일
         LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
@@ -563,39 +561,84 @@ public class AdminService {
         log.info("startDateTime : " + startDateTime);
         log.info("endDateTime : " + endDateTime);
 
-        // 현재 날짜와 시간이 배너의 기간에 포함되어 있는지 확인
-        if (currentDateTime.isEqual(startDateTime) ||
-                (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime))) {
-            // 배너를 노출합니다.
-            log.info("여기로 들어와야해!!! 기간 안이라구!!!");
 
-            bannerDTO.setStatus("1");
+        if (!position.equals("MAIN2") && count < 1) {
 
-            Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+            // 현재 날짜와 시간이 배너의 기간에 포함되어 있는지 확인
+            if (currentDateTime.isEqual(startDateTime) ||
+                    (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime))) {
+                // 배너를 노출합니다.
+                log.info("여기로 들어와야해!!! 기간 안이라구!!!");
 
-            bannerRepository.save(banner2);//status 변환한거 저장
+                bannerDTO.setStatus("1");
 
-            log.info("banner2 성공!: "+banner2);
+                Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
 
-            return bannerDTO;
-        } else {
-            // 배너 기간이 아닌 경우 노출하지 않습니다.
-            log.info("기간 범위에 포함되지 않습니다.");
+                bannerRepository.save(banner2);//status 변환한거 저장
+
+                log.info("banner2 성공!: " + banner2);
+
+                return bannerDTO;
+            } else {
+                // 배너 기간이 아닌 경우 노출하지 않습니다.
+                log.info("기간 범위에 포함되지 않습니다.");
+                bannerDTO.setStatus("0");
+
+                Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+
+                bannerRepository.save(banner2);//status 변환한거 저장
+
+                log.info("banner2 실패! : " + banner2);
+
+                return null;
+            }
+        }else if(position.equals("MAIN2")&& count<5){
+            // 현재 날짜와 시간이 배너의 기간에 포함되어 있는지 확인
+            if (currentDateTime.isEqual(startDateTime) ||
+                    (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime))) {
+                // 배너를 노출합니다.
+                log.info("여기로 들어와야해!!! 기간 안이라구!!!");
+
+                bannerDTO.setStatus("1");
+
+                Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+
+                bannerRepository.save(banner2);//status 변환한거 저장
+
+                log.info("banner2 성공!: " + banner2);
+
+                return bannerDTO;
+            } else {
+                // 배너 기간이 아닌 경우 노출하지 않습니다.
+                log.info("기간 범위에 포함되지 않습니다.");
+                bannerDTO.setStatus("0");
+
+                Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+
+                bannerRepository.save(banner2);//status 변환한거 저장
+
+                log.info("banner2 실패! : " + banner2);
+
+                return null;
+            }
+        }else {
+
+            log.info("status 1의 값은 1개 이상이 될 수 없습니다.!");
+
             bannerDTO.setStatus("0");
 
             Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
 
             bannerRepository.save(banner2);//status 변환한거 저장
 
-            log.info("banner2 실패! : "+banner2);
-
+            log.info("banner2 실패! : " + banner2);
             return null;
         }
     }
 
 
     //status를 0으로 바꿔서 저장(비활성화 모드)
-    public void findByIdForDelete(String bno){
+    public void findByIdForDelete(String bno) {
 
         int bNo = Integer.parseInt(bno);
 
@@ -609,23 +652,23 @@ public class AdminService {
 
         bannerRepository.save(banner2);
 
-        log.info("findByIdForDelete - banner2 : "+banner2);
+        log.info("findByIdForDelete - banner2 : " + banner2);
     }
 
 
     //조회수 카운트
-    public Banner findByIdBanner(String bno){
+    public Banner findByIdBanner(String bno) {
         int bNo = Integer.parseInt(bno);
 
         Optional<Banner> banner = bannerRepository.findById(bNo);
 
         BannerDTO bannerDTO = modelMapper.map(banner, BannerDTO.class);
 
-        log.info("adminService-findByIdBanner : "+bannerDTO);
+        log.info("adminService-findByIdBanner : " + bannerDTO);
 
-        bannerDTO.setHit(bannerDTO.getHit()+1);
+        bannerDTO.setHit(bannerDTO.getHit() + 1);
 
-        log.info("adminService-findByIdBanner-bannerDTO "+bannerDTO);
+        log.info("adminService-findByIdBanner-bannerDTO " + bannerDTO);
 
         Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
 

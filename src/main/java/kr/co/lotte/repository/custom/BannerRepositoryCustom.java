@@ -1,6 +1,8 @@
 package kr.co.lotte.repository.custom;
 
+
+
 public interface BannerRepositoryCustom {
 
-    public int countstatus(String position);
+    Long countByPositionAndStatus(String position, int status);
 }

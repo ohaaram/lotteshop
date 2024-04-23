@@ -2,10 +2,7 @@ package kr.co.lotte.repository.impl;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.co.lotte.entity.QProdImage;
-import kr.co.lotte.entity.QProducts;
-import kr.co.lotte.entity.QSeller;
-import kr.co.lotte.entity.QSubProducts;
+import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.custom.BannerRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,24 +17,19 @@ public class BannerRepositoryImpl implements BannerRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    private QProducts qProducts = QProducts.products;
-    private QSubProducts subProducts = QSubProducts.subProducts;
+    private QBanner qBanner = QBanner.banner;
 
-    private final QProdImage qImages = QProdImage.prodImage;
-    private final QSeller qSeller = QSeller.seller;
 
     @Override
-    public int countstatus(String position) {
+    public Long countByPositionAndStatus(String position,int status) {
 
-        Tuple results =  jpaQueryFactory.select()
-                .from(subProducts)
-                .join(qProducts)
-                .on(qProducts.prodNo.eq(subProducts.prodNo))
-                .where(subProducts.subProdNo.eq(subProductNo)).fetchOne();
+        //position이 일치하면서 status가 1인 status의 수
+        Long results = jpaQueryFactory
+                .select(qBanner.status.count())
+                .from(qBanner)
+                .where(qBanner.position.eq(position).and(qBanner.status.eq(String.valueOf(status))))
+                .fetchOne();
 
-
-
-
-        return 0;
+        return results;
     }
 }
