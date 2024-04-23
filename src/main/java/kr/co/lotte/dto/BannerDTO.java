@@ -28,6 +28,7 @@ public class BannerDTO {
     private int hit;
     private String color;
     private String link;
+    private String status;
     private String position;
     private String d_begin;//배너가 노출되는 시작날짜
     private String d_end;//배너가 노출되는 끝날짜

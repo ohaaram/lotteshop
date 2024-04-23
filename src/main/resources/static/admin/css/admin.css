@@ -698,7 +698,17 @@ button[type=submit] {
     margin: 0 auto;
     cursor: pointer;
 }
-
+/*****************************************/
+/* admin.cs.faq css */
+/*****************************************/
+#admin-cs-faq table td.faq-list-checkbox{
+    text-align: center;
+    width: 36px;
+}
+#admin-cs-faq table th.faq-list-checkbox{
+    text-align: center;
+    width: 36px;
+}
 #admin-cs-faq .paging{
     width: 100%;
     padding: 30px 0;
@@ -710,7 +720,29 @@ button[type=submit] {
     margin: 0 2px;
     padding: 8px 9px;
     border: 1px solid #1e1e1e;
-    color: #c84f3c;
+    color: #0D3A46;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+}
+#admin-cs-faq .paging > .prev {
+    display: inline-block;
+    min-width: 14px;
+    margin: 0 2px;
+    padding: 8px 9px;
+    border: 1px solid #1e1e1e;
+    color: #0D3A46;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+}
+#admin-cs-faq .paging > .next {
+    display: inline-block;
+    min-width: 14px;
+    margin: 0 2px;
+    padding: 8px 9px;
+    border: 1px solid #1e1e1e;
+    color: #0D3A46;
     font-size: 12px;
     text-align: center;
     text-decoration: none;
@@ -720,14 +752,53 @@ button[type=submit] {
     text-decoration: none;
 }
 #admin-cs-faq .paging .num a.on {
-    color: #fe434c; /* 강조할 색상으로 변경하세요 */
+    color: #4CAF50; /* 강조할 색상으로 변경하세요 */
     font-weight: bold;
 }
+#admin-cs-faq .cs-write {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #4CAF50; /* 버튼 배경색 */
+    color: white; /* 버튼 텍스트 색상 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#admin-cs-faq .cs-write:hover {
+    background-color: #45a049; /* 마우스 호버 시 배경색 */
+}
+#admin-cs-faq .faq-modify button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #4CAF50; /* 버튼 배경색 */
+    color: white; /* 버튼 텍스트 색상 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#admin-cs-faq .faq-modify button:hover{
+    background-color: #45a049; /* 마우스 호버 시 배경색 */
+}
 
-#admin-cs-faq > section > table  tr > td:nth-child(1) {width: 20px;}
-#admin-cs-faq > section > table  tr > td:nth-child(2) {width: 80px;}
-#admin-cs-faq > section > table  tr > td:nth-child(3) {width: 80px;}
-#admin-cs-faq > section > table  tr > td:nth-child(4) {width: auto; text-align: left;}
-#admin-cs-faq > section > table  tr > td:nth-child(5) {width: 80px;}
-#admin-cs-faq > section > table  tr > td:nth-child(6) {width: 80px;}
-#admin-cs-faq > section > table  tr > td:nth-child(7) {width: 80px;}
+#admin-cs-faq .faq-modify .faq-title{
+    width: 840px;
+}
+#admin-cs-faq .faq-modify .faq-content{
+    height: 480px;
+    width: 840px;
+}
+#admin-cs-faq .faq-modify table textarea{
+        padding: 2px;
+        border: 1px solid #959595;
+        font-size: 13px;
+        background-color: #eaeaea;
+        color: #333;
+        box-sizing: border-box;
+        resize: none;
+}

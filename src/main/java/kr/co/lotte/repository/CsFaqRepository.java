@@ -13,4 +13,5 @@ public interface CsFaqRepository extends JpaRepository<CsFaq, Integer> {
 
     Page<CsFaq> findAll(Pageable pageable);
     List<CsFaq> findByCate(String cate);
+
 }

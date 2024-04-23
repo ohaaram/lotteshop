@@ -8,19 +8,19 @@
 
         window.onload = function () {
 
-            const b_delete = document.getElementById('delete');
             const checkBoxes = document.querySelectorAll('.checkBoxes');
-
-            b_delete.onclick = function (e) {
-                e.preventDefault();
-
-                deleteSelectedBanners();
-            }
-
-            //전체 선택
-
             const totalCheckBox = document.getElementsByName('all')[0];
             let checkedTurn = 0;
+
+            const btnDeletes = document.querySelectorAll('.btnNegative');//input type = Button
+
+            btnDeletes.forEach(function (btnDelete){
+                btnDelete.onclick = function (e){
+                    deleteSelectedBanners();
+                }
+            })
+
+            //전체 선택
 
             totalCheckBox.onclick = function (e) {
                 if (checkedTurn === 0) {
@@ -43,9 +43,11 @@
                 checkBoxes.forEach(check => {
                     if (check.checked) {
                         const row = check.closest('tr');
-                        const bannerNo = row.querySelector('[id="bannerNo"]').textContent;
+                        //const bannerNo = row.querySelector('[id="bannerNo"]').textContent;
+                        const bannerNoElement = row.querySelector('.bannerNo');
+                        const bannerNo = bannerNoElement.textContent;
                         // 배너번호를 확인
-                        console.log('BannerNo : ' + bannerNo);//배너번호 잘 찍힘
+                        console.log('제발 찍혀라!! BannerNo : ' + bannerNo);
                         row.remove();
 
                         const jsonData = {
@@ -68,8 +70,6 @@
                     }
                 });
             }
-
-
         }
 
 
@@ -111,9 +111,9 @@
                     <th>관리</th>
                 </tr>
 
-                <tr th:each=" bannerList :${banner}">
+                <tr th:each=" bannerList :${banner1}">
                     <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
-                    <td th:text="${bannerList.bannerNo}" id="bannerNo">201603292</td>
+                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
                     <td><img th:src="@{/uploads/__${bannerList.img_1200}__}" class="thumb"></td>
                     <td>
                         <ul>
@@ -130,12 +130,12 @@
                     <td th:text="${bannerList.t_end}">14:00</td>
                     <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a th:href="@{/banner/inactive}">[비활성]</a>
+                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
                         <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
                     </td>
                 </tr>
             </table>
-            <input type="button" class="btnNegative" id="delete" value="선택삭제"/>
+            <input type="button" class="btnNegative" value="선택삭제"/>
             <input type="button" class="btnPositive btnRegister" value="등록하기"/>
 
         </section>
@@ -160,100 +160,34 @@
                     <th>조회</th>
                     <th>관리</th>
                 </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img th:src="@{/images/slider_item1.jpg}" class="thumb"></td>
+                <tr th:each=" bannerList :${banner2}">
+                    <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
+                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
+                    <td><img th:src="@{/uploads/__${bannerList.img_985}__}" class="thumb"></td>
                     <td>
                         <ul>
-                            <li class="name">배너이름</li>
+                            <li class="name" th:text="${bannerList.name}">배너이름</li>
                             <li class="size">크기 : 985 x 447</li>
-                            <li class="link"><a href="#">배너링크</a></li>
+                            <li class="size" th:text="${bannerList.color}">배경색 : #e4dfdf</li>
+                            <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>메인 - 슬라이더</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
+                    <td>메인 - 상단</td>
+                    <td th:text="${bannerList.d_begin}">2023/01/01</td>
+                    <td th:text="${bannerList.d_end}">2023/01/07</td>
+                    <td th:text="${bannerList.t_begin}">13:00</td>
+                    <td th:text="${bannerList.t_end}">14:00</td>
+                    <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="../../images/slider_item2.jpg" class="thumb"></td>
-                    <td>
-                        <ul>
-                            <li class="name">배너이름</li>
-                            <li class="size">크기 : 985 x 447</li>
-                            <li class="link"><a href="#">배너링크</a></li>
-                        </ul>
-                    </td>
-                    <td>메인 - 슬라이더</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
-                    <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="../../images/slider_item3.jpg" class="thumb"></td>
-                    <td>
-                        <ul>
-                            <li class="name">배너이름</li>
-                            <li class="size">크기 : 985 x 447</li>
-                            <li class="link"><a href="#">배너링크</a></li>
-                        </ul>
-                    </td>
-                    <td>메인 - 슬라이더</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
-                    <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="../../images/slider_item4.jpg" class="thumb"></td>
-                    <td>
-                        <ul>
-                            <li class="name">배너이름</li>
-                            <li class="size">크기 : 985 x 447</li>
-                            <li class="link"><a href="#">배너링크</a></li>
-                        </ul>
-                    </td>
-                    <td>메인 - 슬라이더</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
-                    <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
+                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
+                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
                     </td>
                 </tr>
             </table>
             <input type="button" class="btnNegative" value="선택삭제"/>
             <input type="button" class="btnPositive btnRegister" value="등록하기"/>
         </section>
-
-        <!-- 상품 상세보기 배너-->
+      <!-- 상품 상세보기 배너-->
         <section id="tabs3">
             <h4>상품 상세보기 배너</h4>
             <p>
@@ -273,26 +207,27 @@
                     <th>조회</th>
                     <th>관리</th>
                 </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="../../images/vip_plcc_banner.png" class="thumb"></td>
+                <tr th:each=" bannerList :${banner3}">
+                    <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
+                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
+                    <td><img th:src="@{/uploads/__${bannerList.img_456}__}" class="thumb"></td>
                     <td>
                         <ul>
-                            <li class="name">배너이름</li>
+                            <li class="name" th:text="${bannerList.name}">배너이름</li>
                             <li class="size">크기 : 456 x 60</li>
-                            <li class="link"><a href="#">배너링크</a></li>
+                            <li class="size" th:text="${bannerList.color}">배경색 : #e4dfdf</li>
+                            <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>상품 - 상세보기</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
+                    <td>메인 - 상단</td>
+                    <td th:text="${bannerList.d_begin}">2023/01/01</td>
+                    <td th:text="${bannerList.d_end}">2023/01/07</td>
+                    <td th:text="${bannerList.t_begin}">13:00</td>
+                    <td th:text="${bannerList.t_end}">14:00</td>
+                    <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
+                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
+                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
                     </td>
                 </tr>
             </table>
@@ -320,26 +255,27 @@
                     <th>조회</th>
                     <th>관리</th>
                 </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="/member/images/member_login_banner.jpg" class="thumb"></td>
+                <tr th:each=" bannerList :${banner4}">
+                    <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
+                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
+                    <td><img th:src="@{/uploads/__${bannerList.img_425}__}" class="thumb"></td>
                     <td>
                         <ul>
-                            <li class="name">배너이름</li>
+                            <li class="name" th:text="${bannerList.name}">배너이름</li>
                             <li class="size">크기 : 425 x 260</li>
-                            <li class="link"><a href="#">배너링크</a></li>
+                            <li class="size" th:text="${bannerList.color}">배경색 : #e4dfdf</li>
+                            <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>회원 - 로그인</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
+                    <td>메인 - 상단</td>
+                    <td th:text="${bannerList.d_begin}">2023/01/01</td>
+                    <td th:text="${bannerList.d_end}">2023/01/07</td>
+                    <td th:text="${bannerList.t_begin}">13:00</td>
+                    <td th:text="${bannerList.t_end}">14:00</td>
+                    <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
+                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
+                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
                     </td>
                 </tr>
             </table>
@@ -367,50 +303,30 @@
                     <th>조회</th>
                     <th>관리</th>
                 </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="/my/images/my_banner1.jpg" class="thumb"></td>
+                <tr th:each=" bannerList :${banner5}">
+                    <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
+                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
+                    <td><img th:src="@{/uploads/__${bannerList.img_810}__}" class="thumb"></td>
                     <td>
                         <ul>
-                            <li class="name">배너이름</li>
+                            <li class="name" th:text="${bannerList.name}">배너이름</li>
                             <li class="size">크기 : 810 x 86</li>
-                            <li class="link"><a href="#">배너링크</a></li>
+                            <li class="size" th:text="${bannerList.color}">배경색 : #e4dfdf</li>
+                            <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>마이페이지</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
+                    <td>메인 - 상단</td>
+                    <td th:text="${bannerList.d_begin}">2023/01/01</td>
+                    <td th:text="${bannerList.d_end}">2023/01/07</td>
+                    <td th:text="${bannerList.t_begin}">13:00</td>
+                    <td th:text="${bannerList.t_end}">14:00</td>
+                    <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
+                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
+                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
                     </td>
                 </tr>
-                <tr>
-                    <td><input type="checkbox" name="배너번호"/></td>
-                    <td>201603292</td>
-                    <td><img src="/my/images/my_banner2.png" class="thumb"></td>
-                    <td>
-                        <ul>
-                            <li class="name">배너이름</li>
-                            <li class="size">크기 : 810 x 86</li>
-                            <li class="link"><a href="#">배너링크</a></li>
-                        </ul>
-                    </td>
-                    <td>마이페이지</td>
-                    <td>2023/01/01</td>
-                    <td>2023/01/07</td>
-                    <td>13:00</td>
-                    <td>14:00</td>
-                    <td>12</td>
-                    <td>
-                        <a href="#">[비활성]</a>
-                        <a href="#">[활성]</a>
-                    </td>
-                </tr>
+
             </table>
             <input type="button" class="btnNegative" value="선택삭제"/>
             <input type="button" class="btnPositive btnRegister" value="등록하기"/>

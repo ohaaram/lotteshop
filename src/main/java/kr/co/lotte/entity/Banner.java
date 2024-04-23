@@ -30,6 +30,7 @@ public class Banner {
     private int hit;//조회 수
     private String color;//배너 백그라운드
     private String link;//배너링크
+    private String status;
     private String position;//배너위치
     private String d_begin;//배너가 노출되는 시작날짜
     private String d_end;//배너가 노출되는 끝날짜

@@ -19,11 +19,11 @@ public class QOrders extends EntityPathBase<Orders> {
 
     public static final QOrders orders = new QOrders("orders");
 
-    public final StringPath color = createString("color");
+    public final StringPath addr1 = createString("addr1");
+
+    public final StringPath addr2 = createString("addr2");
 
     public final NumberPath<Integer> itemDiscount = createNumber("itemDiscount", Integer.class);
-
-    public final StringPath memo = createString("memo");
 
     public final StringPath orderAddr = createString("orderAddr");
 
@@ -31,19 +31,17 @@ public class QOrders extends EntityPathBase<Orders> {
 
     public final NumberPath<Integer> orderNo = createNumber("orderNo", Integer.class);
 
+    public final StringPath orderState = createString("orderState");
+
     public final NumberPath<Integer> orderTotalPrice = createNumber("orderTotalPrice", Integer.class);
 
-    public final StringPath receiveHp = createString("receiveHp");
+    public final StringPath payment = createString("payment");
 
-    public final StringPath receiveName = createString("receiveName");
-
-    public final StringPath sendHp = createString("sendHp");
-
-    public final StringPath sendName = createString("sendName");
-
-    public final StringPath size = createString("size");
+    public final NumberPath<Integer> point = createNumber("point", Integer.class);
 
     public final StringPath userId = createString("userId");
+
+    public final StringPath zip = createString("zip");
 
     public QOrders(String variable) {
         super(Orders.class, forVariable(variable));

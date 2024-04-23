@@ -88,29 +88,87 @@ public class MarketController {
             return marketService.inserCart(uid, counts , nos);
     };
 
+    @ResponseBody
+    @PostMapping("/product/order")
+    public ResponseEntity order(@RequestBody Map<String , Object> map, HttpSession session){
+        List<Integer> nos = (List<Integer>) map.get("itemsNos");
+        List<Integer> counts = (List<Integer>) map.get("itemsCounts");
+        session.setAttribute("nos", nos);
+        session.setAttribute("counts", counts);
 
-    @GetMapping("/product/order")//여기는 바로 구매 했을 때 넘겨주는 페이지(세션으로 넘김)
-    public String order(HttpServletRequest request, Model model){
+        Map<String , String> map1 = new HashMap<>();
+        map1.put("result","success");
+        return ResponseEntity.ok().body(map1);
+    }
 
-        //상품에 대한 이미지가 있어야하네...
-
-        HttpSession session = request.getSession();
-
-        List<Map<String, Object>> ordersDTOS = (List<Map<String, Object>>) session.getAttribute("orderList");
-
-        ProductsDTO products= (ProductsDTO) session.getAttribute("productsDTO");
-
-        log.info("ordersDTOS : "+ordersDTOS);
-
-
-        UserDTO userDTO = (UserDTO) session.getAttribute("userDTO");
-
-        model.addAttribute("product", products);
-        model.addAttribute("userDTO", userDTO);
-        model.addAttribute("ordersDTOS", ordersDTOS);
-
+    //바로구매(장바구니 안 거치고)
+    @GetMapping("/product/order")//
+    public String order( Model model, HttpSession session, Authentication authentication){
+        int status = 0;
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+        model.addAttribute("user", user);
+        List<Integer> nos = (List<Integer>) session.getAttribute("nos");
+        List<Integer> counts = (List<Integer>) session.getAttribute("counts");
+        log.info("nos nonono~ : "+nos);
+        model.addAttribute("subProducts", marketService.selectProducts(nos));
+        model.addAttribute("counts", counts);
+        model.addAttribute("status", status);
         return "/product/order";
     }
+
+    //바로구매(장바구니 거치고)
+    @GetMapping("/product/order2")//
+    public String order2( Model model, Authentication authentication, @RequestParam(name = "list") List<Integer> list){
+        log.info("list : "+list);
+        int status = 1;
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+        model.addAttribute("user", user);
+        List<Carts> cartsList = marketService.selectCarts(list);
+
+        List<Integer> counts = cartsList.stream().map(item ->   item.getCartProdCount()).toList();
+        List<Integer> nos = cartsList.stream().map(item ->   item.getProdNo()).toList();
+        model.addAttribute("cartlist", cartsList);
+        model.addAttribute("subProducts", marketService.selectProducts(nos));
+        model.addAttribute("counts", counts);
+        model.addAttribute("status", status);
+        return "/product/order";
+    }
+
+    //구매하기 (orderTable  포인트 사용 감소)
+    @ResponseBody
+    @PostMapping("/product/orderBuy")
+    public ResponseEntity orderBuy(@RequestBody OrdersDTO ordersDTO){
+        log.info("이거확인 "+ordersDTO.toString());
+        return marketService.insertOrderAndPoint(ordersDTO);
+    }
+
+    //구매하기2( 카트제거 , orderItems 넣기)
+    @ResponseBody
+    @PostMapping("/product/deleteCartForOrder")
+    public ResponseEntity deleteCartForOrder(@RequestBody Map<String, List<Integer>> map){
+        List<Integer> list = map.get("lists");
+        return marketService.deleteCartForBuy(list);
+    }
+    
+    //구매하기2-1 (세션제거, orderItems 넣기)
+    @ResponseBody
+    @GetMapping("/product/insertItems")
+    public ResponseEntity insertItems(Model model, HttpSession session,
+                                      @RequestParam(name = "orderNo")int orderNo,Authentication authentication){
+        List<Integer> nos = (List<Integer>) session.getAttribute("nos");
+        List<Integer> counts = (List<Integer>) session.getAttribute("counts");
+        session.removeAttribute("nos");
+        session.removeAttribute("counts");
+
+        return marketService.insertItemsForBuy(nos ,counts , orderNo);
+    }
+
+
+    //주문 확인시 product 재고 감소 + 포인트 주고 + usertotalPrice에 넣기
+    
+    //주문 취소시 사용한 포인트 돌려주기 + userTotalPrice 빼기
 
     //옵션관련된것
     @ResponseBody

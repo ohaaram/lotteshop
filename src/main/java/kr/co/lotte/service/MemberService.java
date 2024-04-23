@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.SellerDTO;
 import kr.co.lotte.dto.TermsDTO;
 import kr.co.lotte.dto.UserDTO;
+import kr.co.lotte.dto.UserUpdateDTO;
 import kr.co.lotte.entity.Seller;
 import kr.co.lotte.entity.User;
 import kr.co.lotte.mapper.MemberMapper;
@@ -19,9 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -119,6 +123,25 @@ public class MemberService {
 
         return termsMapper.findTerms(intPk);
     }
+
+    public void myInfoUpdate(Principal principal, UserUpdateDTO userUpdateDTO) {
+        Optional<User> findUser = memberRepository.findById(principal.getName());
+        log.info("findUser={}", findUser);
+
+        User updateUser = findUser.get();
+
+        log.info("user={}",updateUser);
+
+        updateUser.setEmail(userUpdateDTO.getEmail());
+        updateUser.setHp(userUpdateDTO.getHp());
+        updateUser.setZip(userUpdateDTO.getZip());
+        updateUser.setAddr1(userUpdateDTO.getAddr1());
+        updateUser.setAddr2(userUpdateDTO.getAddr2());
+
+        memberRepository.save(updateUser);
+
+    }
+
 
 
 

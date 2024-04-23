@@ -19,6 +19,8 @@ public class QPoints extends EntityPathBase<Points> {
 
     public static final QPoints points = new QPoints("points");
 
+    public final NumberPath<Integer> orderNo = createNumber("orderNo", Integer.class);
+
     public final NumberPath<Integer> point = createNumber("point", Integer.class);
 
     public final DateTimePath<java.time.LocalDateTime> pointDate = createDateTime("pointDate", java.time.LocalDateTime.class);

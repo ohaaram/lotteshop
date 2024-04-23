@@ -16,4 +16,5 @@ public class PointsDTO {
     private int point;
     private String pointDesc;
     private LocalDateTime pointDate;
+    private int orderNo;
 }

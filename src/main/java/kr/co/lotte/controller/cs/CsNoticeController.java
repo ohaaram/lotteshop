@@ -17,20 +17,23 @@ public class CsNoticeController {
     private final CsNoticeService csNoticeService;
 
 
+    // admin notice 리스트 출력
     @GetMapping("/admin/cs/notice/list")
     public String adminNoticeList(){
 
         return "/admin/cs/notice/list";
     }
 
+    // admin notice 뷰 페이지
     @GetMapping("/admin/cs/notice/view")
     public String adminNoticeView(){
 
         return "/admin/cs/notice/view";
     }
 
+    //admin 페이지 공지사항 작성
     @GetMapping("/admin/cs/notice/write")
-    public String adminNoticeWrite(){
+    public String noticeWrite(){
         return "/admin/cs/notice/write";
     }
 
@@ -39,12 +42,6 @@ public class CsNoticeController {
         csNoticeService.insertCsNotice(csNoticeDTO);
 
         return "redirect:/admin/cs/notice/write?code=100";
-    }
-
-    @GetMapping("/admin/cs/qna/list")
-    public String adminQnaList(){
-
-        return "/admin/cs/qna/list";
     }
 
 }

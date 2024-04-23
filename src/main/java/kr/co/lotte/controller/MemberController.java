@@ -2,9 +2,11 @@ package kr.co.lotte.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.dto.SellerDTO;
 import kr.co.lotte.dto.TermsDTO;
 import kr.co.lotte.dto.UserDTO;
+import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -22,6 +25,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AdminService adminService;
 
     @GetMapping("/member/join")
     public String join() {
@@ -29,7 +33,11 @@ public class MemberController {
     }
 
     @GetMapping("/member/login")
-    public String login() {
+    public String login(Model model) {
+
+        List<BannerDTO> banner4 = adminService.findMEMBER1("MEMBER1");
+        model.addAttribute("banner4", banner4);
+
         return "/member/login";
     }
 
@@ -111,6 +119,7 @@ public class MemberController {
     @GetMapping("/member/signup")
     public String signup(Model model){
         model.addAttribute("terms", memberService.findTerms(1));
+        TermsDTO terms = memberService.findTerms(1);
         return "/member/signup";
     }
 

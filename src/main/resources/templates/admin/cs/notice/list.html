@@ -4,6 +4,15 @@
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
 <section id="admin-cs-notice" layout:fragment="content">
+    <script>
+        window.onload=function (){
+            const writeInput = document.getElementById('writeInput');
+            writeInput.onclick=function (e){
+                e.preventDefault();
+                document.getElementById('write').click();
+            }
+        }
+    </script>
     <nav>
         <h3>고객센터</h3>
         <p>
@@ -80,7 +89,8 @@
                 <input type="button" value="선택삭제" id="selectDelete" style="float: left; margin-right: 10px;"/>
             </div>
             <div>
-                <input  type="button" value="공지작성" id="#" style="float: right; "/>
+                <input type="button" id="writeInput" value="공지작성" th:href="@{/admin/cs/notice/write}" style="float: right; "/>
+                <a type="button" id="write" value="공지작성" th:href="@{/admin/cs/notice/write}" style="float: right; "/>
             </div>
 
         </div>

@@ -357,8 +357,39 @@
                                     }
                                 }
 
-                                if(event.target.matches('#cartSub2')){
 
+                                if (event.target.matches('#cartBuy')) {
+                                    try {
+                                        const userID = document.getElementById('userId').value;
+                                        const quantityContainers = document.querySelectorAll('.quantity-container');
+                                        const itemsCounts = [];
+                                        const itemsNos = [];
+
+                                        quantityContainers.forEach(container => {
+                                            if (container.querySelector('#optionNo').value == "") {
+
+                                            } else {
+                                                itemsCounts.push(parseInt(container.querySelector('#optionCount').value));
+                                                itemsNos.push(parseInt(container.querySelector('#optionNo').value));
+                                            }
+
+                                        });
+                                        if (itemsCounts.length < 1) {
+                                            alert('상품을 선택해주세요');
+                                        } else {
+                                            const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
+                                            console.log(json);
+                                            const result = await fetchPost('/lotteshop/product/order', json);
+                                            window.location.href ='/lotteshop/product/order';
+                                        }
+                                    } catch (e) {
+                                        console.log(e.toString())
+                                        alert('로그인 후 이용해주세요');
+                                    }
+                                }
+
+                                if(event.target.matches('#cartSub2')){
+                                    try {
                                         const userID = document.getElementById('userId').value;
                                         const quantityContainers = document.querySelectorAll('.quantity-container');
                                         const itemsCounts = [];
@@ -379,12 +410,45 @@
                                             const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
                                             console.log(json);
                                             const result = await fetchPost('/lotteshop/product/view', json);
-                                            if(result.result === 'success'){
+                                            if (result.result === 'success') {
                                                 alert('장바구니로 상품이 담겼습니다.')
                                                 //추후에 장바구니 이동 추가
                                             }
                                         }
+                                    }catch (e) {
+                                            console.log(e.toString())
+                                            alert('로그인 후 이용해주세요');
+                                        }
+                                }
 
+                                if(event.target.matches('#cartBuy2')){
+                                    try{
+                                        const userID = document.getElementById('userId').value;
+                                        const quantityContainers = document.querySelectorAll('.quantity-container');
+                                        const itemsCounts = [];
+                                        const itemsNos = [];
+
+                                        quantityContainers.forEach(container => {
+                                            if (container.querySelector('#optionNo').value == "") {
+
+                                            } else {
+                                                itemsCounts.push(parseInt(container.querySelector('#optionCount').value));
+                                                itemsNos.push(parseInt(container.querySelector('#optionNo').value));
+                                            }
+
+                                        });
+                                        if (itemsCounts.length < 1) {
+                                            alert('상품을 선택해주세요');
+                                        } else {
+                                            const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
+                                            console.log(json);
+                                            const result = await fetchPost('/lotteshop/product/order', json);
+                                            window.location.href = '/lotteshop/product/order';
+                                        }
+                                    } catch (e) {
+                                        console.log(e.toString())
+                                        alert('로그인 후 이용해주세요');
+                                    }
                                 }
 
                             });
@@ -429,7 +493,7 @@
                             </div>
                         <div class="button">
                             <input type="button" class="cart" id="cartSub" value="장바구니"/>
-                            <input type="button" class="order"   id="cartOrder" value="구매하기"/>
+                            <input type="button" class="order"  id="cartBuy"  value="구매하기"/>
                         </div>
                         <div class="total">
                         <span id="total_price"
@@ -452,7 +516,7 @@
                         </div>
                         <div class="button">
                             <input type="button" class="cart"  id="cartSub2" value="장바구니"/>
-                            <input type="button" class="order" value="구매하기"/>
+                            <input type="button" class="order"  id="cartBuy2" value="구매하기"/>
                         </div>
                         <div class="total">
                         <span id="total_price"

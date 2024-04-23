@@ -1,7 +1,9 @@
 package kr.co.lotte.service.cs;
 
 import groovy.util.logging.Slf4j;
+import kr.co.lotte.dto.CsFaqDTO;
 import kr.co.lotte.entity.CsFaq;
+import kr.co.lotte.mapper.AdminCsMapper;
 import kr.co.lotte.repository.CsFaqRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CsFaqService {
 
-    private static final Logger log = LoggerFactory.getLogger(CsFaqService.class);
+    private final AdminCsMapper adminCsMapper;
     private final CsFaqRepository csFaqRepository;
 
     // admin.cs.faq.list 출력
@@ -25,6 +27,24 @@ public class CsFaqService {
         return csFaqRepository.findAll(pageable);
     }
 
+    // admin.cs.faq.modify 출력
+    public CsFaqDTO faqSelectNo(int no){
+        return adminCsMapper.faqSelectNo(no);
+    }
+
+    // admin.cs.faq 수정
+    public void adminFaqUpdate(CsFaqDTO csFaqDTO){
+        adminCsMapper.adminFaqUpdate(csFaqDTO);
+    }
+
+    // admin.cs.faq 삭제
+    public void adminFaqDelete(int no){
+        adminCsMapper.adminFaqDelete(no);
+    }
+    // admin.cs.faq 글 작성
+    public void adminFaqWrite(CsFaqDTO csFaqDTO){
+        adminCsMapper.adminFaqWrite(csFaqDTO);
+    }
 
     // faq.user 출력
     public List<CsFaq> getLotteonersArticles(){

@@ -4,8 +4,25 @@
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
 <section id="admin-cs-faq" layout:fragment="content">
+    <script>
+        window.onload=function (){
+        }
+        function toggleSelectAll(){
+            var selectAllCheckbox = document.getElementById("selectAll");
+            var checkboxes = document.getElementsByClassName("selectCheckbox");
+            for(var i = 0; i < checkboxes.length; i++){
+                checkboxes[i].checked = selectAllCheckbox.checked;
+            }
+        }
+
+        function dleleteSelected(){
+            if (confirm('선택한 항목들을 삭제하시겠습니까?')){
+                document.getElementById("deleteForm").submit();
+            }
+        }
+    </script>
     <nav>
-        <h3>고객센터</h3>
+        <h3>FAQ 보기</h3>
         <p>
             HOME > 고객센터 > <strong>FAQ 관리</strong>
         </p>
@@ -13,6 +30,7 @@
 
     <section>
         <div>
+            <form id="deleteSelectedForm" th:action="@{/admin/cs/faq/deleteSelected}" method="post">
             <select name="search">
                 <option value="search1">전체</option>
                 <option value="search2">제목</option>
@@ -25,7 +43,7 @@
             <span ></span>
             <table border="0">
                 <tr>
-                    <th><input type="checkbox"></th>
+                    <th class="toggleSelectAll" ><input type="checkbox"></th>
                     <th>번호</th>
                     <th>유형</th>
                     <th>제목</th>
@@ -33,33 +51,36 @@
                     <th>관리</th>
                 </tr>
                 <tr th:each="faq: ${csFaqs}">
-                    <td><input type="checkbox"></td>
+                    <td class="faq-list-checkbox"><input type="checkbox" class="selectCheckbox" value="[[${faq.no}]]"></td>
                     <td>[[${faq.no}]]</td>
                     <td>[[${faq.cate}]]</td>
                     <td>[[${faq.title}]]</td>
-                    <td th:text="${#strings.substring(faq.content, 0, 20)}"></td>
+                    <td th:text="${#strings.length(faq.content) > 20 ? #strings.substring(faq.content, 0, 20) + '...' : faq.content} "></td>
                     <td>
-                        <a>수정</a>
-                        <a>삭제</a>
+                        <a th:href="@{/admin/cs/faq/{no}(no=${faq.no})}">[수정]</a>
+                        <a th:href="@{/admin/cs/faq/delete/{no}(no=${faq.no})}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
                     </td>
                 </tr>
             </table>
             <div>
-                <input type="button" value="선택삭제" id="selectDelete" style="float: left; margin-right: 10px;"/>
+                <button class="" type="button" onclick="deleteSelected()">선택 삭제</button>
             </div>
+            </form>
             <div>
-                <input  type="button" value="공지작성" id="#" style="float: right; "/>
+                <a class="cs-write" style="float: right" th:href="@{/admin/cs/faq/register}">질문 작성</a>
             </div>
             <div class="paging">
-                    <span class="prev" th:if="${csFaqs.hasPrevious()}">
-                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.previousPageable().pageNumber})}">&laquo; 이전</a>
+                &laquo;
+                <span class="prev" th:if="${csFaqs.hasPrevious()}">
+                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.previousPageable().pageNumber})}">이전</a>
                     </span>
                 <span class="num" th:each="page : ${#numbers.sequence(csFaqs.number - 4, csFaqs.number + 5)}" th:if="${page >= 0 && page < csFaqs.totalPages}">
         <a class="#" th:href="@{${pageURL}(page=${page})}" th:text="${page + 1}" th:classappend="${page eq csFaqs.number ? 'on' : ''}"></a>
     </span>
                     <span class="next" th:if="${csFaqs.hasNext()}">
-                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.nextPageable().pageNumber})}">다음 &raquo;</a>
+                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.nextPageable().pageNumber})}">다음</a>
                     </span>
+                &raquo;
             </div>
             <div>
                 <p>현재 페이지: [[${csFaqs.number + 1}]] / 전체 페이지 수 : [[${csFaqs.totalPages}]]</p>

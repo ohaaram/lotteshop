@@ -4,92 +4,262 @@
       layout:decorate="~{/my/layout/myLayout.html}">
 
 
-            <div class="info" layout:fragment="content">
-				<ul>
-                    <span class="menu_else"></span>
-                    <li class="on"><a th:href="@{#}">전체주문내역</a></li>
-                    <!--<li><a th:href="@{#}">관심상품</a></li>-->
-                    <li><a th:href="@{#}">포인트내역</a></li>
-                    <li><a th:href="@{#}">쿠폰</a></li>
-                    <li><a th:href="@{#}">나의리뷰</a></li>
-                    <li><a th:href="@{#}">문의하기</a></li>
-                    <li><a th:href="@{#}">나의설정</a></li>
-                </ul>
+<div class="info" layout:fragment="content">
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
-                <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
-                    <article>
-                        <h3>회원정보 설정</h3>
 
-                        <table border="0">
-                            <tr>
-                                <td>사용자 ID</td>
-                                <td>chh****</td>
-                            </tr>
-                            <tr>
-                                <td>비밀번호</td>
-                                <td>
-                                    <button id="btnChangePass">비밀번호 수정</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>이름</td>
-                                <td>김*학</td>
-                            </tr>
-                            <tr>
-                                <td>생년월일</td>
-                                <td>1983년 05월 03일</td>
-                            </tr>
-                            <tr>
-                                <td>E-mail</td>
-                                <td>
-                                    <input type="text" name="email1" value="chakh101">@
-                                    <input type="text" name="email2" value="naver.com">
-                                    <select>
-                                        <option>직접입력</option>
-                                        <option>naver.com</option>
-                                        <option>daum.net</option>
-                                        <option>gmail.com</option>
-                                        <option>nate.com</option>
-                                        <option>outlook.com</option>
-                                    </select>
-                                    <button id="btnChangeEmail">수정하기</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>휴대폰</td>
-                                <td>
-                                    <p class="hp">
-                                        <input type="text" name="hp1" value="010"/>-
-                                        <input type="text" name="hp2" value="1234"/>-
-                                        <input type="text" name="hp3" value="1001"/>
-                                        <button id="btnChangeHp">수정하기</button>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>주소</td>
-                                <td>
-                                    <input type="text" name="zip"/>
-                                    <button id="btnFindZip">주소검색</button>
-                                    <p class="address">
-                                        <input type="text" name="addr1"/>
-                                        <input type="text" name="addr2"/>
-                                    </p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>회원탈퇴</td>
-                                <td>
-                                    <button id="btnWithdraw">탈퇴하기</button>
-                                </td>
-                            </tr>
-                        </table>
-                        <button id="btnInfoChange">수정하기</button>
-                    </article>
-                </section>
 
-            </div>
-        </div>        
+    <script>
+
+        //유효성 검사에 사용할 상태변수
+        let isUidOk = false;
+        let isPassOk = false;
+        let isNameOk = false;
+        let isNickOk = false;
+        let isEmailOk = false;
+        let isHpOk = false;
+        let isEmailCodeOk = false;
+
+        // 유효성 검사에 사용할 정규표현식
+        const reUid = /^[a-z]+[a-z0-9]{4,19}$/g;
+        const rePass = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{5,16}$/;
+        const reName = /^[가-힣]{2,10}$/
+        const reNick = /^[a-zA-Zㄱ-힣0-9][a-zA-Zㄱ-힣0-9]*$/;
+        const reEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+        const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
+        window.onload = function () {
+
+
+            // 이메일 유효성 검사
+
+            const divEmailCode = document.getElementById('divEmailCode');
+
+            const inputEmail = document.getElementById('inputEmail');
+            const btn_email = document.getElementById('btn_email');
+            const resultEmail = document.getElementById('result_email');
+
+            btn_email.onclick = function () {
+
+                const type = this.dataset.type;
+
+                console.log("type : " + type);
+
+                // 유효성 검사
+                if (!inputEmail.value.match(reEmail)) {
+
+                    inputEmail.classList.add('is-invalid');
+                    resultEmail.innerText = '이메일 형식이 맞지 않습니다.';
+                    isEmailOk = false;
+                    return;
+                }
+
+                async function fetchGet(url) {
+
+                    console.log("fetchData1...1");
+
+                    try {
+                        console.log("fetchData1...2");
+                        const response = await fetch(url);
+                        console.log("here1");
+
+                        if (!response.ok) {
+                            console.log("here2");
+                            throw new Error('response not ok');
+                        }
+
+                        const data = await response.json();
+                        console.log("data1 : " + data);
+                        return data;
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+
+                // 이메일 인증코드 발급 및 중복체크 추가 예정
+                setTimeout(async () => {
+
+                    console.log('inputEmail value : ' + inputEmail.value);
+
+                    const data = await fetchGet(`/lotteshop/member/check/${type}/${inputEmail.value}`);
+                    console.log('data : ' + data.result);
+
+                    if (data.result > 0) {
+                        inputEmail.classList.add('is-invalid');
+                        resultEmail.innerText = '이미 사용중인 이메일 입니다.';
+                        isEmailOk = false;
+                    } else {
+                        alert('인증코드를 이메일로 전송합니다.');
+                    }
+
+                }, 1000);
+
+                isEmailOk = true;
+            }
+            // 이메일 인증코드 확인
+            const btnCheckEmailCode = document.getElementById('btnCheckEmailCode');
+            const inputEmailCode = document.getElementById('inputEmailCode');
+            const resultEmailCode = document.getElementById('resultEmailCode');
+
+            btnCheckEmailCode.onclick = async function () {
+
+                async function fetchGet(url) {
+
+                    console.log("fetchData1...1");
+
+                    try {
+                        console.log("fetchData1...2");
+                        const response = await fetch(url);
+                        console.log("here1");
+
+                        if (!response.ok) {
+                            console.log("here2");
+                            throw new Error('response not ok');
+                        }
+
+                        const data = await response.json();
+                        console.log("data1 : " + data);
+                        return data;
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+
+                const data = await fetchGet(`/lotteshop/member/email/${inputEmailCode.value}`);
+
+                if (!data.result) {
+                    inputEmail.classList.add('is-invalid');
+                    inputEmailCode.classList.add('is-invalid');
+                    resultEmailCode.innerText = '인증코드가 일치하지 않습니다.';
+                    isEmailCodeOk = false;
+                } else {
+                    inputEmail.classList.add('is-valid');
+                    inputEmailCode.classList.add('is-valid');
+                    resultEmailCode.innerText = '이메일이 인증되었습니다.';
+                    isEmailCodeOk = true;
+                }
+            }
+
+            //우편번호 검색
+            function postcode() {
+                new daum.Postcode({
+                    oncomplete: function (data) {
+                        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                        // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                        // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                        var addr = ''; // 주소 변수
+                        var extraAddr = ''; // 참고항목 변수
+
+                        //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                        if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                            addr = data.roadAddress;
+                        } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                            addr = data.jibunAddress;
+                        }
+
+                        // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                        document.getElementById('inputZip').value = data.zonecode;
+                        document.getElementById("inputAddr1").value = addr;
+                        // 커서를 상세주소 필드로 이동한다.
+                        document.getElementById("inputAddr2").focus();
+                    }
+                }).open();
+            }
+
+            findZip.onclick = function () {
+                postcode();
+            }
+        }
+    </script>
+    <ul>
+        <span class="menu_else"></span>
+        <li class="on"><a th:href="@{#}">전체주문내역</a></li>
+        <!--<li><a th:href="@{#}">관심상품</a></li>-->
+        <li><a th:href="@{#}">포인트내역</a></li>
+        <li><a th:href="@{#}">쿠폰</a></li>
+        <li><a th:href="@{#}">나의리뷰</a></li>
+        <li><a th:href="@{#}">문의하기</a></li>
+        <li><a th:href="@{#}">나의설정</a></li>
+    </ul>
+
+    <section>
+        <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+        <form th:action method="post">
+            <article>
+                <h3>회원정보 설정</h3>
+
+                <table border="0">
+                    <tr>
+                        <td>사용자 ID</td>
+                        <td th:text="${user.uid}">id</td>
+                    </tr>
+                    <tr>
+                        <td>비밀번호</td>
+                        <td>
+                            <button type="button" id="btnChangePass">비밀번호 수정</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>이름</td>
+                        <td th:text="${user.name}"></td>
+                    </tr>
+                    <tr>
+                        <td>생년월일</td>
+                        <td>1983년 05월 03일</td>
+                    </tr>
+                    <tr>
+                        <td>E-mail</td>
+                        <td>
+                            <input id="inputEmail" type="text" name="email" th:value="${user.email}">
+                            <button class="btnSubmit" type="button" id="btn_email" data-type="email">이메일 인증</button>
+                            <span id="result_email"></span>
+
+                            <!--이메일 인증코드 검사-->
+                            <div>
+                                <input class="form-control" id="inputEmailCode" name="code" type="text"
+                                       placeholder="이메일 인증코드 입력"/>
+                                <button type="button" class="btnSubmit" id="btnCheckEmailCode"
+                                        data-type="email">
+                                    <span class="" role="status">인증코드 확인</span>
+                                </button>
+                                <div id="resultEmailCode" class="d-block"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>휴대폰</td>
+                        <td>
+                            <p class="hp">
+                                <input type="text" name="hp" th:value="${user.hp}"/>
+                                <button type="button" id="btnChangeHp">수정하기</button>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>주소</td>
+                        <td>
+                            <input type="text" name="zip" id="inputZip" th:value="${user.zip}" readonly/>
+                            <button type="button" id="findZip">주소검색</button>
+                            <p class="address">
+                                <input type="text" name="addr1" id="inputAddr1" th:value="${user.addr1}" readonly/>
+                                <input type="text" name="addr2" id="inputAddr2" th:value="${user.addr2}"/>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>회원탈퇴</td>
+                        <td>
+                            <!--                            type은 button 이여야하는가-->
+                            <button type="button" id="btnWithdraw">탈퇴하기</button>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" id="btnInfoChange" value="수정하기">
+            </article>
+        </form>
+    </section>
+
+</div>
+
 
 </html>

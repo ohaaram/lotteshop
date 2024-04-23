@@ -12,9 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,45 +30,7 @@ public class CsFaqController {
         return "/cs/index";
     }
 
-    @GetMapping("/cs/qna/list")
-    public String qnaList(Model model, Integer pageNum, Integer pageSize){
-
-        return "/cs/qna/list";
-    }
-
-    @GetMapping("/cs/qna/write" )
-    public String qnaWrite(){
-
-        return "/cs/qna/write";
-    }
-
-    @PostMapping("/cs/qna/write")
-    public String qnaWrite(CsFaqDTO csFaqDTO){
-
-
-        return "redirect:/cs/qna/list";
-
-    }
-
-    @GetMapping("/cs/notice/list" )
-    public String noticeList(){
-
-        return "/cs/notice/list";
-    }
-
-    @GetMapping("/cs/notice/write" )
-    public String noticeWrite(){
-
-        return "/cs/notice/write";
-    }
-
-    @GetMapping("/cs/notice/view" )
-    public String noticeView(){
-
-        return "/cs/notice/view";
-    }
-
-    // admin.cs.faq.list 출력
+    // admin faq 리스트 출력
     @GetMapping("/admin/cs/faq/list")
     public String adminFaqList(Model model,
                                @RequestParam(defaultValue = "0") int page,
@@ -80,6 +40,44 @@ public class CsFaqController {
         model.addAttribute("csFaqs", csFaqs);
 
         return "/admin/cs/faq/list";
+    }
+
+    // admin.cs.faq 수정 페이지 출력
+    @GetMapping("/admin/cs/faq/{no}")
+    public String adminFaqModify(@PathVariable int no, Model model){
+
+        CsFaqDTO csFaqDTO = csFaqService.faqSelectNo(no);
+        model.addAttribute("csFaqDTO", csFaqDTO);
+        return "/admin/cs/faq/modify";
+    }
+
+    // admin.cs.faq 수정하기
+    @PostMapping("/admin/cs/faq")
+    public String adminFaqUpdate(CsFaqDTO csFaqDTO){
+        csFaqService.adminFaqUpdate(csFaqDTO);
+        return "redirect:/admin/cs/faq/list";
+    }
+
+    // admin.cs.faq 삭제하기
+    @GetMapping("/admin/cs/faq/delete/{no}")
+    public String adminFaqDelete(@PathVariable int no){
+        csFaqService.adminFaqDelete(no);
+        return "redirect:/admin/cs/faq/list";
+    }
+
+    // admin.cs.faq 글 작성 페이지
+    @GetMapping("/admin/cs/faq/register")
+    public String adminFaqRegister(Model model){
+        CsFaqDTO csFaqDTO = new CsFaqDTO();
+        model.addAttribute("csFaqDTO", csFaqDTO);
+        return "/admin/cs/faq/register";
+    }
+
+    // admin.cs.faq 글 작성
+    @PostMapping("/admin/cs/faq/register")
+    public String adminFaqWrite(CsFaqDTO csFaqDTO){
+        csFaqService.adminFaqWrite(csFaqDTO);
+        return "redirect:/admin/cs/faq/list";
     }
 
     // faq.user 페이지 출력

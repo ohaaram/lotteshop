@@ -45,6 +45,8 @@ public class QBanner extends EntityPathBase<Banner> {
 
     public final StringPath position = createString("position");
 
+    public final StringPath status = createString("status");
+
     public final StringPath t_begin = createString("t_begin");
 
     public final StringPath t_end = createString("t_end");

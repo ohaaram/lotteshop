@@ -4,7 +4,47 @@
       layout:decorate="~{/my/layout/myLayout.html}">
 
 
+
             <div class="home" layout:fragment="content">
+
+                <script>
+                    // 클릭 이벤트 처리 함수
+                    function preventClick(event, element) {
+                        event.preventDefault(); // 기본 동작 중지
+                        console.log(event);
+                        console.log(element.getAttribute('data-bannerNo'));//이렇게 함수에 bannerNo를 담아서 옴
+                        console.log(element.getAttribute('data-link'));//link주소도 받아와짐
+
+                        const bannerNo = element.getAttribute('data-bannerNo');
+                        const link = element.getAttribute('data-link');
+
+
+                        const jsonData = {
+                            "bannerNo":bannerNo,
+                            "link":link
+                        }
+
+                        fetch("/lotteshop/main/index",{
+                            method:'POST',
+                            headers:{'Content-Type': 'application/json'},
+                            body:JSON.stringify(jsonData)
+                        })
+                            .then(response=>{
+                                if(!response.ok){
+                                    throw new Error('데이터 전송에 실패!');
+                                }else{
+                                    window.location.href=link;
+                                }
+                                return response.json();
+                            })
+                            .then(data =>{
+                                console.log(data);
+                            })
+                            .catch(err=>console.log(err))
+                    }
+
+                </script>
+
 				<ul>
                     <span class="menu_else"></span>
                     <li><a href="./ordered.html">전체주문내역</a></li>
@@ -17,8 +57,11 @@
                 </ul>
 
                 <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
-
+                    <th:block th:each="banner :${banner5}">
+                        <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}" th:onclick="'preventClick(event ,this)'" th:href="@{${banner.link}}">
+                            <img th:src="@{/uploads/__${banner.img_810}__}" alt="패션, 타운 하나로 끝" class="banner">
+                        </a>
+                    </th:block>
                     <article class="latest">
                         <h3>최근주문내역</h3>
                         <a th:href="@{#}" class="more">더보기</a>

@@ -112,6 +112,7 @@
                         window.onload=function (e){
                             const all = document.getElementById('all');
                             const checkAll = document.querySelectorAll('#check');
+                            const orderBuy = document.getElementById('orderBuy');
 
                             all.onclick = function (){
                                 if (all.checked){
@@ -162,6 +163,25 @@
                                         const json = {list : cartLists};
                                         console.log(json)
                                         fetchPut('/lotteshop/product/cart/delete', json);
+
+                                    }
+                                }
+                            }
+
+                            orderBuy.onclick=function (e){
+                                var cartList = [];
+                                e.preventDefault();
+                                if(confirm('주문페이지로 이동하시겠습니까?')){
+
+                                    checkAll.forEach(function (item) {
+                                        if (item.checked) {
+                                            cartList.push(parseInt(item.closest('tr').querySelector('#cartNo').innerText));
+                                        }
+                                    });
+                                    if(cartList.length == 0){
+                                        alert('상품을 선택해주세요.')
+                                    }else{
+                                       window.location.href ='/lotteshop/product/order2?list='+cartList;
 
                                     }
                                 }
@@ -229,7 +249,7 @@
                             <td id="totalPrice">0</td>
                         </tr>
                     </table>
-                    <input type="submit" name=""  value="주문하기">
+                    <input type="submit" name="" id="orderBuy" value="주문하기">
                 </div>
 
             </form>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+<section id="admin-cs-faq" layout:fragment="content">
+    <script>
+        // 폼 제출
+        window.onload =function (){
+
+        }
+        function submitForm(){
+            if(confirm('작성하시겠습니까?')){
+                document.getElementById("faqWriteForm").submit();
+            }
+        }
+    </script>
+    <nav>
+        <h3>FAQ 작성페이지</h3>
+        <p>
+            HOME > 고객센터 > FAQ 관리 > <strong>FAQ 작성</strong>
+        </p>
+    </nav>
+    <section class="faq-modify">
+        <article>
+            <form id="faqWriteForm" th:action="@{/admin/cs/faq}" method="post">
+                <table class="">
+                    <tr>
+                        <td>제목:</td>
+                        <td class="faq-title">
+                            <label>
+                                <textarea class="faq-title" name="title"></textarea>
+                            </label>
+                        </td>
+                    </tr>                    <tr>
+                        <td>카테고리:</td>
+                        <td class="faq-title">
+                            <label>
+                                <textarea class="faq-title" name="cate"></textarea>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>내용:</td>
+                        <td>
+                            <label>
+                                <textarea class="faq-content" name="content"></textarea>
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a th:href="@{/admin/cs/faq/list}" class="cs-write">목록보기</a>
+            <button onclick="submitForm()">작성하기</button>
+        </article>
+    </section>
+</section>
+</html>

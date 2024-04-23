@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Builder
+@Setter
 @Entity
 @Table(name="points")
 
@@ -23,4 +24,5 @@ public class Points {
     private String pointDesc;
     @CreationTimestamp
     private LocalDateTime pointDate;
+    private int orderNo;
 }

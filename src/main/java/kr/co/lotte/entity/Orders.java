@@ -25,12 +25,13 @@ public class Orders {
     private int itemDiscount;
     @CreationTimestamp
     private LocalDateTime orderDate;
-    private String receiveName;
-    private String receiveHp;
-    private String memo;
-    private String sendHp;
-    private String sendName;
-    private String size;
-    private String color;
+
+
+    private String zip;
+    private String orderState;
+    private String addr1;
+    private String addr2;
+    private String payment;
+    private int point;
 
 }

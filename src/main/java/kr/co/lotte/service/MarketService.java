@@ -2,18 +2,14 @@ package kr.co.lotte.service;
 
 
 import com.querydsl.core.Tuple;
-import kr.co.lotte.dto.CartsDTO;
-import kr.co.lotte.dto.ProdImageDTO;
-import kr.co.lotte.dto.ProductsDTO;
-import kr.co.lotte.dto.SellerDTO;
+import groovy.transform.AutoImplement;
+import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
-import kr.co.lotte.repository.CartsRepository;
-import kr.co.lotte.repository.ProductsRepository;
-import kr.co.lotte.repository.SellerRepository;
-import kr.co.lotte.repository.SubProductsRepository;
+import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -98,5 +94,77 @@ public class MarketService {
         }
         return lists;
     }
+    //카트조회(주문을 위한)
+    public List<Carts> selectCarts(List<Integer> cartNos){
+        List<Carts> lists = new ArrayList<>();
+        for(int a : cartNos){
+            lists.add(cartsRepository.findById(a).get());
+        }
+        return lists;
+    }
+
+    @Autowired
+    private OrdersRepository ordersRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private OrdersItemRepository ordersItemRepository;
+    @Autowired
+    private PointsRepository pointsRepository;
+
+    //order table 넣고 포인트 감소
+    public ResponseEntity insertOrderAndPoint(OrdersDTO ordersDTO){
+        ordersDTO.setOrderState("주문 대기");
+       Orders orders= ordersRepository.save(modelMapper.map(ordersDTO , Orders.class));
+        if(ordersDTO.getPoint()>0){
+            User user = memberRepository.findById(ordersDTO.getUserId()).get();
+            user.setTotalPoint(user.getTotalPoint()-ordersDTO.getPoint());
+            memberRepository.save(user);
+
+            Points points = new Points();
+            points.setUserId(user.getUid());
+            points.setPoint(-ordersDTO.getPoint());
+            points.setPointDesc("상품 구매 사용");
+            points.setOrderNo(orders.getOrderNo());
+            pointsRepository.save(points);
+        }
+        Map<String , Integer> map = new HashMap<>();
+        map.put("orderNo" , orders.getOrderNo());
+        return ResponseEntity.ok().body(map);
+    }
+
+    //orderItems 넣고 카트 제거
+    public ResponseEntity deleteCartForBuy(List<Integer> lists){
+        int orderNo = lists.get(0);
+        lists.remove(0);
+        for(int carNo : lists){
+            Carts carts = cartsRepository.findById(carNo).get();
+            OrderItemsDTO orderItemsDTO  = new OrderItemsDTO();
+            orderItemsDTO.setOrderNo(orderNo);
+            orderItemsDTO.setProdNo(carts.getProdNo());
+            orderItemsDTO.setItemCount(carts.getCartProdCount());
+            ordersItemRepository.save(modelMapper.map(orderItemsDTO , OrderItems.class));
+            cartsRepository.deleteById(carNo);
+        }
+        Map<String , String> map = new HashMap<>();
+        map.put("data" , "success");
+        return ResponseEntity.ok().body(map);
+    }
+
+    public ResponseEntity insertItemsForBuy(List<Integer> nos, List<Integer> counts , int orderNo){
+        int i=0;
+        for(int no : nos){
+            OrderItemsDTO orderItemsDTO  = new OrderItemsDTO();
+            orderItemsDTO.setOrderNo(orderNo);
+            orderItemsDTO.setProdNo(no);
+            orderItemsDTO.setItemCount(counts.get(i));
+            ordersItemRepository.save(modelMapper.map(orderItemsDTO , OrderItems.class));
+            i++;
+        }
+        Map<String , String> map = new HashMap<>();
+        map.put("data" , "success");
+        return ResponseEntity.ok().body(map);
+    }
+
 
 }
