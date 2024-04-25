@@ -11,11 +11,13 @@ import kr.co.lotte.entity.SubProducts;
 import kr.co.lotte.entity.User;
 import kr.co.lotte.repository.CartsRepository;
 import kr.co.lotte.security.MyUserDetails;
+import kr.co.lotte.service.MainService;
 import kr.co.lotte.service.MarketService;
 import kr.co.lotte.service.MemberService;
 import kr.co.lotte.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -33,10 +35,13 @@ public class MarketController {
     private final MemberService memberService;
     private final ReviewService reviewService;
 
+    @Autowired
+    private final MainService mainService;
+
 
     @GetMapping("/product/list")
-    public String list(){
-
+    public String list(Model model, MainProductsPageRequestDTO requestDTO){
+        model.addAttribute("pageResponseDTO", mainService.searchListProducts(requestDTO));
         return "/product/list";
     }
 

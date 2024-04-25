@@ -17,7 +17,9 @@ public class CsFaq {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int no;
 
-    private String cate;
+    private String cate1;
+    private String cate2;
+    private String catename;
     private String title;
     private String content;
 

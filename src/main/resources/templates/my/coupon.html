@@ -6,15 +6,14 @@
 <div class="coupon" layout:fragment="content">
     <ul>
         <span class="menu_else"></span>
-        <li class="on"><a th:href="@{#}">전체주문내역</a></li>
-        <!--<li><a th:href="@{#}">관심상품</a></li>-->
-        <li><a th:href="@{#}">포인트내역</a></li>
-        <li><a th:href="@{#}">쿠폰</a></li>
-        <li><a th:href="@{#}">나의리뷰</a></li>
-        <li><a th:href="@{#}">문의하기</a></li>
-        <li><a th:href="@{#}">나의설정</a></li>
+        <li ><a th:href="@{/my/order}">전체주문내역</a></li>
+        <!--<li><a href="./favorite.html">관심상품</a></li>-->
+        <li ><a th:href="@{/my/point}">포인트내역</a></li>
+        <li class="on"><a th:href="@{/my/coupon}">쿠폰</a></li>
+        <li><a th:href="@{/my/review}">나의리뷰</a></li>
+        <li><a th:href="@{/my/qna}">문의하기</a></li>
+        <li><a th:href="@{/my/info}">나의설정</a></li>
     </ul>
-
     <section>
         <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
         <article>

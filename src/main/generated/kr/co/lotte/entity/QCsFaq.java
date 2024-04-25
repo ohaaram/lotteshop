@@ -19,7 +19,11 @@ public class QCsFaq extends EntityPathBase<CsFaq> {
 
     public static final QCsFaq csFaq = new QCsFaq("csFaq");
 
-    public final StringPath cate = createString("cate");
+    public final StringPath cate1 = createString("cate1");
+
+    public final StringPath cate2 = createString("cate2");
+
+    public final StringPath catename = createString("catename");
 
     public final StringPath content = createString("content");
 

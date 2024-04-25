@@ -10,9 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -36,7 +40,7 @@ public class CsFaqController {
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "10") int size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<CsFaq> csFaqs = (Page<CsFaq>) csFaqService.getFaqArticles(pageable);
+        Page<CsFaq> csFaqs = (Page<CsFaq>) csFaqService.getAdminFaqArticles(pageable);
         model.addAttribute("csFaqs", csFaqs);
 
         return "/admin/cs/faq/list";
@@ -65,6 +69,13 @@ public class CsFaqController {
         return "redirect:/admin/cs/faq/list";
     }
 
+    // admin.cs.faq 선택삭제
+    @PostMapping("/admin/cs/faq/delete/selectDelete")
+    public String adminFaqDeleteSelected(@RequestParam("selectedNo") List<Integer> selectedNo){
+        csFaqService.adminFaqDeleteSelected(selectedNo);
+        return "redirect:/admin/cs/faq/list";
+    }
+
     // admin.cs.faq 글 작성 페이지
     @GetMapping("/admin/cs/faq/register")
     public String adminFaqRegister(Model model){
@@ -80,28 +91,36 @@ public class CsFaqController {
         return "redirect:/admin/cs/faq/list";
     }
 
-    // faq.user 페이지 출력
-    @GetMapping("/cs/faq/user")
-    public String faqUser(Model model) {
-
-        List<CsFaq> lotteOners = csFaqService.getLotteonersArticles();
-        model.addAttribute("lotteOners", lotteOners);
-
-        List<CsFaq> reg = csFaqService.getRegArticles();
-        model.addAttribute("reg", reg);
-
-        List<CsFaq> info = csFaqService.getInfoArticles();
-        model.addAttribute("info", info);
-
-        List<CsFaq> grade = csFaqService.getGradeArticles();
-        model.addAttribute("grade", grade);
-
-        List<CsFaq> del = csFaqService.getDelArticles();
-        model.addAttribute("del", del);
-
+    // cs.faq 출력
+    @GetMapping("/cs/faq")
+    public String faqList(Model model, @RequestParam(name = "cate1" , required = false) String cate1) {
+        if(cate1 ==null){
+            cate1="user";
+        }
+        List<List<CsFaqDTO>> dtoLists = csFaqService.getFaqArticles(cate1);
+        log.info("dtoLists.size() : " + dtoLists.size());
+        model.addAttribute("dtoLists", dtoLists);
         return "/cs/faq/user";
     }
 
+    // cs.faq 더보기
+    @GetMapping("/cs/faq/loadMore")
+    public ResponseEntity<List<List<CsFaqDTO>>> loadMoreFaqArticles(@RequestParam(name = "cate1") String cate1) {
+        // 추가 데이터를 가져오는 로직을 수행하여 필요한 FAQ 항목들을 가져옵니다.
+        List<List<CsFaqDTO>> additionalDtoLists = csFaqService.getAdditionalFaqArticles(cate1);
+
+        // 새로운 데이터를 클라이언트에 반환합니다.
+        return ResponseEntity.ok().body(additionalDtoLists);
+    }
+
+    // cs.faq.view 출력
+    @GetMapping("/cs/faq/view")
+    public String faqView(){
+
+        return "/cs/faq/view";
+    }
+
+    /*
     // faq.trade 페이지 출력
     @GetMapping("/cs/faq/trade")
     public String faqTrade(Model model) {
@@ -214,5 +233,6 @@ public class CsFaqController {
 
         return "/cs/faq/eventCupon";
     }
+    */
 
 }

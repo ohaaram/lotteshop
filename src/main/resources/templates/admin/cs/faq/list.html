@@ -4,22 +4,43 @@
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
 <section id="admin-cs-faq" layout:fragment="content">
-    <script>
-        window.onload=function (){
-        }
-        function toggleSelectAll(){
-            var selectAllCheckbox = document.getElementById("selectAll");
-            var checkboxes = document.getElementsByClassName("selectCheckbox");
-            for(var i = 0; i < checkboxes.length; i++){
-                checkboxes[i].checked = selectAllCheckbox.checked;
-            }
-        }
+    <script>        window.onload = function() {
+            const all = document.getElementById('all');
+            const checkAll = document.querySelectorAll('.check');
 
-        function dleleteSelected(){
-            if (confirm('선택한 항목들을 삭제하시겠습니까?')){
-                document.getElementById("deleteForm").submit();
-            }
-        }
+            // 전체 선택 기능 구현
+            all.onclick = function () {
+                checkAll.forEach(function (item) {
+                    item.checked = all.checked;
+                });
+            };
+
+            // 선택 삭제 기능 구현
+            const selectDelete = document.getElementById('selectDelete');
+            selectDelete.onclick = async function(e){
+                e.preventDefault();
+
+                var selectedNoList = [];
+
+                checkAll.forEach(function (item){
+                    if(item.checked){
+                        selectedNoList.push(parseInt(item.value));
+                    }
+                });
+
+                if (selectedNoList.length === 0){
+                    alert('선택된 상품이 없습니다.');
+                }else{
+                    if (confirm('삭제 하시겠습니까!?')){
+                        const jsonData = { list: selectedNoList}
+                        const result = await fetchGet('/lotteshop/admin/cs/faq/delete', jsonData);
+                        console.log(result.result);
+                    }
+                    location.reload();
+                }
+            };
+        };
+
     </script>
     <nav>
         <h3>FAQ 보기</h3>
@@ -30,41 +51,46 @@
 
     <section>
         <div>
-            <form id="deleteSelectedForm" th:action="@{/admin/cs/faq/deleteSelected}" method="post">
-            <select name="search">
-                <option value="search1">전체</option>
-                <option value="search2">제목</option>
-                <option value="search3">내용</option>
-                <option value="search3">유형</option>
-                <option value="search4">제목+내용</option>
-            </select>
-            <input type="text" name="search">
+            <form id="deleteSelectedForm" th:action="@{/admin/cs/faq/delete/selectDelete}" method="post">
 
-            <span ></span>
-            <table border="0">
-                <tr>
-                    <th class="toggleSelectAll" ><input type="checkbox"></th>
-                    <th>번호</th>
-                    <th>유형</th>
-                    <th>제목</th>
-                    <th>내용</th>
-                    <th>관리</th>
-                </tr>
-                <tr th:each="faq: ${csFaqs}">
-                    <td class="faq-list-checkbox"><input type="checkbox" class="selectCheckbox" value="[[${faq.no}]]"></td>
-                    <td>[[${faq.no}]]</td>
-                    <td>[[${faq.cate}]]</td>
-                    <td>[[${faq.title}]]</td>
-                    <td th:text="${#strings.length(faq.content) > 20 ? #strings.substring(faq.content, 0, 20) + '...' : faq.content} "></td>
-                    <td>
-                        <a th:href="@{/admin/cs/faq/{no}(no=${faq.no})}">[수정]</a>
-                        <a th:href="@{/admin/cs/faq/delete/{no}(no=${faq.no})}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
-                    </td>
-                </tr>
-            </table>
-            <div>
-                <button class="" type="button" onclick="deleteSelected()">선택 삭제</button>
-            </div>
+                <input type="hidden" id="selectedNoList" name="selectedNoList" />
+
+                <select name="search">
+                    <option value="search1">전체</option>
+                    <option value="search2">제목</option>
+                    <option value="search3">내용</option>
+                    <option value="search3">유형</option>
+                    <option value="search4">제목+내용</option>
+                </select>
+                <input type="text" name="search">
+
+                <span ></span>
+                <table border="0">
+                    <tr>
+                        <th><input type="checkbox" name="all" id="all"></th>
+                        <th>번호</th>
+                        <th>유형</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>관리</th>
+                    </tr>
+                    <tr th:each="faq: ${csFaqs}">
+
+                        <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check" th:value="${faq.no}" /></td>
+
+                        <td>[[${faq.no}]]</td>
+                        <td>[[${faq.cate}]]</td>
+                        <td>[[${faq.title}]]</td>
+                        <td th:text="${#strings.length(faq.content) > 20 ? #strings.substring(faq.content, 0, 20) + '...' : faq.content} "></td>
+                        <td>
+                            <a th:href="@{/admin/cs/faq/{no}(no=${faq.no})}">[수정]</a>
+                            <a th:href="@{/admin/cs/faq/delete/{no}(no=${faq.no})}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <input type="button" value="선택삭제" id="selectDelete"/>
+                </div>
             </form>
             <div>
                 <a class="cs-write" style="float: right" th:href="@{/admin/cs/faq/register}">질문 작성</a>
@@ -77,7 +103,7 @@
                 <span class="num" th:each="page : ${#numbers.sequence(csFaqs.number - 4, csFaqs.number + 5)}" th:if="${page >= 0 && page < csFaqs.totalPages}">
         <a class="#" th:href="@{${pageURL}(page=${page})}" th:text="${page + 1}" th:classappend="${page eq csFaqs.number ? 'on' : ''}"></a>
     </span>
-                    <span class="next" th:if="${csFaqs.hasNext()}">
+                <span class="next" th:if="${csFaqs.hasNext()}">
                         <a class="#" th:href="@{${pageURL}(page=${csFaqs.nextPageable().pageNumber})}">다음</a>
                     </span>
                 &raquo;

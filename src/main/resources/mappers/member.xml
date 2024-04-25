@@ -21,4 +21,43 @@
         select * from `user` where uid=#{uid}
     </select>
 
+    <update id="updateUserPassword">
+        update user set pass = #{pass} where uid =#{uid};
+    </update>
+
+    <update id="userLeave">
+        update user set
+        pass= null ,
+        name= null ,
+        nick= null ,
+        email= null ,
+        hp= null ,
+        zip= null ,
+        addr1= null ,
+        addr2= null ,
+        regip= null ,
+        regDate= null ,
+        leaveDate = now()
+        where uid =#{uid}
+    </update>
+
+    <update id="updateUserForType">
+        update user
+        <set>
+            <if test="type =='nick'">nick=#{value}</if>
+            <if test="type =='name'">name=#{value}</if>
+            <if test="type =='hp'">hp=#{value}</if>
+            <if test="type =='email'">email=#{value}</if>
+        </set>
+        where uid=#{uid}
+    </update>
+
+
+
+
+
+
+
+
+
 </mapper>

@@ -32,9 +32,9 @@ public class CsNoticeController {
     }
 
     //admin 페이지 공지사항 작성
-    @GetMapping("/admin/cs/notice/write")
+    @GetMapping("/admin/cs/notice/register")
     public String noticeWrite(){
-        return "/admin/cs/notice/write";
+        return "/admin/cs/notice/register";
     }
 
     @PostMapping("/admin/cs/notice/write")

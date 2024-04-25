@@ -2,6 +2,9 @@ package kr.co.lotte.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JoinFormula;
+
+import javax.naming.Name;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,4 +23,5 @@ public class OrderItems {
     private int itemPrice;
     private int itemDiscount;
     private int itemCount;
+
 }

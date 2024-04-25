@@ -47,13 +47,13 @@
 
 				<ul>
                     <span class="menu_else"></span>
-                    <li><a href="./ordered.html">전체주문내역</a></li>
+                    <li><a th:href="@{/my/order}">전체주문내역</a></li>
                     <!--<li><a href="./favorite.html">관심상품</a></li>-->
-                    <li><a href="./point.html">포인트내역</a></li>
-                    <li><a href="./coupon.html">쿠폰</a></li>
-                    <li><a href="./review.html">나의리뷰</a></li>
-                    <li><a href="./qna.html">문의하기</a></li>
-                    <li><a href="./info.html">나의설정</a></li>
+                    <li><a th:href="@{/my/point}">포인트내역</a></li>
+                    <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+                    <li><a th:href="@{/my/review}">나의리뷰</a></li>
+                    <li><a th:href="@{/my/qna}">문의하기</a></li>
+                    <li><a th:href="@{/my/info}">나의설정</a></li>
                 </ul>
 
                 <section>
@@ -64,7 +64,7 @@
                     </th:block>
                     <article class="latest">
                         <h3>최근주문내역</h3>
-                        <a th:href="@{#}" class="more">더보기</a>
+                        <a th:href="@{/my/order}" class="more">더보기</a>
                         <table border="0">
                             <tr>
                                 <th>날짜</th>
@@ -95,26 +95,30 @@
                     </article>
 
                     <article class="point">
-                        <h3>포인트적립내역</h3>
-                        <a th:href="@{#}" class="more">더보기</a>
+                        <h3>포인트내역</h3>
+                        <a th:href="@{/my/point}"   class="more">더보기</a>
                         <table border="0">
+                            <tr>
                             <tr>
                                 <th>날짜</th>
                                 <th>구분</th>
                                 <th>주문번호</th>
-                                <th>적립금액</th>                                
+                                <th>적립(차감)내역</th>
                                 <th>비고</th>
                                 <th>유효기간</th>
                             </tr>
-                            <tr>
-                                <td>2022-12-10</td>
-                                <td>적립</td>
-                                <td>2022121001</td>
-                                <td>340</td>
-                                <td>상품 구매확정</td>
-                                <td>2024-12-10</td>
+                            <th:block th:each="point , index:${points}"  th:if="${index.index <3}">
+                            <tr style="text-align: center">
+                                <td >[[${#temporals.format(point.pointDate , 'yyyy-MM-dd')}]]</td>
+                                <td>[[${point.state}]]</td>
+                                <td>[[${point.orderNo}]]</td>
+                                <td>[[${point.point}]]</td>
+                                <td>[[${point.pointDesc}]]</td>
+                                <td >[[${point.endDateTime}]]</td>
                             </tr>
+                            </th:block>
                         </table>
+
                     </article>
                     <article class="review">
                         <h3>상품평</h3>

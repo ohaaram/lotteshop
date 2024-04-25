@@ -5,15 +5,15 @@
 
 
             <div class="point" layout:fragment="content">
-				<ul>
+                <ul>
                     <span class="menu_else"></span>
-                    <li class="on"><a th:href="@{#}">전체주문내역</a></li>
-                    <!--<li><a th:href="@{#}">관심상품</a></li>-->
-                    <li><a th:href="@{#}">포인트내역</a></li>
-                    <li><a th:href="@{#}">쿠폰</a></li>
-                    <li><a th:href="@{#}">나의리뷰</a></li>
-                    <li><a th:href="@{#}">문의하기</a></li>
-                    <li><a th:href="@{#}">나의설정</a></li>
+                    <li ><a th:href="@{/my/order}">전체주문내역</a></li>
+                    <!--<li><a href="./favorite.html">관심상품</a></li>-->
+                    <li class="on"><a th:href="@{/my/point}">포인트내역</a></li>
+                    <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+                    <li><a th:href="@{/my/review}">나의리뷰</a></li>
+                    <li><a th:href="@{/my/qna}">문의하기</a></li>
+                    <li ><a th:href="@{/my/info}">나의설정</a></li>
                 </ul>
 
                 <section>
@@ -22,76 +22,129 @@
                         <h3>포인트내역</h3>
 
                         <div class="byDate">
-                            <span class="tit">기간별조회</span>                            
+                            <span class="tit">기간별조회</span>
                             <ul class="date_3ea">
-                                <li><a th:href="@{#}"><em>1</em>주일</a></li>
-                                <li><a th:href="@{#}"><em>15</em>일</a></li>
-                                <li><a th:href="@{#}" class="on"><em>1</em>개월</a></li>
+                                <th:block th:if="${pageResponseDTO.oneWeek =='yes'}">
+                                    <li ><a  class="on" th:href="@{/my/point(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                                    <li><a th:href="@{/my/point(fifteen = 'yes')}"><em>15</em>일</a></li>
+                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                                        <li><a th:href="@{/my/point(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
+                                    </th:block>
+                                </th:block>
+
+                                <th:block th:if="${pageResponseDTO.fifteen =='yes'}">
+                                    <li ><a th:href="@{/my/point(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                                    <li ><a  class="on" th:href="@{/my/point(fifteen = 'yes')}"><em>15</em>일</a></li>
+                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                                        <li><a th:href="@{/my/point(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
+                                    </th:block>
+                                </th:block>
+
+                                <th:block th:if="${pageResponseDTO.fifteen !='yes' && pageResponseDTO.oneWeek != 'yes'}">
+                                    <li ><a th:href="@{/my/point(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                                    <li ><a th:href="@{/my/point(fifteen = 'yes')}"><em>15</em>일</a></li>
+                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                                        <li ><a  class="on" th:href="@{/my/point(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
+                                    </th:block>
+                                </th:block>
                             </ul>
                             <ul class="date_5ea">
-                                <li><a th:href="@{#}"><em>11</em>월</a></li>
-                                <li><a th:href="@{#}"><em>10</em>월</a></li>
-                                <li><a th:href="@{#}"><em>9</em>월</a></li>
-                                <li><a th:href="@{#}"><em>8</em>월</a></li>
-                                <li><a th:href="@{#}"><em>7</em>월</a></li>
+                                <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                                    <li th:each="i : ${#numbers.sequence(0, 4)}">
+                                            <a  th:href="@{/my/point(currentMonth = ${currentMonth - i})}">
+                                                <em th:if="${currentMonth - i > 0}" th:text="${(currentMonth - i)}"></em>
+                                                <em th:if="${currentMonth - i <= 0}" th:text="${(currentMonth - i) + 12}"></em>월
+                                                <span th:if="${currentMonth - i <= 0}"></span>
+                                            </a>
+
+                                    </li>
+                                </th:block>
                             </ul>
-                            <p>
-                                <input type="date" name="begin"><span>~</span><input type="date" name="end">
-                            </p>
-                            <button class="btnConfirm">조회하기</button>
+
+                            <form th:action="@{/my/point}">
+                                <input type="datetime-local" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
+                                <span>~</span>
+                                <input type="datetime-local" name="dateEnd" max="[CURRENT_DATE]" required>
+                                <button class="btnConfirm" type="submit">조회하기</button>
+                            </form>
+                            <script>
+                                window.onload=function (){
+                                    // 현재 날짜 가져오기
+                                    var currentDate = new Date().toISOString().split('T')[0];
+
+                                    // 현재 날짜의 1년 전 날짜 계산
+                                    var oneYearAgo = new Date();
+                                    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                                    var oneYearAgoDate = oneYearAgo.toISOString().split('T')[0];
+
+                                    // 최대 날짜 설정
+                                    document.getElementsByName("dateBegin")[0].setAttribute('max', currentDate);
+                                    document.getElementsByName("dateBegin")[0].setAttribute('min', oneYearAgoDate);
+                                    document.getElementsByName("dateEnd")[0].setAttribute('max', currentDate);
+
+
+                                    // 입력 필드의 날짜 변경 이벤트 리스너 등록
+                                    document.getElementsByName("dateBegin")[0].addEventListener('change', function() {
+                                        var startDate = new Date(this.value);
+                                        var endDate = new Date(document.getElementsByName("dateEnd")[0].value);
+
+                                        // 시작일과 종료일을 비교하여 종료일이 시작일보다 이전이면 종료일을 시작일과 동일하게 설정
+                                        if (startDate > endDate) {
+                                            document.getElementsByName("dateEnd")[0].value = this.value;
+                                        }
+                                    });
+
+                                    document.getElementsByName("dateEnd")[0].addEventListener('change', function() {
+                                        var startDate = new Date(document.getElementsByName("dateBegin")[0].value);
+                                        var endDate = new Date(this.value);
+
+                                        // 종료일과 시작일을 비교하여 시작일이 종료일보다 이후면 시작일을 종료일과 동일하게 설정
+                                        if (endDate < startDate) {
+                                            document.getElementsByName("dateBegin")[0].value = this.value;
+                                        }
+                                    });
+
+                                }
+                            </script>
                         </div>
 
                         <table border="0">
                             <tr>
                                 <th>날짜</th>
                                 <th>구분</th>
-                                <th>주문번호</th>                                
+                                <th>주문번호</th>
                                 <th>적립금액</th>
                                 <th>비고</th>
                                 <th>유효기간</th>
                             </tr>
-                            <tr>
-                                <td class="date">2022-12-13</td>
-                                <td class="type">적립</td>
-                                <td class="ordNo">2022121001</td>                                
-                                <td class="point">340</td>
-                                <td class="desc">상품 구매확정</td>
-                                <td class="expire">2024-12-12</td>
+                            <tr th:each="point, index:${pageResponseDTO.dtoList}">
+                                <td >[[${#temporals.format(point.pointDate , 'yyyy-MM-dd')}]]</td>
+                                <td>[[${point.state}]]</td>
+                                <td>[[${point.orderNo}]]</td>
+                                <td>[[${point.point}]]</td>
+                                <td>[[${point.pointDesc}]]</td>
+                                <td >[[${point.endDateTime}]]</td>
                             </tr>
-                            <tr>
-                                <td class="date">2022-12-13</td>
-                                <td class="type">적립</td>
-                                <td class="ordNo">2022121001</td>
-                                <td class="point">100</td>
-                                <td class="desc">상품 리뷰 작성 추가 포인트</td>
-                                <td class="expire">2024-12-12</td>
-                            </tr>
-                            <tr>
-                                <td class="date">2022-12-13</td>
-                                <td class="type">적립</td>
-                                <td class="ordNo">2022121001</td>
-                                <td class="point">340</td>
-                                <td class="desc">상품 구매확정</td>
-                                <td class="expire">2024-12-12</td>
-                            </tr>
-                            <tr>
-                                <td class="date">2022-12-13</td>
-                                <td class="type">적립</td>
-                                <td class="ordNo">2022121001</td>
-                                <td class="point">340</td>
-                                <td class="desc">상품 구매확정</td>
-                                <td class="expire">2024-12-12</td>
-                            </tr>
-                            
-                        </table>
 
+                        </table>
+                        <th:block th:if="${pageResponseDTO.dtoList.size()==0}">
+                            <h3 style="text-align: center">내역이 없습니다.</h3>
+                        </th:block>
+                        <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
                         <p class="page">
-                            <a th:href="@{#}" class="prev">이전</a>
-                            <a th:href="@{#}" class="num on">1</a>
-                            <a th:href="@{#}" class="num">2</a>
-                            <a th:href="@{#}" class="num">3</a>
-                            <a th:href="@{#}" class="next">다음</a>
+                            <a th:if="${pageResponseDTO.prev}" th:href="@{/my/point(pg=${pageResponseDTO.start -1})}" class="prev">이전</a>
+                            <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                <th:block th:if="${num == pageResponseDTO.pg}">
+                                    <a th:href="@{/my/point( pg=${num })}" class="on">[[${num}]]</a>
+                                </th:block>
+
+                                <th:block th:if="${num != pageResponseDTO.pg}">
+                                    <a th:href="@{/my/point( pg=${num })}" >[[${num}]]</a>
+                                </th:block>
+                            </th:block>
+                            <a  th:if="${pageResponseDTO.next}" th:href="@{/my/point( pg=${pageResponseDTO.end+1})}" class="next">다음</a>
                         </p>
+                        </th:block>
 
                     </article>                  
 

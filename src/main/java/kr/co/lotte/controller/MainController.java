@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.entity.Banner;
 import kr.co.lotte.service.AdminService;
+import kr.co.lotte.service.MainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,19 @@ public class MainController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private MainService mainService;
+
     @GetMapping(value = {"/", "/index"})
-    public String index(Model model, HttpSession session){
+    public String index(Model model){
 
         List<BannerDTO> banner1 = adminService.findMAIN1("MAIN1");
         List<BannerDTO> banner2 = adminService.findMAIN2("MAIN2");
         // List<BannerDTO> banner3 = adminService.findPRODUCT1("PRODUCT1");
-
+        model.addAttribute("prodSolds", mainService.selectHitProducts());
+        model.addAttribute("prodRecommend", mainService.selectRecomendProducts());
+        model.addAttribute("prodRecent", mainService.selectRecentProducts());
+        model.addAttribute("prodDiscount", mainService.selectDiscountProducts());
 
 
         log.info("AdminController - banner : "+banner1.toString());
@@ -41,21 +48,6 @@ public class MainController {
         model.addAttribute("banner1", banner1);
         model.addAttribute("banner2", banner2);
         //model.addAttribute("banner3", banner3);
-
-        
-        //배너
-        if (session != null) {// 세션이 존재하는지 확인합니다.
-            // 세션에서 bannerDTO 속성을 가져옵니다.
-            BannerDTO bannerDTO = (BannerDTO) session.getAttribute("bannerDTO");
-
-            // bannerDTO가 null이 아니면 세션에 해당 속성이 존재한다는 것이므로 이후 코드를 실행합니다.
-            if (bannerDTO != null) {
-                model.addAttribute("bannerDTO", bannerDTO);
-                log.info("MainController - index : bannerDTO " + bannerDTO);
-            }
-        } else {
-            log.error("세션이 존재하지 않습니다.");
-        }
 
         return "/index";
     }

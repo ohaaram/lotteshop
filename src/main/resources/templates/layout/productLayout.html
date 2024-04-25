@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
+
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <link rel="stylesheet" th:href="@{/product/css/product.css}"/>
     <script   type="text/javascript" th:src="@{/js/util.js}" ></script>
@@ -24,15 +25,36 @@
     <header>
         <div class="top">
             <div>
-                <a th:href="@{/member/login}">로그인</a>
-                <a href="#">회원가입</a>
-                <a href="#">마이페이지</a>
-                <a href="#"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
+                <th:block th:if="${#authentication.principal == 'anonymousUser'}">
+                    <a th:href="@{/member/login}">로그인</a>
+                </th:block>
+
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <a th:href="@{/member/logout}">로그아웃</a>
+                </th:block>
+
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role != 'USER'}">
+                        <a th:href="@{/admin/index}">관리자페이지</a>
+                    </th:block>
+                </th:block>
+                <a th:href="@{#}">회원가입</a>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                <th:block  th:if="${#authentication.principal.user.role == 'USER'}">
+                <a th:href="@{/my/home}">마이페이지</a>
+                <th:block>
+                </th:block>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role == 'USER'}">
+                <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
+                    </th:block>
+                </th:block>
             </div>
         </div>
         <div class="logo">
             <div>
-                <a href="#"><img th:src="@{/images/header_logo.png}" alt="로고"/></a>
+
+                <a th:href="@{/}"><img src="../images/header_logo.png" alt="로고"/></a>
                 <form action="#">
                     <input type="text" name="keyword"/>
                     <button><i class="fa fa-search"></i></button>
@@ -60,6 +82,7 @@
         </div>
     </header>
 </div>
+
 
 <div layout:fragment="content">
 

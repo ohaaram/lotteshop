@@ -3,7 +3,7 @@ package kr.co.lotte.service.cs;
 import groovy.util.logging.Slf4j;
 import kr.co.lotte.dto.CsNoticeDTO;
 import kr.co.lotte.entity.CsNotice;
-import kr.co.lotte.repository.CsNoticeRepository;
+import kr.co.lotte.repository.cs.CsNoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

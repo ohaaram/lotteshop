@@ -183,7 +183,7 @@
             <input type="button" class="btnNegative" value="선택삭제"/>
             <input type="button" class="btnPositive btnRegister" value="등록하기"/>
         </section>
-      <!-- 상품 상세보기 배너-->
+        <!-- 상품 상세보기 배너-->
         <section id="tabs3">
             <h4>상품 상세보기 배너</h4>
             <p>
@@ -320,6 +320,12 @@
                     <td>
                         <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
                         <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
+                        <!--
+                        <a th:href="@{'/banner/inactive?bannerNo=' + ${bannerList.bannerNo} + '&tabs=' + tabsValue}">[비활성]</a>
+                        <a th:href="@{'/banner/active?bannerNo=' + ${bannerList.bannerNo} + '&tabs=' + tabsValue}" class="activeButton">[활성]</a>
+                        -->
+
+
                     </td>
                 </tr>
 

@@ -23,10 +23,22 @@
         DELETE FROM `csfaq` WHERE no=#{no}
     </delete>
 
+    <!-- admin.cs.faq 선택삭제 -->
+    <delete id="deleteFaqByIds" parameterType="java.util.List">
+        DELETE FROM csfaq WHERE no IN
+
+        <foreach item="no" index="index" collection="selectedNo" open="(" separator="," close=")">
+
+            #{no}
+        </foreach>
+    </delete>
+
     <!-- admin.cs.faq 글 작성 -->
     <insert id="adminFaqWrite" parameterType="kr.co.lotte.dto.CsFaqDTO">
         INSERT INTO `csfaq` (title, content)
         VALUES (#{title}, #{content})
     </insert>
+
+
 
 </mapper>

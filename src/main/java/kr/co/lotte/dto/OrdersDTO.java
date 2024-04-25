@@ -1,8 +1,12 @@
 package kr.co.lotte.dto;
 
+import kr.co.lotte.entity.OrderItems;
+import kr.co.lotte.entity.SubProducts;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,7 +20,7 @@ public class OrdersDTO {
     private int orderTotalPrice;
     private String orderAddr;
     private int itemDiscount;
-    private LocalDateTime orderDate;
+    private Date orderDate;
 
     private String receiveName;
     private String receiveHp;
@@ -30,4 +34,6 @@ public class OrdersDTO {
     private String addr2;
     private String payment;
     private int point;
+
+    private List<OrderItems> orderItems;
 }

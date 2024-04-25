@@ -161,7 +161,7 @@ function promiseConfirmModal(message){
         const confirmModal = document.getElementById('confirmModal');
         const btnOk = document.getElementById('btnOk');
         const btnCancel = document.getElementById('btnCancel');
-        confirmModal.getElementsByClassName('modal-body')[0].innerText = message;
+
 
         const modal = new bootstrap.Modal(confirmModal);
 

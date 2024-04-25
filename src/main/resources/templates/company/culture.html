@@ -1,0 +1,434 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/company/layouts/companyLayout.html}">
+<div class="content" layout:fragment="content">
+
+    <style>
+        #main_total_section{
+            width: 100%;
+            height: auto;
+        }
+
+        #introduce {
+            width: 100%; /* 원하는 너비로 설정하세요 */
+            height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
+        }
+
+        #first_context {
+            font-size: 20px;
+        }
+
+        #second_context {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        #div_total_wrap {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 1000px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        #left_div,
+        #div_wrap {
+            display: inline-block; /* 인라인 블록 요소로 설정 */
+        }
+
+        #right_div > p:nth-child(1) {
+
+            font-size: 25px;
+            font-weight: bold;
+            padding: 30px;
+        }
+
+        #right_div > p:nth-child(2) {
+
+            font-size: 15px;
+            padding-left: 30px;
+        }
+
+        #div_total_wrap {
+            border-radius: 10px 5px 5px 10px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+            box-shadow: 10px 5px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 설정 */
+        }
+
+        #left_div {
+            border-radius: 10px 0px 0px 10px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+        }
+
+        /*첫번째 박스 끝*/
+
+
+        #div_total_wrap2 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 1000px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        #left_div2,
+        #div_wrap2 {
+            display: inline-block; /* 인라인 블록 요소로 설정 */
+        }
+
+        #right_div2 > p:nth-child(1) {
+
+            font-size: 25px;
+            font-weight: bold;
+            padding-right: 30px;
+            margin-left: 20px;
+        }
+
+        #right_div2 > p:nth-child(2) {
+
+            font-size: 15px;
+            padding-right: 30px;
+            margin-left: 20px;
+        }
+
+        #div_total_wrap2 {
+            border-radius: 10px 5px 5px 10px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+            box-shadow: -10px 5px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 설정 */
+        }
+
+        #left_div2 {
+            border-radius: 0px 10px 10px 0px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+        }
+
+        /*두번째 박스 끝*/
+
+        #div_total_wrap3 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 1000px;
+            margin-bottom: 170px;
+            margin-top: 20px;
+        }
+
+        #left_div3,
+        #div_wrap3 {
+            display: inline-block; /* 인라인 블록 요소로 설정 */
+        }
+
+        #right_div3 > p:nth-child(1) {
+
+            font-size: 25px;
+            font-weight: bold;
+            padding-right: 30px;
+            margin-left: 20px;
+        }
+
+        #right_div3 > p:nth-child(2) {
+
+            font-size: 15px;
+            padding-right: 30px;
+            margin-left: 20px;
+        }
+
+        #div_total_wrap3 {
+            border-radius: 10px 5px 5px 10px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+            box-shadow: 10px 5px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 설정 */
+        }
+
+        #left_div3 {
+            border-radius: 10px 0px 0px 10px; /* 각 모서리의 둥근 정도 설정 (시계방향으로 위쪽 왼쪽부터 시작) */
+        }
+
+        /*첫번째 박스 시작*/
+        #total_section {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 570px;
+            height: 110px;
+        }
+
+        #img_section,
+        #title_section {
+            display: flex;
+        }
+
+        #script_section {
+            width: 570px;
+        }
+
+        #first_wrap {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+        }
+
+        /*첫번째 박스 끝!*/
+
+
+        /*두번째 박스 시작*/
+        #total_section2 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 570px;
+            height: 110px;
+        }
+
+        #img_section2,
+        #title_section2 {
+            display: flex;
+        }
+
+        #script_section2 {
+            width: 570px;
+        }
+
+        #first_section {
+            margin-right: 50px;
+        }
+
+        /*세번째 박스 시작*/
+        #total_section3 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 570px;
+            height: 110px;
+        }
+
+        #img_section3,
+        #title_section3 {
+            display: flex;
+        }
+
+        #script_section3 {
+            width: 570px;
+        }
+
+        #first_wrap2 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+        }
+
+        /*세번째 박스 끝*/
+
+        /*네번째 박스 시작*/
+        #total_section4 {
+            display: flex;
+            align-items: center; /* 세로 정렬 설정 */
+            width: 570px;
+            height: 110px;
+        }
+
+        #img_section4,
+        #title_section4 {
+            display: flex;
+        }
+
+        #script_section4 {
+            width: 570px;
+        }
+
+        #first_section3 {
+            margin-right: 50px;
+        }
+
+
+        /* fadeInUp 애니메이션 정의 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 100%, 0);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* 애니메이션 클래스에 fadeInUp 적용 */
+        .fadeInUp {
+            animation-name: fadeInUp;
+            animation-duration: 1s;
+        }
+
+
+    </style>
+
+    <main>
+        <section id="main_total_section">
+            <div style="position: relative;">
+                <img id="introduce" th:src="@{/company/images/lotte_culture.png}">
+                <!-- 애니메이션 -->
+                <div class="elementor-element elementor-element-e44ae05 elementor-widget elementor-widget-text-editor animated fadeInUp"
+                     data-id="e44ae05" data-element_type="widget"
+                     data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}"
+                     data-widget_type="text-editor.default"
+                     style="position: absolute; bottom: 0; left: 0;">
+                    <div class="elementor-widget-container">
+                        <p style="font-size: x-large; font-weight: bold; color: white;">대기업의 안정성과 스타트업의 혁신성을 함께,<br>롯데ON에서 우리는 성장하고 있어요.&nbsp;</p>
+                    </div>
+                </div>
+            </div>
+            <!---->
+
+            <div class="container">
+                <p id="first_context">
+                    <br>
+                    <br>
+                    롯데ON은 안정성 있게, 혁신성 있게 우리의 문화를 만들어가고 있어요.<br>
+                    구성원들은 수평적이고 자율적인 문화 속에서<br>
+                    개선을 넘어서 혁신적인 롯데ON만의 서비스를 만들어요.<br>
+                    그렇게 굵은 점을 찍어가며, 우리는 롯데ON과 함께 성장하고 있어요.<br/><br/>
+                </p>
+
+                <p id="second_context">
+                    대기업 속의 스타트업, 롯데ON은 이렇게 일해요!
+                </p>
+
+                <div id="div_total_wrap">
+                    <img id="left_div" th:src="@{/company/images/together.png}">
+                    <div id="div_wrap">
+                        <div id="right_div">
+                            <p>
+                                스스로 책임지고 자율적으로 일해요
+                            </p>
+                            <p>
+                                “어른답게” 서로를 어른으로 대하고 배려하는 것이 중요해요.<br>
+                                스스로 판단하고 자율적으로 행동할 수 있기 때문에<br>
+                                더 높은 효율을 만들어나가며 일을 할 수 있어요.<br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="div_total_wrap2">
+                    <div id="div_wrap2">
+                        <div id="right_div2">
+                            <p>
+                                목표와 방향을 생각하며 나아가요
+                            </p>
+                            <p>
+                                “혁신적으로"일의 목적을 충분히 생각하는 것으로부터<br>
+                                우리의 아이디어는 시작되고, 높은 목표는 혁신적인 방향<br>을
+                                만들어 낼 수 있다고 믿어요. 그 과정에서 우리가 더 잘<br>할 수
+                                있는 것이 무엇인지 항상 고민해요.<br>
+                            </p>
+                        </div>
+                    </div>
+                    <img id="left_div2" th:src="@{/company/images/second.png}">
+                </div>
+
+                <div id="div_total_wrap3">
+                    <img id="left_div3" th:src="@{/company/images/power.png}">
+                    <div id="div_wrap3">
+                        <div id="right_div3">
+                            <p>
+                                함께하면 할 수 있다고 믿어요
+                            </p>
+                            <p>
+                                “원팀으로"롯데ON의 뛰어난 동료들과 서로 의지하며<br>
+                                여러 팀이 함께 집중해서 시너지를 만들어내요.<br>
+                                서비스를 더 좋은 방향으로 만들어가기 위해<br>
+                                소통과 협업을 중요하게 생각해요.<br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <h1 style="font-weight: bold">우리의 문화와 제도는 구성원들의<br>성장과 몰입을 위해 존재해요.</h1>
+
+
+                <div id="first_wrap">
+                    <div id="first_section">
+                        <div id="total_section">
+                            <div id="img_section">
+                                <img th:src="@{/company/images/person_icon.png}">
+                            </div>
+                            <div id="title_section">
+                                <h2 style="font-weight: bold">수평적인 문화</h2>
+                            </div>
+                        </div>
+                        <div id="script_section">
+                            <p style="font-size: 17px;font-weight: bold">
+                                수평적인 의사소통을 위해 님 호칭을 사용하며,<br>
+                                서로의 의견도, 인격도 존중되는 소통 문화를 만들어가요.<br>
+                                역할 중심의 Career Level,<br>
+                                모든 정보의 공유와 소통으로<br>
+                                수평적인 문화를 지속해나가요.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="first_section2">
+                        <div id="total_section2">
+                            <div id="img_section2">
+                                <img th:src="@{/company/images/home.png}">
+                            </div>
+                            <div id="title_section2">
+                                <h2 style="font-weight: bold">자율적인 근무환경</h2>
+                            </div>
+                        </div>
+                        <div id="script_section2">
+                            <p style="font-size: 17px;font-weight: bold">
+                                원하는 자리에 앉는 스마트 오피스,<br>
+                                정해진 출퇴근 시간 없이<br>
+                                자율적으로 근무하는<br>
+                                유연근로제로 효율적인 업무를 위한<br>
+                                구성원의 자율을 존중해요.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="first_wrap2">
+                    <div id="first_section3">
+                        <div id="total_section3">
+                            <div id="img_section3">
+                                <img th:src="@{/company/images/happy.png}">
+                            </div>
+                            <div id="title_section3">
+                                <h2 style="font-weight: bold">함께 누리는 복지제도</h2>
+                            </div>
+                        </div>
+                        <div id="script_section3">
+                            <p style="font-size: 17px;font-weight: bold">
+                                선택적 복리후생 제도를 통해<br>
+                                개인이 원하는 복리후생 항목을 선택하여 사용해요.<br>
+                                리프레시 안식휴가, 사랑스러운 아이를 위한<br>
+                                육아휴직 등 다양한 복지 제도로<br>
+                                구성원들의 행복한 일터와 가정을 책임져여요.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="first_section4">
+                        <div id="total_section4">
+                            <div id="img_section4">
+                                <img th:src="@{/company/images/myself.png}">
+                            </div>
+                            <div id="title_section4">
+                                <h2 style="font-weight: bold">자기계발을 통한 성장</h2>
+                            </div>
+                        </div>
+                        <div id="script_section4">
+                            <p style="font-size: 17px;font-weight: bold">
+                                직무에서의 성장을 위해 스스로 노력하는<br>
+                                구성원들을 위해 외부 교육과 자격증 비용을 지원하고<br>
+                                교육 사이트를 통한 온라인 강의 및<br>
+                                다양한 사내 교육도 함께 진행돼요.<br>
+                                구성원의 성장이 곧 롯데ON의 성장이라고 믿어요.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <br>
+                    <br>
+                </div>
+                <a href="#">
+                    <img th:src="@{/company/images/company_banner.png}">
+                </a>
+                <div>
+                    <br>
+                    <br>
+                </div>
+                </div>
+        </section>
+    </main>
+</div>

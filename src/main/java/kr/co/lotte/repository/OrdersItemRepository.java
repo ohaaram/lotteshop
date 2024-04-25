@@ -5,6 +5,9 @@ import kr.co.lotte.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrdersItemRepository extends JpaRepository<OrderItems, Integer> {
+    List<OrderItems> findAllByOrderNo(int orderNo);
 }

@@ -6,6 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 @Entity
+@Setter
 @Table(name="orders")
 
 public class Orders {
@@ -24,7 +28,7 @@ public class Orders {
     private String orderAddr;
     private int itemDiscount;
     @CreationTimestamp
-    private LocalDateTime orderDate;
+    private Date orderDate;
 
 
     private String zip;

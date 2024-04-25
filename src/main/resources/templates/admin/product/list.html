@@ -43,9 +43,8 @@
                                    console.log(result.result);
 
                                }
-                               location.reload();git
+                               location.reload();
                            }
-
                        }
 
                        const deleteOnes = document.querySelectorAll('#deleteOne');
@@ -141,12 +140,13 @@
                             </th:block>
 
                             <th:block th:if="${num != page.pg}">
-                                 <a th:href="@{/admin/product/list( pg=${num})}" class="on">[[${num}]]</a>
+
+                                 <a th:href="@{/admin/product/list( pg=${num})}" >[[${num}]]</a>
                             </th:block>
 
                         </span>
                         <span class="next" th:if="${page.next}">
-                            <a th:href="@{/admin/product/list( pg=${pageend+1})}">다음&nbsp;></a>
+                            <a th:href="@{/admin/product/list( pg=${page.end+1})}">다음&nbsp;></a>
                         </span>
                         </div>
 

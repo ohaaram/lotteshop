@@ -1,0 +1,200 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/company/layouts/companyLayout.html}">
+<div class="content" layout:fragment="content">
+    <style>
+        .space_feel {
+            padding: 20px 20px;
+        }
+
+        /* fadeInUp 애니메이션 정의 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 100%, 0);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* 애니메이션 클래스에 fadeInUp 적용 */
+        .fadeInUp {
+            animation-name: fadeInUp;
+            animation-duration: 1s;
+        }
+
+        /* 슬라이더 영역 */
+        .slider {
+            width: 100%;
+            height: 425px;
+            overflow: hidden;
+        }
+
+        main > section > .slider > .bx-wrapper {
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            border: none;
+            background: #fff;
+        }
+
+        .slider img {
+            height: 400px;
+            width: 980px;
+        }
+
+        .blog_title {
+            border-bottom: 1px solid grey;
+            padding-bottom: 5px;
+        }
+
+        .blog_title > a {
+            text-decoration: none;
+            color: #1e1e1e;
+        }
+
+        #b_btn {
+            float: right;
+            cursor: pointer;
+        }
+
+
+
+    </style>
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var parentDivs = document.querySelectorAll('.blog_title');
+            parentDivs.forEach(function(parentDiv) {
+                parentDiv.addEventListener('click', function (event) {
+                    var target = event.target;
+                    if (target.classList.contains('title-link')) {
+                        event.preventDefault(); // 기본 동작 방지
+                        var bno = target.getAttribute('data-bno');
+                        console.log('제목 클릭, bno:', bno);
+                        alert('제목 링크를 클릭하였습니다.');
+                    } else if (target.tagName === 'IMG') {
+                        var dataBno = parentDiv.querySelector('.title-link').getAttribute('data-bno');
+                        console.log('이미지 클릭, data-bno:', dataBno);
+                    }
+                });
+            });
+        });
+
+        /*
+        function fetchDataBno(element) {
+            var parentDiv = element.closest('.blog_title');
+            var dataBno = parentDiv.querySelector('.title-link').getAttribute('data-bno');
+            console.log('data-bno:', dataBno);
+            return false;
+        }
+
+         */
+
+    </script>
+
+
+    <main>
+        <section id="main_total_section">
+            <div style="position: relative;">
+                <img id="introduce" th:src="@{/company/images/index_img.png}">
+                <!-- 애니메이션 -->
+                <div class="elementor-element elementor-element-e44ae05 elementor-widget elementor-widget-text-editor animated fadeInUp"
+                     data-id="e44ae05" data-element_type="widget"
+                     data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}"
+                     data-widget_type="text-editor.default"
+                     style="position: absolute; bottom: 0; left: 0;">
+                    <div class="elementor-widget-container">
+                        <p style="font-size: x-large; font-weight: bold; color: white;">취향을,브랜드를,혜택을 발견하는 즐거움<br>지금
+                            롯데온에서 만나요.&nbsp;</p>
+                    </div>
+                </div>
+            </div>
+            <div class="space_feel"></div>
+            <div class="container">
+                <div>
+                    <p style="font-size: x-large">
+                        쇼핑 좀 해본 사람들이 만든 플랫폼,<br>
+                        롯데ON은 풍부한 오프라인 쇼핑 인프라, 온라인 쇼핑 노하우,<br>
+                        IT기술로 세상에 없던 새로운 쇼핑 경험을 제공하고<br>
+                        꼭 이용하고 싶은 온라인 쇼핑 플랫폼으로 발전하고 있어요.<br>
+                    </p>
+                </div>
+                <div class="space_feel"></div>
+                <div>
+                    <p style="font-weight: bold;font-size: 35px">쇼핑을 새롭게, 세상을 이롭게 만들어나가요.</p>
+                </div>
+                <div class="space_feel"></div>
+
+                <!-- 슬라이더 영역 -->
+                <section class="slider">
+                    <ul>
+                        <li>
+                            <a href="#"
+                            ><img th:src="@{/company/images/newslider1.png}" alt="item1"
+                            /></a>
+                        </li>
+                        <li>
+                            <a href="#"
+                            ><img th:src="@{/company/images/newslider2.png}" alt="item2"
+                            /></a>
+                        </li>
+                        <li>
+                            <a href="#"
+                            ><img th:src="@{/company/images/newslider3.png}" alt="item3"
+                            /></a>
+                        </li>
+                    </ul>
+                </section>
+                <div class="space_feel"></div>
+
+                <div>
+                    <p style="font-weight: bold;font-size: 35px">롯데ON은 이렇게 성장해가고 있어요</p>
+                </div>
+                <div class="space_feel"></div>
+
+                <!--여기서부터 블로그 내용을 출력하기-->
+                <div th:each="lists:${list}">
+                    <div>
+                        <p style="font-size: 17px" th:text="${#strings.substring(lists.date, 0, 10)}"></p>
+                    </div>
+                    <div class="blog_title">
+                        <a class="title-link" href="#" style="font-size: 20px;font-weight: bold"
+                           th:text="${lists.title}" th:data-bno="${lists.bno}"></a>
+
+                        <a class="title-link">
+                            <img id="b_btn" th:src="@{/company/images/button.png}">
+                        </a>
+
+                    </div>
+                    <span><br><br></span>
+                </div>
+                <!--블로그 내용 출력 끝!-->
+
+                <div class="space_feel"></div>
+                <div class="space_feel"></div>
+                <div>
+                    <p style="font-size: xx-large;font-weight: bold">
+                        국내 최초의 온라인 종합쇼핑몰로 출발해<br>
+                        쇼핑 경험의 변화를 이끌어내고 있어요.<br>
+                    </p>
+                </div>
+                <div class="space_feel"></div>
+                <div>
+                    <img th:src="@{/company/images/home_history.png}">
+                </div>
+                <div class="space_feel"></div>
+                <div>
+                    <a href="#">
+                        <img th:src="@{/company/images/인재등록배너.png}">
+                    </a>
+                </div>
+                <div class="space_feel"></div>
+            </div>
+        </section>
+    </main>
+</div>

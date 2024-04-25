@@ -31,6 +31,7 @@ public class Seller {
     private String sellerAddr2;
     private String sellerDname;
     private String sellerDHp;
+    private String role;
 
 
 }

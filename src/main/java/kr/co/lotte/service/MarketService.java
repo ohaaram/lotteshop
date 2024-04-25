@@ -125,6 +125,8 @@ public class MarketService {
             points.setUserId(user.getUid());
             points.setPoint(-ordersDTO.getPoint());
             points.setPointDesc("상품 구매 사용");
+            points.setState("차감");
+
             points.setOrderNo(orders.getOrderNo());
             pointsRepository.save(points);
         }

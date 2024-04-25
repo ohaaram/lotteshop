@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URI;
 import java.security.AlgorithmConstraints;
@@ -204,13 +205,13 @@ public class AdminController {
     }
 
     @GetMapping("/banner/active")
-    public String bannerActive(@RequestParam("bannerNo") String bannerNo){
+    public String bannerActive(@RequestParam("bannerNo") String bannerNo, RedirectAttributes redirectAttributes){
 
         log.info("bannerNo : "+bannerNo);//배너번호 잘 넘어옴
 
         BannerDTO bannerDTO = adminService.findById(bannerNo);//배너번호를 이용해서 설정하기 내용은 읽어오기!
 
-        log.info("세션에 저장하기 전에 DTO값 확인 : "+bannerDTO);//status 변경되었는지 확인하기
+        log.info("status값 확인 : "+bannerDTO);//status 변경되었는지 확인하기
 
         return "redirect:/admin/config/banner";
 

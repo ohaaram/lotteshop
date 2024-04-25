@@ -24,5 +24,10 @@ public class Points {
     private String pointDesc;
     @CreationTimestamp
     private LocalDateTime pointDate;
+
+    private LocalDateTime endDateTime;
+
     private int orderNo;
+
+    private String state;
 }

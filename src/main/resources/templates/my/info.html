@@ -3,10 +3,13 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/my/layout/myLayout.html}">
 
+<!--
+    - 회원정보 수정 및 탈퇴 기능
+    - 회원탈퇴는 해당 사용자의 아이디만 남기고 모두 컬럼의 값을 null 업데이트
+-->
 
 <div class="info" layout:fragment="content">
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-
 
 
     <script>
@@ -21,121 +24,72 @@
         let isEmailCodeOk = false;
 
         // 유효성 검사에 사용할 정규표현식
-        const reUid = /^[a-z]+[a-z0-9]{4,19}$/g;
+        const uid = `[[${user.uid}]]`;
         const rePass = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{5,16}$/;
         const reName = /^[가-힣]{2,10}$/
         const reNick = /^[a-zA-Zㄱ-힣0-9][a-zA-Zㄱ-힣0-9]*$/;
         const reEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
         const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
+
+
         window.onload = function () {
 
-
             // 이메일 유효성 검사
-
-            const divEmailCode = document.getElementById('divEmailCode');
-
             const inputEmail = document.getElementById('inputEmail');
-            const btn_email = document.getElementById('btn_email');
-            const resultEmail = document.getElementById('result_email');
+            const btnCheckEmail = document.getElementById('btnCheckEmail');
+            const insertCode = document.getElementById('insertCode');
+            const emailSpinner = document.getElementById('emailSpinner');
 
-            btn_email.onclick = function () {
-
-                const type = this.dataset.type;
-
-                console.log("type : " + type);
-
+            btnCheckEmail.onclick = function() {
+                const value = inputEmail.value;
+                console.log(value)
                 // 유효성 검사
-                if (!inputEmail.value.match(reEmail)) {
-
-                    inputEmail.classList.add('is-invalid');
-                    resultEmail.innerText = '이메일 형식이 맞지 않습니다.';
-                    isEmailOk = false;
-                    return;
-                }
-
-                async function fetchGet(url) {
-
-                    console.log("fetchData1...1");
-
-                    try {
-                        console.log("fetchData1...2");
-                        const response = await fetch(url);
-                        console.log("here1");
-
-                        if (!response.ok) {
-                            console.log("here2");
-                            throw new Error('response not ok');
+                emailSpinner.classList.remove('d-none');
+                if(!value.match(reEmail)){
+                    emailSpinner.classList.add('d-none');
+                    alert("이메일 형식이 맞지 않습니다.");
+                }else{
+                    // 이메일 인증코드 발급 및 중복체크
+                    setTimeout(async () => {
+                        const data = await fetchGet(`/lotteshop/member/check/email/${value}`);
+                        console.log('data : ' + data.result);
+                        if(data.result > 0){
+                            emailSpinner.classList.add('d-none');
+                            alert("이미 사용중인 이메일입니다.")
+                        }else{
+                            emailSpinner.classList.add('d-none');
+                            alert("인증코드가 발송되었습니다.")
+                            insertCode.style.display="";
                         }
-
-                        const data = await response.json();
-                        console.log("data1 : " + data);
-                        return data;
-                    } catch (err) {
-                        console.log(err)
-                    }
+                    }, 1000);
                 }
-
-                // 이메일 인증코드 발급 및 중복체크 추가 예정
-                setTimeout(async () => {
-
-                    console.log('inputEmail value : ' + inputEmail.value);
-
-                    const data = await fetchGet(`/lotteshop/member/check/${type}/${inputEmail.value}`);
-                    console.log('data : ' + data.result);
-
-                    if (data.result > 0) {
-                        inputEmail.classList.add('is-invalid');
-                        resultEmail.innerText = '이미 사용중인 이메일 입니다.';
-                        isEmailOk = false;
-                    } else {
-                        alert('인증코드를 이메일로 전송합니다.');
-                    }
-
-                }, 1000);
-
-                isEmailOk = true;
             }
+
+
             // 이메일 인증코드 확인
+            const inputEmailCode = document.getElementById('code');
             const btnCheckEmailCode = document.getElementById('btnCheckEmailCode');
-            const inputEmailCode = document.getElementById('inputEmailCode');
-            const resultEmailCode = document.getElementById('resultEmailCode');
 
-            btnCheckEmailCode.onclick = async function () {
+            btnCheckEmailCode.onclick = async function (e){
+                e.preventDefault();
+                const value = inputEmailCode.value;
+                const newEmail = inputEmail.value;
+                const data = await fetchGet(`/lotteshop/member/check/email/${value}`);
 
-                async function fetchGet(url) {
-
-                    console.log("fetchData1...1");
-
-                    try {
-                        console.log("fetchData1...2");
-                        const response = await fetch(url);
-                        console.log("here1");
-
-                        if (!response.ok) {
-                            console.log("here2");
-                            throw new Error('response not ok');
+                if(!data.result){
+                    alert('인증코드가 일치하지 않습니다.')
+                }else{
+                    const result = confirm('인증되었습니다. 변경하시겠습니까?');
+                    if(result){
+                        const result2 = await fetchGet(`/lotteshop/my/email/${newEmail}/${uid}`);
+                        if(result2.success === '100'){
+                            alert('변경되었습니다.');
+                            insertCode.style.display="none";
                         }
-
-                        const data = await response.json();
-                        console.log("data1 : " + data);
-                        return data;
-                    } catch (err) {
-                        console.log(err)
+                    }else{
+                        insertCode.style.display="none";
                     }
-                }
 
-                const data = await fetchGet(`/lotteshop/member/email/${inputEmailCode.value}`);
-
-                if (!data.result) {
-                    inputEmail.classList.add('is-invalid');
-                    inputEmailCode.classList.add('is-invalid');
-                    resultEmailCode.innerText = '인증코드가 일치하지 않습니다.';
-                    isEmailCodeOk = false;
-                } else {
-                    inputEmail.classList.add('is-valid');
-                    inputEmailCode.classList.add('is-valid');
-                    resultEmailCode.innerText = '이메일이 인증되었습니다.';
-                    isEmailCodeOk = true;
                 }
             }
 
@@ -169,22 +123,52 @@
             findZip.onclick = function () {
                 postcode();
             }
+
+
+            // 휴대폰 유효성 검사
+            const inputHp = document.getElementById('inputHp');
+            const  resultHp =document.getElementById('result_Hp');
+            inputHp.addEventListener('focusout', async () => {
+
+                const value =  inputHp.value;
+
+                if(!value.match(reHp)){
+                    showResultInvalid(resultHp, '휴대폰 형식이 맞지 않습니다.');
+                }else {
+                    setTimeout(async () => {
+                        const data = await fetchGet(`/lotteshop/member/check/hp/${value}`);
+
+                        if(data.result > 0){
+                            showResultInvalid(resultHp, '이미 사용중인 휴대폰 입니다.');
+                        }else{
+                            showResultInvalid(resultHp, '');
+                            if(confirm('휴대폰 번호를 변경하시겠습니까?')) {
+                                const result2 = await fetchGet(`/lotteshop/my/hp/${value}/${uid}`);
+                                if (result2.success === '100') {
+                                    alert('변경되었습니다.');
+                                }
+                            }
+                        }
+                    }, 1000);
+                }
+            });
         }
+
     </script>
     <ul>
         <span class="menu_else"></span>
-        <li class="on"><a th:href="@{#}">전체주문내역</a></li>
-        <!--<li><a th:href="@{#}">관심상품</a></li>-->
-        <li><a th:href="@{#}">포인트내역</a></li>
-        <li><a th:href="@{#}">쿠폰</a></li>
-        <li><a th:href="@{#}">나의리뷰</a></li>
-        <li><a th:href="@{#}">문의하기</a></li>
-        <li><a th:href="@{#}">나의설정</a></li>
+        <li ><a th:href="@{/my/order}">전체주문내역</a></li>
+        <!--<li><a href="./favorite.html">관심상품</a></li>-->
+        <li ><a th:href="@{/my/point}">포인트내역</a></li>
+        <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+        <li><a th:href="@{/my/review}">나의리뷰</a></li>
+        <li><a th:href="@{/my/qna}">문의하기</a></li>
+        <li class="on"><a th:href="@{/my/info}">나의설정</a></li>
     </ul>
 
     <section>
         <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
-        <form th:action method="post">
+        <form name="updateForm" th:action method="post">
             <article>
                 <h3>회원정보 설정</h3>
 
@@ -196,6 +180,10 @@
                     <tr>
                         <td>비밀번호</td>
                         <td>
+                            <input type="password" name="pass" id="pass1">
+                        </td>
+                        <td>
+                            <input type="password" name="pass" id="pass2">
                             <button type="button" id="btnChangePass">비밀번호 수정</button>
                         </td>
                     </tr>
@@ -211,17 +199,25 @@
                         <td>E-mail</td>
                         <td>
                             <input id="inputEmail" type="text" name="email" th:value="${user.email}">
-                            <button class="btnSubmit" type="button" id="btn_email" data-type="email">이메일 인증</button>
+                            <button class="btnCheckEmail" type="button" id="btnCheckEmail" data-type="email">
+                                <span class="spinner spinner-border spinner-border-sm d-none" aria-hidden="true" id="emailSpinner"></span>
+                                <span class="" role="status">이메일 인증</span>
+                            </button>
                             <span id="result_email"></span>
 
                             <!--이메일 인증코드 검사-->
+                    <tr style="display: none" id="insertCode">
+                    <td>E-mail 인증코드</td>
+                        <td>
+                            <input class="form-control" id="code" name="email" type="text"
+                                   placeholder="이메일 인증코드 입력"/>
+                            <button type="button" class="btnSubmit" id="btnCheckEmailCode"
+                                    data-type="email">인증코드 확인
+                            </button>
+                        </td>
+                    </tr>
                             <div>
-                                <input class="form-control" id="inputEmailCode" name="code" type="text"
-                                       placeholder="이메일 인증코드 입력"/>
-                                <button type="button" class="btnSubmit" id="btnCheckEmailCode"
-                                        data-type="email">
-                                    <span class="" role="status">인증코드 확인</span>
-                                </button>
+
                                 <div id="resultEmailCode" class="d-block"></div>
                             </div>
                         </td>
@@ -230,8 +226,10 @@
                         <td>휴대폰</td>
                         <td>
                             <p class="hp">
-                                <input type="text" name="hp" th:value="${user.hp}"/>
+                                <input class="form-control" type="text" id="inputHp" name="hp"
+                                       maxlength="13" minlength="13" th:value="${user.hp}"/>
                                 <button type="button" id="btnChangeHp">수정하기</button>
+                            <div id="result_Hp" class="d-block"></div>
                             </p>
                         </td>
                     </tr>

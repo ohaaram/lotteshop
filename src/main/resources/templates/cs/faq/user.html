@@ -8,22 +8,47 @@
         //////////////////////////////////////////////////////////////////
         /////btnHome, Top
         //////////////////////////////////////////////////////////////////
-        $(document).ready(function (){
-            $(window).scroll(function (){
-                if($(this).scrollTop() > 250){
+        $(document).ready(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 250) {
                     $('#btnTop').fadeIn();
-                }else{
+                } else {
                     $('#btnTop').fadeOut();
-                }        });
-            $('#btnTop').click(function (){
+                }
+            });
+            $('#btnTop').click(function () {
                 $('html, body').animate({scrollTop: 0}, 400);
                 return false;
             });
         });
 
         //////////////////////////////////////////////////////////////////
-        ///// 더보기, 간략히 보기
+        ///// 더보기 및 간략히 보기
         //////////////////////////////////////////////////////////////////
+
+        $(document).ready(function () {
+            // 기본으로 보여질 항목의 개수 설정
+            var visibleItems = 3;
+
+            // 더보기 버튼 클릭 시 실행될 함수
+            $('#loadMore').click(function () {
+                // 추가 항목을 가져올 AJAX 요청
+                $.ajax({
+                    type: 'GET',
+                    url: '/cs/faq/loadMore', // 추가 데이터를 제공할 엔드포인트 URL
+                    success: function (data) {
+                        // 성공적으로 데이터를 받아왔을 때 실행할 코드
+                        // 받은 데이터를 처리하고 새로운 항목을 화면에 추가하는 등의 작업 수행
+                    },
+                    error: function () {
+                        // 오류 발생 시 실행할 코드
+                        alert('데이터를 불러오는 중 오류가 발생했습니다.');
+                    }
+                });
+            });
+        });
+
+
     </script>
 
     <section id="cs">
@@ -37,12 +62,12 @@
                 <aside>
                     <h2>자주묻는 질문</h2>
                     <ul>
-                        <li class="on"><a th:href="@{/cs/faq/user}">회원</a></li>
-                        <li><a th:href="@{/cs/faq/eventCupon}">이벤트/쿠폰</a></li>
-                        <li><a th:href="@{/cs/faq/order}">주문/결제</a></li>
-                        <li><a th:href="@{/cs/faq/delivery}">배송</a></li>
-                        <li><a th:href="@{/cs/faq/cancel}">취소/반품/교환</a></li>
-                        <li><a th:href="@{/cs/faq/trade}">거래증빙서류</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='user')}">회원</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='event')}">이벤트/쿠폰</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='order')}">주문/결제</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='delivery')}">배송</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='cancel')}">취소/반품/교환</a></li>
+                        <li><a th:href="@{/cs/faq(cate1='receipt')}">거래증빙서류</a></li>
                     </ul>
                 </aside>
                 <article>
@@ -67,107 +92,18 @@
                             </li>
                         </ul>
                     </nav>
-                    <div class="accordion" id="accordionLo">
-                        <h3 id="scrollspyHeading1" data-bs-smooth-scroll="true" >롯데오너스</h3>
-                        <div th:each="lotteOners, iterStat : ${lotteOners}"  class="accordion-item" th:if="${iterStat.index} &lt; 3">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#collapseLo' + ${iterStat.index}"
-                                        aria-expanded="true"
-                                        th:aria-controls="'collapseLo' + ${iterStat.index}">
-                                    [[${lotteOners.title}]]
-                                </button>
-                            </h2>
-                            <div th:id="'collapseLo' + ${iterStat.index}" class="accordion-collapse collapse"
-                                 th:data-bs-parent="'#accordionLo'">
-                                <div class="accordion-body">
-                                    [[${lotteOners.content}]]
-                                </div>
-                            </div>
-                        </div>
+
+                    <div th:each="dtoList , index:${dtoLists}" th:with="cate2=${dtoList.get(0).getCate2()}">
+                            <h3>[[${dtoLists[index.index][0].catename}]]</h3>
+                        <ul>
+                            <li th:each="dto:${dtoList}">
+                                <a th:href="@{/cs/faq/view}"><span>Q.</span>[[${dto.title}]]</a>
+                            </li>
+                            <li class="more"><a href="#" id="loadMore">더보기</a></li>
+                        </ul>
+
                     </div>
 
-                    <div class="accordion" id="accordionInfo">
-                        <h3 id="scrollspyHeading2" data-bs-smooth-scroll="true">정보확인/변경</h3>
-                        <div th:each="info, iterStat : ${info}" class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#collapseInfo' + ${iterStat.index}"
-                                        aria-expanded="true"
-                                        th:aria-controls="'collapseInfo' + ${iterStat.index}">
-                                    <strong>[[${info.title}]]</strong>
-                                </button>
-                            </h2>
-                            <div th:id="'collapseInfo'+ ${iterStat.index}" class="accordion-collapse collapse"
-                                 th:data-bs-parent="'#accordionInfo'">
-                                <div class="accordion-body">
-                                    [[${info.content}]]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion" id="accordionReg">
-                        <h3 id="scrollspyHeading3" data-bs-smooth-scroll="true">회원가입</h3>
-                        <div th:each="reg, iterStat: ${reg}"  class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#collapseReg' + ${iterStat.index}"
-                                        aria-expanded="true"
-                                        th:aria-controls="'collapseReg' + ${iterStat.index}">
-                                    [[${reg.title}]]
-                                </button>
-                            </h2>
-                            <div th:id="'collapseReg' + ${iterStat.index}" class="accordion-collapse collapse"
-                                 th:data-bs-parent="'#accordionReg'">
-                                <div class="accordion-body">
-                                    [[${reg.content}]]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion" id="accordionGrade">
-                        <h3 id="scrollspyHeading4" data-bs-smooth-scroll="true">회원등급</h3>
-                        <div th:each="grade, iterStat : ${grade}"  class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#collapseGrade' + ${iterStat.index}"
-                                        aria-expanded="true"
-                                        th:aria-controls="'collapseGrade' + ${iterStat.index}">
-                                    [[${grade.title}]]
-                                </button>
-                            </h2>
-                            <div th:id="'collapseGrade' + ${iterStat.index}" class="accordion-collapse collapse"
-                                 th:data-bs-parent="'#accordionGrade'">
-                                <div class="accordion-body">
-                                    [[${grade.content}]]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion" id="accordionDel">
-                        <h3 id="scrollspyHeading5" data-bs-smooth-scroll="true">회원탈퇴</h3>
-                        <div th:each="del, iterStat : ${del}" class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#collapseDel' + ${iterStat.index}"
-                                        aria-expanded="true"
-                                        th:aria-controls="'collapseDel' + ${iterStat.index}">
-                                    [[${del.title}]]
-                                </button>
-                            </h2>
-                            <div th:id="'collapseDel' + ${iterStat.index}" class="accordion-collapse collapse"
-                                 th:data-bs-parent="'#accordionDel'">
-                                <div class="accordion-body" >
-                                    [[${del.content}]]
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <aside>
                         <a th:href="@{/cs}" id="btnHome">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-house-check" viewBox="0 0 16 16">

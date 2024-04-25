@@ -22,6 +22,7 @@ public class Products {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int prodNo;
     private int cateNo;
+    private int prodSold;
     private String sellerUid;
     private String prodName;
 

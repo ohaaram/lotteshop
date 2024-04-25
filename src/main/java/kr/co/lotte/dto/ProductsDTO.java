@@ -25,6 +25,7 @@ public class ProductsDTO {
     private int prodDiscount;
 
 
+
     private MultipartFile multImage1;
     private MultipartFile multImage2;
     private MultipartFile multImage3;
