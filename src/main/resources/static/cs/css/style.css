@@ -288,6 +288,126 @@ header > .logo a {
   margin-right: 6px;
 }
 
+/*view*/
+/* 공지사항 전체 컨텐츠 */
+.content {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+/* 공지사항 메인 섹션 */
+#cs {
+  display: flex;
+  justify-content: center;
+}
+
+.notice {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* 내비게이션 */
+nav {
+  margin-bottom: 20px;
+}
+
+nav div {
+  font-size: 14px;
+}
+
+nav div p {
+  margin: 0;
+}
+
+nav div p span {
+  margin: 0 5px;
+  color: #999;
+}
+
+/* 사이드 메뉴 */
+aside {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+aside h2 {
+  margin-bottom: 15px;
+}
+
+aside ul {
+  list-style: none;
+  padding: 0;
+}
+
+aside ul li {
+  margin-bottom: 10px;
+}
+
+aside ul li a {
+  color: #333;
+  text-decoration: none;
+}
+
+aside ul li.on a {
+  font-weight: bold;
+}
+
+/* 컨텐츠 */
+article {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.article nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.article nav h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.article nav .date {
+  font-size: 16px;
+  color: #999;
+}
+
+.content p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.btnList {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.btnList:hover {
+  background-color: #555;
+}
+
+
+
+
+
+
+
+
+
 /* 푸터영역 */
 footer {
   width: 100%;

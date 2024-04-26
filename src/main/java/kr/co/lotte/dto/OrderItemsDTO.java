@@ -15,4 +15,6 @@ public class OrderItemsDTO {
     private int itemPrice;
     private int itemDiscount;
     private int itemCount;
+
+    private String orderState;
 }

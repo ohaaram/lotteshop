@@ -26,9 +26,7 @@
     <!-- admin.cs.faq 선택삭제 -->
     <delete id="deleteFaqByIds" parameterType="java.util.List">
         DELETE FROM csfaq WHERE no IN
-
         <foreach item="no" index="index" collection="selectedNo" open="(" separator="," close=")">
-
             #{no}
         </foreach>
     </delete>

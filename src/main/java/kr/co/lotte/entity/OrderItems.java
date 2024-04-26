@@ -24,4 +24,5 @@ public class OrderItems {
     private int itemDiscount;
     private int itemCount;
 
+    private String orderState;
 }

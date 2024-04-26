@@ -14,7 +14,7 @@ $(function(){
     });
 
     // 주문상세 팝업 띄우기
-    $('.latest .info .orderNo > a').click(function(e){
+    $('#detailOrder').click(function(e){
         e.preventDefault();
         $('#popOrder').addClass('on');
     });

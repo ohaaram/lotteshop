@@ -420,6 +420,8 @@
                                         const quantityContainers = document.querySelectorAll('.quantity-container');
                                         const itemsCounts = [];
                                         const itemsNos = [];
+                                        const itemsPrice =[]
+                                        const itemsDiscount =[];
 
                                         quantityContainers.forEach(container => {
                                             if (container.querySelector('#optionNo').value == "") {
@@ -427,6 +429,7 @@
                                             } else {
                                                 itemsCounts.push(parseInt(container.querySelector('#optionCount').value));
                                                 itemsNos.push(parseInt(container.querySelector('#optionNo').value));
+
                                             }
 
                                         });

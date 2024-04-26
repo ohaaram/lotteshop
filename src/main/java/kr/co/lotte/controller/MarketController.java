@@ -170,9 +170,13 @@ public class MarketController {
         return marketService.insertItemsForBuy(nos ,counts , orderNo);
     }
 
+    @GetMapping("/product/orderSuccess")
+    public String successOrder(@RequestParam(name = "orderNo") int orderNo){
 
-    //주문 확인시 product 재고 감소 + 포인트 주고 + usertotalPrice에 넣기
-    
+        return "/product/complete";
+    }
+
+
     //주문 취소시 사용한 포인트 돌려주기 + userTotalPrice 빼기
 
     //옵션관련된것

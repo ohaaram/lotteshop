@@ -23,6 +23,12 @@ public class CsNoticeController {
 
         return "/admin/cs/notice/list";
     }
+    // cs notice 리스트 출력
+    @GetMapping("/cs/notice/list")
+    public String noticeList(){
+
+        return "/cs/notice/list";
+    }
 
     // admin notice 뷰 페이지
     @GetMapping("/admin/cs/notice/view")

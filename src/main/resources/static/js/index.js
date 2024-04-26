@@ -1,10 +1,13 @@
 $(document).ready(function () {
     $(".slider > ul").bxSlider({
       easing: "linear",
+        auto: true,
+      touchEnabled: false
     });
-  });
 
-  $(function () {
+
+
+
     var best = $("aside > .best");
 
     $(window).scroll(function () {

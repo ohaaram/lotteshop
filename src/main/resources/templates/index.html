@@ -1,163 +1,164 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
-  <title>롯데ON::4조</title>
-  <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}"/>
-  <link rel="stylesheet"
-        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"/>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css"/>
-  <link rel="stylesheet" th:href="@{/css/common.css}"/>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script src="https://kit.fontawesome.com/20962f3e4b.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
-  <script th:src="@{/js/index.js}"></script>
+    <meta charset="UTF-8"/>
+    <title>롯데ON::4조</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}"/>
+    <link rel="stylesheet"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css"/>
+    <link rel="stylesheet" th:href="@{/css/common.css}"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://kit.fontawesome.com/20962f3e4b.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
+    <script th:src="@{/js/index.js}"></script>
 
-  <script>
-    $(function () {
-      $('#bannerTop .btnClose').click(function () {
-        $(this).closest('#bannerTop').removeClass('on');
-      });
-    });
+    <script>
+        $(function () {
+
+            $('#bannerTop .btnClose').click(function () {
+                $(this).closest('#bannerTop').removeClass('on');
+            });
+
+        });
+
+        window.onload = function () {
+
+            const sliders = document.getElementsByClassName('sliderBanner');
+            for (const slider of sliders) {
+                slider.onclick = function (e) {
+
+                    const bannerNo = slider.getAttribute('data-bannerNo');
+                    const link = slider.getAttribute('data-link');
 
 
-    // 클릭 이벤트 처리 함수
-    function preventClick(event, element) {
-      event.preventDefault(); // 기본 동작 중지
-      console.log(event);
-      console.log(element.getAttribute('data-bannerNo'));//이렇게 함수에 bannerNo를 담아서 옴
-      console.log(element.getAttribute('data-link'));//link주소도 받아와짐
+                    alert('클릭되었습니다!!!!!!!!.');
+                    console.log('bannerNo :' + bannerNo);
 
-      const bannerNo = element.getAttribute('data-bannerNo');
-      const link = element.getAttribute('data-link');
-      alert("클릭이 되는가?");
+                    const jsonData = {
+                        "bannerNo": bannerNo
+                    }
 
-
-      const jsonData = {
-        "bannerNo": bannerNo,
-        "link": link
-      }
-
-      fetch("/lotteshop/main/index", {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(jsonData)
-      })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error('데이터 전송에 실패!');
-                } else {
-                  window.location.href = link;
+                    fetch("/lotteshop/main/index", {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(jsonData)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('데이터 전송에 실패!');
+                            } else {
+                                window.location.href = link;
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(data);
+                        })
+                        .catch(err => console.log(err))
                 }
-                return response.json();
-              })
-              .then(data => {
-                console.log(data);
-              })
-              .catch(err => console.log(err))
+            }
+        }
 
 
-    }
+    </script>
+    <style>
+        #bannerTop {
+            display: none;
+            width: 100%;
+            height: 80px;
+            border-bottom: 1px solid #e9e9e9;
+            box-sizing: border-box;
+        }
 
+        #bannerTop.on {
+            display: block;
+        }
 
-  </script>
-  <style>
-    #bannerTop {
-      display: none;
-      width: 100%;
-      height: 80px;
-      border-bottom: 1px solid #e9e9e9;
-      box-sizing: border-box;
-    }
+        #bannerTop > article {
+            position: relative;
+            width: 1200px;
+            height: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
 
-    #bannerTop.on {
-      display: block;
-    }
+        #bannerTop > article > .btnClose {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 40px;
+            height: 40px;
+            background-image: url('../static/images/ico_sprite.png');
+            background-position: -122px -142px;
+            background-color: transparent;
+            font-size: 0;
+            border: none;
+            cursor: pointer;
+        }
 
-    #bannerTop > article {
-      position: relative;
-      width: 1200px;
-      height: 100%;
-      margin: 0 auto;
-      overflow: hidden;
-    }
-
-    #bannerTop > article > .btnClose {
-      position: absolute;
-      right: 0px;
-      top: 0px;
-      width: 40px;
-      height: 40px;
-      background-image: url('../static/images/ico_sprite.png');
-      background-position: -122px -142px;
-      background-color: transparent;
-      font-size: 0;
-      border: none;
-      cursor: pointer;
-    }
-
-  </style>
+    </style>
 
 </head>
 <body>
 <!--메인 배너 시작-->
 <th:block th:if="${banner1 != null }">
-  <th:block th:each="banner : ${banner1}">
-    <div id="bannerTop" class="on"
-         th:style="${banner.status == 0 ? 'background-color: #0000;' : 'background-color: ' + banner.color + ';'}">
-      <article>
-        <!--<input type="hidden" th:value="${banner.bannerNo}">-->
-        <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
-           th:onclick="'preventClick(event ,this);'">
-          <img class="bannerImg" th:src="@{/uploads/__${banner.img_1200}__}"/>
-        </a>
-        <a th:if="${banner.status} == 0" th:href="@{/index}">
-          <img th:src="@{/images/header_logo.png}"/>
-        </a>
-        <button class="btnClose">close</button>
-      </article>
-    </div>
-  </th:block>
+    <th:block th:each="banner : ${banner1}">
+        <div id="bannerTop" class="on"
+             th:style="${banner.status == 0 ? 'background-color: #0000;' : 'background-color: ' + banner.color + ';'}">
+            <article>
+                <!--<input type="hidden" th:value="${banner.bannerNo}">-->
+                <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}">
+                    <img class="bannerImg" th:src="@{/uploads/__${banner.img_1200}__}"/>
+                </a>
+                <a th:if="${banner.status} == 0" th:href="@{/index}">
+                    <img th:src="@{/images/header_logo.png}"/>
+                </a>
+                <button class="btnClose">close</button>
+            </article>
+        </div>
+    </th:block>
 </th:block>
 
 <!--메인 배너 끝!-->
 
 <div id="wrapper">
-  <header>
-    <div class="top">
-      <div>
-        <th:block th:if="${#authentication.principal == 'anonymousUser'}">
-          <a th:href="@{/member/login}">로그인</a>
-        </th:block>
+    <header>
+        <div class="top">
+            <div>
+                <th:block th:if="${#authentication.principal == 'anonymousUser'}">
+                    <a th:href="@{/member/login}">로그인</a>
+                </th:block>
 
-        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
-          <a th:href="@{/member/logout}">로그아웃</a>
-        </th:block>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <a th:href="@{/member/logout}">로그아웃</a>
+                </th:block>
 
-        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
-          <th:block th:if="${#authentication.principal.user.role != 'USER'}">
-          <a th:href="@{/admin/index}">관리자페이지</a>
-          </th:block>
-        </th:block>
-        <a th:href="@{#}">회원가입</a>
-        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
-          <th:block  th:if="${#authentication.principal.user.role == 'USER'}">
-            <a th:href="@{/my/home}">마이페이지</a>
-            <th:block>
-            </th:block>
-        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
-          <th:block th:if="${#authentication.principal.user.role == 'USER'}">
-            <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
-          </th:block>
-        </th:block>
-      </div>
-    </div>
-    <div class="logo">
-      <div>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role != 'USER'}">
+                        <a th:href="@{/admin/index}">관리자페이지</a>
+                    </th:block>
+                </th:block>
+                <a th:href="@{#}">회원가입</a>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role == 'USER'}">
+                        <a th:href="@{/my/home}">마이페이지</a>
+                        <th:block>
+                        </th:block>
+                        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                            <th:block th:if="${#authentication.principal.user.role == 'USER'}">
+                                <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
+                            </th:block>
+                        </th:block>
+            </div>
+        </div>
+        <div class="logo">
+            <div>
 
-        <a th:href="@{/}"><img src="./images/header_logo.png" alt="로고"/></a>
+                <a th:href="@{/}"><img src="./images/header_logo.png" alt="로고"/></a>
+
 
         <form action="#">
           <input type="text" name="search"/>
@@ -175,10 +176,10 @@
           <li><a th:href="@{#}">할인상품</a></li>
         </ul>
         <ul>
-          <li><a th:href="@{#}">공지사항</a></li>
-          <li><a th:href="@{#}">자주묻는질문</a></li>
-          <li><a th:href="@{#}">문의하기</a></li>
-          <li><a th:href="@{#}">고객센터</a></li>
+          <li><a th:href="@{/cs/notice/list}">공지사항</a></li>
+          <li><a th:href="@{/cs/faq}">자주묻는질문</a></li>
+          <li><a th:href="@{/cs/qna}">문의하기</a></li>
+          <li><a th:href="@{/cs}">고객센터</a></li>
         </ul>
       </div>
     </div>
@@ -237,245 +238,284 @@
         <ol>
             <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물')}">농/축산물</a>
 
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">정육/계란</a>
-                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">쌀/잡곡/견과</a>
-                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">과일</a>
-                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">채소</a>
-              </ol>
 
-            </li>
-        <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물')}">수산/건어물</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">정육/계란</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">쌀/잡곡/견과</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">과일</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">채소</a>
+                            </ol>
 
-            <ol>
-              <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='생선')}">생선</a>
-              <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='김/해조류')}">김/해조류</a>
-              <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='전복/굴/조개류')}">전복/굴/조개류</a>
-              <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='오징어/낙지/쭈꾸미')}">오징어/낙지/쭈꾸미</a>
-              </ol>
-          </li>
-        </ol>
-        <li>
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물')}">수산/건어물</a>
+
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='생선')}">생선</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='김/해조류')}">김/해조류</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='전복/굴/조개류')}">전복/굴/조개류</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='오징어/낙지/쭈꾸미')}">오징어/낙지/쭈꾸미</a>
+                            </ol>
+                        </li>
+                    </ol>
+                <li>
 
 
-          <a th:href="@{/product/list(cateName1='반려동물')}"><i class="fas fa-home"></i>반려동물<i
-                  class="fas fa-angle-right"></i></a>
-          <ol>
-            <li>
-              <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지')}">강아지</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='사료/영양제')}">사료/영양제</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='간식')}">간식</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='배변용품')}">배변용품</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
-              </ol>
-            </li>
-            <li>
-              <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이')}">고양이</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='사료/영양제')}">사료/영양제</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='간식')}">간식</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='배변용품')}">배변용품</a></li>
-                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-      </ul>
+                    <a th:href="@{/product/list(cateName1='반려동물')}"><i class="fas fa-home"></i>반려동물<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li>
+                            <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지')}">강아지</a>
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='사료/영양제')}">사료/영양제</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='간식')}">간식</a>
+                                </li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='배변용품')}">배변용품</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='장난감/훈련용품')}">장난감/훈련용품</a>
+                                </li>
+                            </ol>
+                        </li>
+                        <li>
+                            <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이')}">고양이</a>
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='사료/영양제')}">사료/영양제</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='간식')}">간식</a>
+                                </li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='배변용품')}">배변용품</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='장난감/훈련용품')}">장난감/훈련용품</a>
+                                </li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
 
-      <!-- 베스트상품 배너 -->
-      <article class="best">
-        <h1><i class="fas fa-crown"></i>베스트상품</h1>
-        <ol th:each="product , index:${prodSolds}" th:if="${index.index <3}">
-          <li>
-            <a th:href="@{#}">
-              <div class="thumb">
-                <i>[[${index.index +1}]]</i>
-                <img th:src="@{/uploads/__${product.image1}__}" alt="item1"/>
-              </div>
-              <h2>[[${product.prodName}]]</h2>
-              <th:block th:if="${product.prodDiscount != 0}">
-                <div class="org_price">
-                  <del>[[${product.prodPrice}]]</del>
-                  <span>[[${product.prodDiscount}]]</span>
-                </div>
-                <div class="dis_price">
-                  <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                </div>
-              </th:block>
-              <th:block th:if="${product.prodDiscount == 0}">
-                <div class="dis_price">
-                  <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                </div>
-              </th:block>
-            </a>
-          </li>
-        </ol>
-      </article>
-    </aside>
-    <section>
-      <!-- 슬라이더 영역 -->
-      <section class="slider">
+            <!-- 베스트상품 배너 -->
+            <article class="best">
+                <h1><i class="fas fa-crown"></i>베스트상품</h1>
+                <ol th:each="product , index:${prodSolds}" th:if="${index.index <3}">
+                    <li>
+                        <a th:href="@{#}">
+                            <div class="thumb">
+                                <i>[[${index.index +1}]]</i>
+                                <img th:src="@{/uploads/__${product.image1}__}" alt="item1"/>
+                            </div>
+                            <h2>[[${product.prodName}]]</h2>
+                            <th:block th:if="${product.prodDiscount != 0}">
+                                <div class="org_price">
+                                    <del>[[${product.prodPrice}]]</del>
+                                    <span>[[${product.prodDiscount}]]</span>
+                                </div>
+                                <div class="dis_price">
+                                    <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) *
+                                        0.01, 1,0 )}]]
+                                    </ins>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${product.prodDiscount == 0}">
+                                <div class="dis_price">
+                                    <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) *
+                                        0.01, 1,0 )}]]
+                                    </ins>
+                                </div>
+                            </th:block>
+                        </a>
+                    </li>
+                </ol>
+            </article>
+        </aside>
+        <section>
+            <!-- 슬라이더 영역 -->
+            <section class="slider">
+                <ul>
+                    <li th:each="banner : ${banner2}" th:if="${banner.status} == 1">
+                        <a class="sliderBanner" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
+                           th:href="@{${banner.link}}">
+                            <img class="bannerImg" th:src="@{/uploads/__${banner.img_985}__}"/>
+                        </a>
+                    </li>
+
+                    <li th:each="banner : ${banner2}" th:if="${banner} == null">
+                        <th:block>
+                            <div style="background-color: #F0F0F0; width: 985px; height: 447px;"></div>
+                        </th:block>
+                    </li>
+                </ul>
+            </section>
+            <!-- 히트상품 영역 -->
+            <section class="hit">
+                <h3><span>히트상품</span></h3>
+                <article th:each="product , index : ${prodSolds}">
+                    <a th:href="@{/product/view(prodno = ${product.prodNo})}">
+                        <div class="thumb">
+                            <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
+                        </div>
+                        <h2>[[${product.prodName}]]</h2>
+                        <p>[[${product.etc}]]</p>
+                        <th:block th:if="${product.prodDiscount != 0}">
+                            <div class="org_price">
+                                <del>[[${product.prodPrice}]]</del>
+                                <span>[[${product.prodDiscount}]]</span>
+                            </div>
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${product.prodDiscount == 0}">
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                    </a>
+                </article>
+            </section>
+            <!-- 추천상품 영역 -->
+            <section class="recommend">
+                <h3><span>추천상품</span></h3>
+                <article th:each="product , index : ${prodRecommend}">
+                    <a th:href="@{/product/view(prodno = ${product.prodNo})}">
+                        <div class="thumb">
+                            <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
+                        </div>
+                        <h2>[[${product.prodName}]]</h2>
+                        <p>[[${product.etc}]]</p>
+                        <th:block th:if="${product.prodDiscount != 0}">
+                            <div class="org_price">
+                                <del>[[${product.prodPrice}]]</del>
+                                <span>[[${product.prodDiscount}]]</span>
+                            </div>
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${product.prodDiscount == 0}">
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                    </a>
+                </article>
+            </section>
+            <!-- 최신상품 영역 -->
+            <section class="new">
+                <h3><span>최신상품</span></h3>
+                <article th:each="product , index : ${prodRecent}">
+                    <a th:href="@{/product/view(prodno = ${product.prodNo})}">
+                        <div class="thumb">
+                            <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
+                        </div>
+                        <h2>[[${product.prodName}]]</h2>
+                        <p>[[${product.etc}]]</p>
+                        <th:block th:if="${product.prodDiscount != 0}">
+                            <div class="org_price">
+                                <del>[[${product.prodPrice}]]</del>
+                                <span>[[${product.prodDiscount}]]</span>
+                            </div>
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${product.prodDiscount == 0}">
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                    </a>
+                </article>
+
+            </section>
+            <!-- 할인상품 영역 -->
+            <section class="discount">
+                <h3><span>할인상품</span></h3>
+                <article th:each="product , index : ${prodDiscount}">
+                    <a th:href="@{/product/view(prodno = ${product.prodNo})}">
+                        <div class="thumb">
+                            <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
+                        </div>
+                        <h2>[[${product.prodName}]]</h2>
+                        <p>[[${product.etc}]]</p>
+                        <th:block th:if="${product.prodDiscount != 0}">
+                            <div class="org_price">
+                                <del>[[${product.prodPrice}]]</del>
+                                <span>[[${product.prodDiscount}]]</span>
+                            </div>
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                        <th:block th:if="${product.prodDiscount == 0}">
+                            <div class="dis_price">
+                                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                    1,0 )}]]
+                                </ins>
+                                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                            </div>
+                        </th:block>
+                    </a>
+                </article>
+            </section>
+        </section>
+    </main>
+    <footer>
         <ul>
-          <li th:each="banner : ${banner2}" th:if="${banner.status} == 1">
-            <a th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
-               th:onclick="'preventClick(event ,this)'" th:href="@{${banner.link}}">
-              <img class="bannerImg" th:src="@{/uploads/__${banner.img_985}__}"/>
-            </a>
-          </li>
-
-          <li th:each="banner : ${banner2}" th:if="${banner} == null">
-            <th:block>
-              <div style="background-color: #F0F0F0; width: 985px; height: 447px;"></div>
-            </th:block>
-          </li>
+            <li><a th:href="@{#}">회사소개</a></li>
+            <li><a th:href="@{#}">서비스이용약관</a></li>
+            <li><a th:href="@{#}">개인정보처리방침</a></li>
+            <li><a th:href="@{#}">전자금융거래약관</a></li>
         </ul>
-      </section>
-      <!-- 히트상품 영역 -->
-      <section class="hit">
-        <h3><span>히트상품</span></h3>
-        <article th:each="product , index : ${prodSolds}">
-          <a th:href="@{/product/view(prodno = ${product.prodNo})}">
-            <div class="thumb">
-              <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
-            </div>
-            <h2>[[${product.prodName}]]</h2>
-            <p>[[${product.etc}]]</p>
-            <th:block th:if="${product.prodDiscount != 0}">
-              <div class="org_price">
-                <del>[[${product.prodPrice}]]</del>
-                <span>[[${product.prodDiscount}]]</span>
-              </div>
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-            <th:block th:if="${product.prodDiscount == 0}">
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-          </a>
-        </article>
-      </section>
-      <!-- 추천상품 영역 -->
-      <section class="recommend">
-        <h3><span>추천상품</span></h3>
-        <article th:each="product , index : ${prodRecommend}">
-          <a th:href="@{/product/view(prodno = ${product.prodNo})}">
-            <div class="thumb">
-              <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
-            </div>
-            <h2>[[${product.prodName}]]</h2>
-            <p>[[${product.etc}]]</p>
-            <th:block th:if="${product.prodDiscount != 0}">
-              <div class="org_price">
-                <del>[[${product.prodPrice}]]</del>
-                <span>[[${product.prodDiscount}]]</span>
-              </div>
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-            <th:block th:if="${product.prodDiscount == 0}">
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-          </a>
-        </article>
-      </section>
-      <!-- 최신상품 영역 -->
-      <section class="new">
-        <h3><span>최신상품</span></h3>
-        <article th:each="product , index : ${prodRecent}">
-          <a th:href="@{/product/view(prodno = ${product.prodNo})}">
-            <div class="thumb">
-              <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
-            </div>
-            <h2>[[${product.prodName}]]</h2>
-            <p>[[${product.etc}]]</p>
-            <th:block th:if="${product.prodDiscount != 0}">
-              <div class="org_price">
-                <del>[[${product.prodPrice}]]</del>
-                <span>[[${product.prodDiscount}]]</span>
-              </div>
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-            <th:block th:if="${product.prodDiscount == 0}">
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-          </a>
-        </article>
-
-      </section>
-      <!-- 할인상품 영역 -->
-      <section class="discount">
-        <h3><span>할인상품</span></h3>
-        <article th:each="product , index : ${prodDiscount}">
-          <a th:href="@{/product/view(prodno = ${product.prodNo})}">
-            <div class="thumb">
-              <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
-            </div>
-            <h2>[[${product.prodName}]]</h2>
-            <p>[[${product.etc}]]</p>
-            <th:block th:if="${product.prodDiscount != 0}">
-              <div class="org_price">
-                <del>[[${product.prodPrice}]]</del>
-                <span>[[${product.prodDiscount}]]</span>
-              </div>
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-            <th:block th:if="${product.prodDiscount == 0}">
-              <div class="dis_price">
-                <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins>
-                <span class="free" th:if="${product.delivery == 0}">무료배송</span>
-              </div>
-            </th:block>
-          </a>
-        </article>
-      </section>
-    </section>
-  </main>
-  <footer>
-    <ul>
-      <li><a th:href="@{#}">회사소개</a></li>
-      <li><a th:href="@{#}">서비스이용약관</a></li>
-      <li><a th:href="@{#}">개인정보처리방침</a></li>
-      <li><a th:href="@{#}">전자금융거래약관</a></li>
-    </ul>
-    <div>
-      <p><img src="../static/images/footer_logo.png" alt="로고"/></p>
-      <p>
-        <strong>(주)롯데ON</strong><br/>
-        서울특별시 송파구 올림픽로 300 롯데월드타워 26층 (역삼동 강남파이낸스센터)<br/>
-        대표이사 : 김사무엘상현, 정준호, 강성현<br/>
-        사업자등록번호 : 529-85-00774(롯데쇼핑(주) e커머스사업부)<br/>
-        통신판매업 신고 : 서울송파 제0158호<br>
-        호스팅 서비스사업자 : 롯데쇼핑(주) e커머스사업부
-      </p>
-      <p>
-        <strong>고객센터</strong><br/>
-        Tel : 1899-7000(유료) (평일 09:00~18:00)<br/>
-        Fax : 051-123-4567 | E-mail : lotteon@lotte.net<br/>
-        [[${appInfo.name}]]-[[${appInfo.version}]]
-      </p>
-    </div>
-  </footer>
-  <button type="button" id="top">상단이동</button>
+        <div>
+            <p><img src="../static/images/footer_logo.png" alt="로고"/></p>
+            <p>
+                <strong>(주)롯데ON</strong><br/>
+                서울특별시 송파구 올림픽로 300 롯데월드타워 26층 (역삼동 강남파이낸스센터)<br/>
+                대표이사 : 김사무엘상현, 정준호, 강성현<br/>
+                사업자등록번호 : 529-85-00774(롯데쇼핑(주) e커머스사업부)<br/>
+                통신판매업 신고 : 서울송파 제0158호<br>
+                호스팅 서비스사업자 : 롯데쇼핑(주) e커머스사업부
+            </p>
+            <p>
+                <strong>고객센터</strong><br/>
+                Tel : 1899-7000(유료) (평일 09:00~18:00)<br/>
+                Fax : 051-123-4567 | E-mail : lotteon@lotte.net<br/>
+                [[${appInfo.name}]]-[[${appInfo.version}]]
+            </p>
+        </div>
+    </footer>
+    <button type="button" id="top">상단이동</button>
 </div>
 </body>
 </html>

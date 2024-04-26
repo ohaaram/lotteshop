@@ -22,7 +22,7 @@
         /* 애니메이션 클래스에 fadeInUp 적용 */
         .fadeInUp {
             animation-name: fadeInUp;
-            animation-duration: 1s;
+            animation-duration: 2s;
         }
 
         /* 슬라이더 영역 */
@@ -61,39 +61,46 @@
         }
 
 
-
     </style>
 
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function () {
+
             var parentDivs = document.querySelectorAll('.blog_title');
-            parentDivs.forEach(function(parentDiv) {
-                parentDiv.addEventListener('click', function (event) {
+
+            parentDivs.forEach(function (parentDiv) {
+
+                parentDiv.addEventListener('click', async function (event) {
+
                     var target = event.target;
+                    var bno = null;
+                    var cate = null;
+
                     if (target.classList.contains('title-link')) {
+
                         event.preventDefault(); // 기본 동작 방지
-                        var bno = target.getAttribute('data-bno');
+                        bno = target.getAttribute('data-bno');
+                        cate = target.getAttribute('data-cate');
                         console.log('제목 클릭, bno:', bno);
+                        console.log('제목 클릭, cate:', cate);
                         alert('제목 링크를 클릭하였습니다.');
+
                     } else if (target.tagName === 'IMG') {
-                        var dataBno = parentDiv.querySelector('.title-link').getAttribute('data-bno');
-                        console.log('이미지 클릭, data-bno:', dataBno);
+                        bno = parentDiv.querySelector('.title-link').getAttribute('data-bno');
+                        cate = parentDiv.querySelector('.title-link').getAttribute('data-cate');
+                        alert('이미지 링크를 클릭하였습니다.');
+                        console.log('이미지 클릭, bno:', bno);
+                        console.log('이미지 클릭, cate:', cate);
+
                     }
+                    const viewURL = `/lotteshop/company/view?cate=${cate}&bno=${bno}`;
+
+                    window.location.href=viewURL;
+
                 });
             });
         });
-
-        /*
-        function fetchDataBno(element) {
-            var parentDiv = element.closest('.blog_title');
-            var dataBno = parentDiv.querySelector('.title-link').getAttribute('data-bno');
-            console.log('data-bno:', dataBno);
-            return false;
-        }
-
-         */
 
     </script>
 
@@ -164,9 +171,9 @@
                     </div>
                     <div class="blog_title">
                         <a class="title-link" href="#" style="font-size: 20px;font-weight: bold"
-                           th:text="${lists.title}" th:data-bno="${lists.bno}"></a>
+                           th:text="${lists.title}" th:data-cate="${lists.cate}" th:data-bno="${lists.bno}"></a>
 
-                        <a class="title-link">
+                        <a>
                             <img id="b_btn" th:src="@{/company/images/button.png}">
                         </a>
 

@@ -4,18 +4,19 @@
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
 <section id="admin-cs-faq" layout:fragment="content">
-    <script>        window.onload = function() {
+    <script>
+        window.onload = function() {
             const all = document.getElementById('all');
             const checkAll = document.querySelectorAll('.check');
 
-            // 전체 선택 기능 구현
+            // 전체 선택
             all.onclick = function () {
                 checkAll.forEach(function (item) {
                     item.checked = all.checked;
                 });
             };
 
-            // 선택 삭제 기능 구현
+            // 선택 삭제
             const selectDelete = document.getElementById('selectDelete');
             selectDelete.onclick = async function(e){
                 e.preventDefault();
@@ -69,7 +70,8 @@
                     <tr>
                         <th><input type="checkbox" name="all" id="all"></th>
                         <th>번호</th>
-                        <th>유형</th>
+                        <th>유형1</th>
+                        <th>유형2</th>
                         <th>제목</th>
                         <th>내용</th>
                         <th>관리</th>
@@ -79,7 +81,8 @@
                         <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check" th:value="${faq.no}" /></td>
 
                         <td>[[${faq.no}]]</td>
-                        <td>[[${faq.cate}]]</td>
+                        <td>[[${faq.cate1}]]</td>
+                        <td>[[${faq.cate2}]]</td>
                         <td>[[${faq.title}]]</td>
                         <td th:text="${#strings.length(faq.content) > 20 ? #strings.substring(faq.content, 0, 20) + '...' : faq.content} "></td>
                         <td>

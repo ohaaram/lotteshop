@@ -566,7 +566,13 @@ main > section > .slider {
   height: 425px;
   overflow: hidden;
 }
-main > section > .slider > .bx-wrapper {
+
+main > section > .slider ul {
+  overflow: hidden;
+  z-index: 1000;
+}
+
+main > section > .slider .bx-wrapper {
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
   box-shadow: none;

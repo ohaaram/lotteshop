@@ -16,4 +16,7 @@ public class CartsDTO {
     private int prodNo;
     private int cartProdCount;
     private LocalDateTime cartProdDate;
+
+    private int prodPrice;
+    private int prodDiscount;
 }

@@ -21,6 +21,7 @@ public class CompanyController {
     private final BlogService blogService;
 
 
+
     @GetMapping("/company/index")
     public String index(Model model){
         //blog에 있는 전체 글을 출력
@@ -54,5 +55,13 @@ public class CompanyController {
          model.addAttribute("blogs",blogDTO);
 
         return "/company/view";
+    }
+
+    @GetMapping("/company/recruit")
+    public String recruit(){
+
+
+
+        return "/company/recruit";
     }
 }

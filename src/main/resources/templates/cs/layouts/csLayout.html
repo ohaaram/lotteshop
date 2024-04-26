@@ -21,6 +21,7 @@
             <div class="top">
                 <div>
                     <p>
+                        <a th:href="@{/index}">홈으로</a>
                         <a th:href="@{/member/login.html}">로그인</a>
                         <a th:href="@{#}">회원가입</a>
                         <a th:href="@{#}">마이페이지</a>
@@ -33,7 +34,7 @@
             </div>
             <div class="logo">
                 <div>
-                    <a th:href="@{/cs}"><img th:src="@{/images/header_logo.png}" alt="로고" />고객센터</a>
+                    <a th:href="@{/cs/index}"><img th:href="@{/index}" th:src="@{/images/header_logo.png}" alt="로고" />고객센터</a>
                 </div>
             </div>
         </header>

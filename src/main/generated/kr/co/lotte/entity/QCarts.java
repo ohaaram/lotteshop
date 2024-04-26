@@ -25,7 +25,11 @@ public class QCarts extends EntityPathBase<Carts> {
 
     public final DateTimePath<java.time.LocalDateTime> cartProdDate = createDateTime("cartProdDate", java.time.LocalDateTime.class);
 
+    public final NumberPath<Integer> prodDiscount = createNumber("prodDiscount", Integer.class);
+
     public final NumberPath<Integer> prodNo = createNumber("prodNo", Integer.class);
+
+    public final NumberPath<Integer> prodPrice = createNumber("prodPrice", Integer.class);
 
     public final StringPath userId = createString("userId");
 

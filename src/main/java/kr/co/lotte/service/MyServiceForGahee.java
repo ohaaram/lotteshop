@@ -3,10 +3,7 @@ package kr.co.lotte.service;
 import com.querydsl.core.Tuple;
 import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
-import kr.co.lotte.repository.OrdersItemRepository;
-import kr.co.lotte.repository.OrdersRepository;
-import kr.co.lotte.repository.PointsRepository;
-import kr.co.lotte.repository.ProductsRepository;
+import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,8 @@ public class MyServiceForGahee {
     private OrdersItemRepository ordersItemRepository;
     @Autowired
     private ProductsRepository productsRepository;
+    @Autowired
+    private SubProductsRepository subProductsRepository;
 
     public List<Points> forPoint(String uid){
         //최근 주문 내역
@@ -68,7 +67,8 @@ public class MyServiceForGahee {
     public List<Products> searchProducts(List<List<OrderItems>> orders) {
         List<Products>  lists = new ArrayList<>();
         for (List<OrderItems> orderItems: orders) {
-            Products products = productsRepository.findById(orderItems.get(0).getProdNo()).get();
+            SubProducts subProducts = subProductsRepository.findById(orderItems.get(0).getProdNo()).get();
+            Products products = productsRepository.findById(subProducts.getProdNo()).get();
             lists.add(products);
         }
         return lists;

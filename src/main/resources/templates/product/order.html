@@ -51,7 +51,6 @@
         let isPointOk = false;
         function usingPoint(){
             //alert('클릭이 되었습니다.');
-            //포인트를 사용한다고 적용 버튼을 눌렀을 때, 5000점 이상이면 현금처럼 사용가능
             const curPoint = document.getElementsByClassName('curPoint')[0].textContent;
             const usingPoint = document.getElementById('point').value;
             const totalOrder = document.getElementById('totalOrder').textContent;
@@ -154,14 +153,12 @@
                 const json = {lists: lists}
                 const result = await fetchPost('/lotteshop/product/deleteCartForOrder', json);
                 if(result.data != null){
-                    alert('주문이 완료되었습니다.')
-                    window.location.href='/lotteshop/'
+                    window.location.href='/lotteshop/product/orderSuccess?orderNo='+orderNo;
                 }
             } else {
                 const result = await fetchGet('/lotteshop/product/insertItems?orderNo=' + orderNo);
                 if(result.data != null){
-                    alert('주문이 완료되었습니다.')
-                    window.location.href='/lotteshop/'
+                    window.location.href='/lotteshop/product/orderSuccess?orderNo='+orderNo;
                 }
             }
 
@@ -376,8 +373,8 @@
                             </article>
                         </td>
                         <td th:text="${counts[index.index]}"></td>
-                        <td th:text="${subProduct.prodPrice }"></td>
-                        <td th:text="${subProduct.products.getProdDiscount() +'%'}"></td>
+                        <td  id="subProductPrice" th:text="${subProduct.prodPrice }"></td>
+                        <td id="subProductDiscount" th:text="${subProduct.products.getProdDiscount()}"></td>
                         <td class="delivery" id="subProductDelivery">[[${subProduct.products.delivery}]]</td>
                         <td id="subProductTotalPrice" th:text="${#numbers.formatDecimal(subProduct.prodPrice * (100 - subProduct.products.prodDiscount) * 0.01 * counts[index.index] ,1,0) }"></td>
                         <td id="subProductOriginPrice" style="display: none" th:text="${#numbers.formatDecimal(subProduct.prodPrice * counts[index.index] ,1,0) }"></td>
@@ -385,7 +382,6 @@
                     </tr>
                     </tbody>
                 </table>
-                ** 포인트는 주문 확인 후 적립됩니다. **
                 <!-- 최종 결제 정보-->
                 <div class="final">
                     <h2>최종결제 정보</h2>

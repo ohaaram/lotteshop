@@ -54,12 +54,10 @@ public class MainController {
 
     @PostMapping("/main/index")
     public ResponseEntity<?> banner(@RequestBody Map<String, Object> map){
-        String link = (String)map.get("link");
+
         String bannerNO = (String)map.get("bannerNo");
 
-        log.info("link : "+link);
         log.info("bannerNO : "+bannerNO);
-
 
         Banner banner = adminService.findByIdBanner(bannerNO);
 

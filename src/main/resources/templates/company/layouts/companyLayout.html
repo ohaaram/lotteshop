@@ -141,10 +141,10 @@
             <div>
                 <ul class="nav justify-content-end" id="menubar">
                     <li class="nav-home">
-                        <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">HOME</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/index}" style="color: black; font-weight:bold;">HOME</a>
                     </li>
                     <li class="nav-culture">
-                        <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">기업문화</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/culture}" style="color: black; font-weight:bold;">기업문화</a>
                     </li>
                     <li class="nav-story">
                         <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">소식과
@@ -170,8 +170,8 @@
         <div id="f_total">
             <div id="one_section"><!--두개를 일직선으로 세우기 위해 묶은 묶음-->
                 <div id="f_menu">
-                    <a href="#">HOME</a>
-                    <a href="#">기업문화</a>
+                    <a th:href="@{/company/index}">HOME</a>
+                    <a th:href="@{/company/culture}">기업문화</a>
                     <a href="#">소식과 이야기</a>
                     <a href="#">채용</a>
                 </div>

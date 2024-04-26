@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -50,32 +52,6 @@ public class CsFaqService {
         return dtoLists;
     }
 
-    // cs.faq 더보기
-    public List<List<CsFaqDTO>> getAdditionalFaqArticles(String cate1) {
-        // 추가 데이터를 가져오는 로직을 작성합니다.
-        // 예를 들어, 이 메서드에서는 기존에 가져온 FAQ 항목들 이후의 항목들을 가져오는 로직을 작성해야 합니다.
-        // 이는 데이터베이스에서 다음 페이지의 항목들을 가져오는 등의 방식으로 구현할 수 있습니다.
-
-        // 기존 데이터 이후의 항목들을 가져오는 로직을 수행합니다.
-        List<CsFaq> additionalFaqList = csFaqRepository.findByCate1(cate1);
-
-        // 가져온 추가 항목들을 CsFaqDTO로 변환합니다.
-        List<CsFaqDTO> additionalDtoList = additionalFaqList.stream()
-                .map(entity -> modelMapper.map(entity, CsFaqDTO.class))
-                .collect(Collectors.toList());
-
-        // 추가 데이터를 그룹화하여 반환합니다. 이는 클라이언트 측에서 추가 데이터를 화면에 표시하는 데 사용됩니다.
-        Map<String, List<CsFaqDTO>> additionalGroupedByCate2 = additionalDtoList.stream()
-                .collect(Collectors.groupingBy(CsFaqDTO::getCate2));
-
-        // 그룹화된 추가 데이터를 리스트로 변환하여 반환합니다.
-        List<List<CsFaqDTO>> additionalDtoLists = additionalGroupedByCate2.values()
-                .stream()
-                .collect(Collectors.toList());
-
-        return additionalDtoLists;
-    }
-
     // admin.cs.faq.modify 출력
     public CsFaqDTO faqSelectNo(int no){
         return adminCsMapper.faqSelectNo(no);
@@ -103,11 +79,6 @@ public class CsFaqService {
         adminCsMapper.adminFaqWrite(csFaqDTO);
     }
 
-    //
-    public List<String> getCate2ByCate1(String cate1){
-        //return csFaqRepository.findCate2ByCate1(cate1);
-        return null;
-    }
 
     /*
     // faq.user 출력

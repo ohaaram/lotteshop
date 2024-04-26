@@ -30,7 +30,6 @@ public class CsFaqController {
 
     @GetMapping(value = {"/cs","/cs/index"} )
     public String index(){
-
         return "/cs/index";
     }
 
@@ -103,20 +102,12 @@ public class CsFaqController {
         return "/cs/faq/user";
     }
 
-    // cs.faq 더보기
-    @GetMapping("/cs/faq/loadMore")
-    public ResponseEntity<List<List<CsFaqDTO>>> loadMoreFaqArticles(@RequestParam(name = "cate1") String cate1) {
-        // 추가 데이터를 가져오는 로직을 수행하여 필요한 FAQ 항목들을 가져옵니다.
-        List<List<CsFaqDTO>> additionalDtoLists = csFaqService.getAdditionalFaqArticles(cate1);
-
-        // 새로운 데이터를 클라이언트에 반환합니다.
-        return ResponseEntity.ok().body(additionalDtoLists);
-    }
-
     // cs.faq.view 출력
-    @GetMapping("/cs/faq/view")
-    public String faqView(){
+    @GetMapping("/cs/faq/view/{no}")
+    public String faqView(@PathVariable int no, Model model){
 
+        CsFaqDTO csFaqDTO = csFaqService.faqSelectNo(no);
+        model.addAttribute("csFaqDTO", csFaqDTO);
         return "/cs/faq/view";
     }
 

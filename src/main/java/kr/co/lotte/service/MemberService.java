@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 
@@ -156,6 +157,19 @@ public class MemberService {
         return ResponseEntity.ok().body(map);
     }
 
+    public ResponseEntity<?> updateUserAddr(UserDTO userDTO) {
+        memberMapper.updateUserAddr(userDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("success", "100");
+        return ResponseEntity.ok().body(map);
+    }
+
+    public void updateUserPassword(UserDTO userDTO) {
+        String encoded = passwordEncoder.encode(userDTO.getPass());
+        userDTO.setPass(encoded);
+
+        memberMapper.updateUserPassword(userDTO);
+    }
 }
 
 

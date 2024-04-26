@@ -5,6 +5,7 @@
 
 
             <div class="ordered" layout:fragment="content">
+                <!-- 주문상세 팝업 -->
                 <ul>
                     <span class="menu_else"></span>
                     <li class="on"><a th:href="@{/my/order}">전체주문내역</a></li>
@@ -67,119 +68,184 @@
                                 <button class="btnConfirm" type="submit">조회하기</button>
                             </form>
                         </div>
-                        <script>
-                            window.onload=function (){
-                                // 현재 날짜 가져오기
-                                var currentDate = new Date().toISOString().split('T')[0];
 
-                                // 현재 날짜의 1년 전 날짜 계산
-                                var oneYearAgo = new Date();
-                                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-                                var oneYearAgoDate = oneYearAgo.toISOString().split('T')[0];
-
-                                // 최대 날짜 설정
-                                document.getElementsByName("dateBegin")[0].setAttribute('max', currentDate);
-                                document.getElementsByName("dateBegin")[0].setAttribute('min', oneYearAgoDate);
-                                document.getElementsByName("dateEnd")[0].setAttribute('max', currentDate);
-
-
-                                // 입력 필드의 날짜 변경 이벤트 리스너 등록
-                                document.getElementsByName("dateBegin")[0].addEventListener('change', function() {
-                                    var startDate = new Date(this.value);
-                                    var endDate = new Date(document.getElementsByName("dateEnd")[0].value);
-
-                                    // 시작일과 종료일을 비교하여 종료일이 시작일보다 이전이면 종료일을 시작일과 동일하게 설정
-                                    if (startDate > endDate) {
-                                        document.getElementsByName("dateEnd")[0].value = this.value;
-                                    }
-                                });
-
-                                document.getElementsByName("dateEnd")[0].addEventListener('change', function() {
-                                    var startDate = new Date(document.getElementsByName("dateBegin")[0].value);
-                                    var endDate = new Date(this.value);
-
-                                    // 종료일과 시작일을 비교하여 시작일이 종료일보다 이후면 시작일을 종료일과 동일하게 설정
-                                    if (endDate < startDate) {
-                                        document.getElementsByName("dateBegin")[0].value = this.value;
-                                    }
-                                });
-
-                            }
-                        </script>
                         <table border="0">
                             <tr>
                                 <th>날짜</th>
                                 <th>주문정보</th>
-                                <th>상태</th>
-                                <th>확인/신청</th>
+                            <!--    <th>상태</th>
+                                <th>확인/신청</th> -->
                             </tr>
-                            <tr th:each="order , index :${pageResponseDTO.dtoList}">
+                            <th:block  th:each="order , index :${pageResponseDTO.dtoList}">
+                            <tr>
                                 <td class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</td>
                                 <td>
                                     <a th:href="@{/product/view(prodno=${products[index.index].prodNo})}" class="thumb"><img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index].image1}__}" alt=""></a>
                                     <ul>
-                                        <li class="prodName"><a th:href="@{#}">[[${products[index.index].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]개</a></li>
+                                        <li class="prodName"><span th:href="@{#}"  onclick="openPopup()">[[${products[index.index].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]개</span></li>
                                          주문번호 : <span class="ordNo">[[${order.orderNo}]]</span></li>
                                         <li class="prodPrice">[[${order.orderTotalPrice}]]</li>
+                                        <li class="list-item" >
+                                            <input type="hidden" th:value="${order.orderNo}" id="aec">
+                                            <span  class="detailOrder" th:value="${order.orderNo}"> 주문 내역 상세 보기</span> </li>
                                     </ul>
                                 </td>
-                                <td class="status">[[${order.orderState}]]</td>
-                                <td class="confirm">
-                                    <a th:href="@{#}" class="receive">수취확인</a>
-                                    <a th:href="@{#}" class="review">상품평</a>
-                                    <a th:href="@{#}" class="refund">반품신청</a>
-                                    <a th:href="@{#}" class="exchange">교환신청</a>
-                                </td>
-                            </tr>
-                        </table>
+                                <!--  <td class="status">[[${order.orderState}]]</td>
+                                 <td class="confirm">
+                                     <a th:href="@{#}" class="receive">수취확인</a>
+                                     <a th:href="@{#}" class="review">상품평</a>
+                                     <a th:href="@{#}" class="refund">반품신청</a>
+                                     <a th:href="@{#}" class="exchange">교환신청</a>
+                                 </td>-->
 
-                        <th:block th:if="${pageResponseDTO.dtoList.size()==0}">
-                            <h3 style="text-align: center">내역이 없습니다.</h3>
-                        </th:block>
-                        <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
-                            <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
-                            <p class="page">
-
-                                <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="prev">이전</a>
-                                <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                                    <th:block th:if="${num == pageResponseDTO.pg}">
-                                        <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="on">[[${num}]]</a>
-                                    </th:block>
-
-                                    <th:block th:if="${num != pageResponseDTO.pg}">
-                                        <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" >[[${num}]]</a>
-                                    </th:block>
-                                </th:block>
-                                <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="next">다음</a>
-                            </p>
-                        </th:block>
-                            <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
-                                <p class="page">
-
-                                    <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek})}" class="prev">이전</a>
-                                    <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                                        <th:block th:if="${num == pageResponseDTO.pg}">
-                                            <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="on">[[${num}]]</a>
-                                        </th:block>
-
-                                        <th:block th:if="${num != pageResponseDTO.pg}">
-                                            <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" >[[${num}]]</a>
-                                        </th:block>
-                                    </th:block>
-                                    <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="next">다음</a>
-                                </p>
+                             </tr>
                             </th:block>
+                         </table>
+                            <input type="hidden" id="detailOrder">
+                        <script>
+                            window.onload=function (e){
+                                const detailOrders = document.querySelectorAll('.detailOrder');
+                                detailOrders.forEach(function (item){
+                                    item.onclick = function (e){
+                                        const orderNoForMe = document.getElementById('orderNoForMe');
+                                        const aecc = item.closest('li').querySelector('#aec');
+                                        orderNoForMe.value= aecc.value;
+                                        console.log(aecc.value)
+                                        document.getElementById('detailOrder').click();
+                                    }
+                                })
+
+                            }
+                        </script>
+                        <div id="popOrder" class="popup ">
+
+                            <div>
+                                <nav>
+                                    <h1>주문상세</h1>
+                                    <button class="btnClose">X</button>
+                                </nav>
+                                <section>
+                                    <article class="order">
+                                        <h3>주문정보</h3>
+                                        <input type="hidden" id="orderNoForMe" value="">
+                                        <table border="0">
+                                            <tr>
+                                                <th>날짜</th>
+                                                <th>상품정보</th>
+                                                <th>결제금액</th>
+                                                <th>상태</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <p class="date">2022-12-13</p>
+                                                    주문번호 : <span class="ordNo">1012211341</span>
+                                                </td>
+                                                <td>
+                                                    <img src="https://via.placeholder.com/80x80" alt="">
+                                                    <ul>
+                                                        <li class="company">상호명</li>
+                                                        <li class="prodName">상품명</li>
+                                                        <li>수량 : <span class="prodCount">1</span>개</li>
+                                                        <li class="prodPrice">34,000</li>
+                                                    </ul>
+                                                </td>
+                                                <td class="payment">
+                                                    <ol>
+                                                        <li class="price">
+                                                            <span>판매가</span>
+                                                            <span>34,000원</span>
+                                                        </li>
+                                                        <li class="discount">
+                                                            <span>할인</span>
+                                                            <span>- 3,000원</span>
+                                                        </li>
+                                                        <li class="total">
+                                                            <span>결제금액</span>
+                                                            <span>34,000원</span>
+                                                        </li>
+                                                    </ol>
+                                                </td>
+                                                <td class="status">배송완료</td>
+                                            </tr>
+                                        </table>
+                                    </article>
+                                    <article class="delivery">
+                                        <h3>배송정보</h3>
+                                        <table border="0">
+                                            <tr>
+                                                <th>주문자</th>
+                                                <td class="name">홍길동</td>
+                                            </tr>
+                                            <tr>
+                                                <th>연락처</th>
+                                                <td class="hp">010-1234-1001</td>
+                                            </tr>
+                                            <tr>
+                                                <th>배송지</th>
+                                                <td class="address">[210**] 부산광역시 부산진구 대연동 121 10층 1004호</td>
+                                            </tr>
+                                            <tr>
+                                                <th>배송요청사항</th>
+                                                <td class="request">없음</td>
+                                            </tr>
+                                        </table>
+                                    </article>
+                                </section>
+                            </div>
+                        </div>
+                        <style>
+                            .list-item {
+                                position: relative;
+                                top: 12px; /* 원하는 만큼 조절 */
+                            }
+                        </style>
+                         <th:block th:if="${pageResponseDTO.dtoList.size()==0}">
+                             <h3 style="text-align: center">내역이 없습니다.</h3>
+                         </th:block>
+                         <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
+                             <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
+                             <p class="page">
+
+                                 <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="prev">이전</a>
+                                 <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                     <th:block th:if="${num == pageResponseDTO.pg}">
+                                         <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="on">[[${num}]]</a>
+                                     </th:block>
+
+                                     <th:block th:if="${num != pageResponseDTO.pg}">
+                                         <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" >[[${num}]]</a>
+                                     </th:block>
+                                 </th:block>
+                                 <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="next">다음</a>
+                             </p>
+                         </th:block>
+                             <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
+                                 <p class="page">
+
+                                     <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek})}" class="prev">이전</a>
+                                     <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                         <th:block th:if="${num == pageResponseDTO.pg}">
+                                             <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="on">[[${num}]]</a>
+                                         </th:block>
+
+                                         <th:block th:if="${num != pageResponseDTO.pg}">
+                                             <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" >[[${num}]]</a>
+                                         </th:block>
+                                     </th:block>
+                                     <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="next">다음</a>
+                                 </p>
+                             </th:block>
 
 
-                        </th:block>
+                         </th:block>
 
-                    </article>                  
+                     </article>
 
-                    
 
-                </section>
 
-            </div>
-        </div>        
+                 </section>
 
-</html>
+             </div>
+         </div>
+
+ </html>

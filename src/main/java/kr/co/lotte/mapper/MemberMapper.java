@@ -11,4 +11,8 @@ public interface MemberMapper {
     public UserDTO findUser(String uid);
 
     public void updateUserForType(@Param("type") String type, @Param("value") String value, String uid);
+
+    public void updateUserAddr(UserDTO userDTO);
+
+    public void updateUserPassword(UserDTO userDTO);
 }

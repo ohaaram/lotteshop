@@ -25,4 +25,7 @@ public class Carts {
     @CreationTimestamp
     private LocalDateTime cartProdDate;
 
+    private int prodPrice;
+    private int prodDiscount;
+
 }

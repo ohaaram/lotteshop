@@ -5,6 +5,7 @@
 
 <main layout:fragment="content">
     <script>
+        window.onload = function (){
         //////////////////////////////////////////////////////////////////
         /////btnHome, Top
         //////////////////////////////////////////////////////////////////
@@ -25,28 +26,29 @@
         //////////////////////////////////////////////////////////////////
         ///// 더보기 및 간략히 보기
         //////////////////////////////////////////////////////////////////
-
-        $(document).ready(function () {
-            // 기본으로 보여질 항목의 개수 설정
-            var visibleItems = 3;
-
-            // 더보기 버튼 클릭 시 실행될 함수
-            $('#loadMore').click(function () {
-                // 추가 항목을 가져올 AJAX 요청
-                $.ajax({
-                    type: 'GET',
-                    url: '/cs/faq/loadMore', // 추가 데이터를 제공할 엔드포인트 URL
-                    success: function (data) {
-                        // 성공적으로 데이터를 받아왔을 때 실행할 코드
-                        // 받은 데이터를 처리하고 새로운 항목을 화면에 추가하는 등의 작업 수행
-                    },
-                    error: function () {
-                        // 오류 발생 시 실행할 코드
-                        alert('데이터를 불러오는 중 오류가 발생했습니다.');
+        const loadMoreAll = document.getElementsByClassName('loadMore');
+        Array.from(loadMoreAll).forEach(function (loadMore) {
+            loadMore.addEventListener('click', function (e){
+                e.preventDefault();
+                const button = e.target;
+                const ul = button.parentNode.parentNode; // ul태그
+                const faqListAll = ul.querySelectorAll('.faq-list'); // ul태그 안에 있는 모든 faqList
+                if (button.innerText === "더보기") {
+                    for (let i = 3; i < 10; i++) {
+                        faqListAll[i].style.display = "block";
+                        button.innerText = "간략히 보기";
                     }
-                });
-            });
-        });
+                }else {
+                    for (let i = 3; i < 10; i++) {
+                        faqListAll[i].style.display = "none";
+                        button.innerText = "더보기";
+                    }
+                }
+            })
+        })
+
+
+        }
 
 
     </script>
@@ -74,6 +76,7 @@
                     <h2>회원</h2>
                     <nav id="navbar-example2" class="navbar bg-body-tertiary px-3 mb-3">
                         <a class="navbar-brand" href="#">가장 자주 묻는 질문 입니다</a>
+                        <!--
                         <ul class="nav nav-pills">
                             <li class="nav-item">
                                 <a class="nav-link" href="#scrollspyHeading1">롯데오너스</a>
@@ -91,19 +94,20 @@
                                 <a class="nav-link" href="#scrollspyHeading5">회원탈퇴</a>
                             </li>
                         </ul>
+                        -->
                     </nav>
 
                     <div th:each="dtoList , index:${dtoLists}" th:with="cate2=${dtoList.get(0).getCate2()}">
                             <h3>[[${dtoLists[index.index][0].catename}]]</h3>
                         <ul>
-                            <li th:each="dto:${dtoList}">
-                                <a th:href="@{/cs/faq/view}"><span>Q.</span>[[${dto.title}]]</a>
+                            <li class="faq-list" th:each="dto : ${dtoList}">
+                                <a th:href="@{/cs/faq/view/{no}(no=${dto.no})}"><span>Q.</span>[[${dto.title}]]</a>
                             </li>
-                            <li class="more"><a href="#" id="loadMore">더보기</a></li>
+                            <li class="loadMore" style="display: block">
+                                <a style="text-align: center"  href="#">더보기</a>
+                            </li>
                         </ul>
-
                     </div>
-
                     <aside>
                         <a th:href="@{/cs}" id="btnHome">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-house-check" viewBox="0 0 16 16">
