@@ -1,8 +1,6 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kr.co.lotte.repository.ProductsRepository;
 import kr.co.lotte.dto.*;
@@ -20,11 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.PanelUI;
-
 import org.springframework.data.domain.Pageable;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -916,19 +911,14 @@ public class AdminService {
                .build();
     }
 
-    /*
+    //판매자 아이디를 이용해 판매자 정보 출력
+    public SellerDTO findSellerInfo(String uid){
 
-    public int getTotalCount(CsFaqPageRequestDTO pageRequestDTO){
-        Pageable pageable = pageRequestDTO.getPageable("status_id");
+        Optional<Seller> seller  = sellerRepository.findById(uid);
 
-        List<Tuple> seller_status = seller_statusRepository.seller_status();
+        SellerDTO sellerDTO = modelMapper.map(seller, SellerDTO.class);
 
-        int total = seller_status.size();
-
-        log.info("adminservice - gettotalCount " +total);
-
-        return total;
+        return sellerDTO;
     }
 
-     */
 }

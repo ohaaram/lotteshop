@@ -353,4 +353,20 @@ public class AdminController {
 
         return "/admin/seller/seller_status";
     }
+
+    //판매자 모달창에 띄울 정보들
+    @GetMapping("/admin/seller/{uid}")
+    public ResponseEntity<?> modal(@PathVariable("uid")String uid){
+
+
+        SellerDTO sellerDTO = adminService.findSellerInfo(uid);//판매자 정보
+
+        log.info("adminController - modal - sellerDTO : "+sellerDTO);
+
+        // Json 생성
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", sellerDTO);
+
+        return ResponseEntity.ok().body(resultMap);
+    }
 }
