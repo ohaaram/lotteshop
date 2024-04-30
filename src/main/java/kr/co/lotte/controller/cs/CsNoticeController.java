@@ -1,6 +1,8 @@
 package kr.co.lotte.controller.cs;
 
 import groovy.util.logging.Slf4j;
+import kr.co.lotte.dto.CsFaqPageRequestDTO;
+import kr.co.lotte.dto.CsFaqPageResponseDTO;
 import kr.co.lotte.dto.CsNoticeDTO;
 import kr.co.lotte.service.cs.CsNoticeService;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,11 @@ public class CsNoticeController {
 
     private final CsNoticeService csNoticeService;
 
-
     // admin notice 리스트 출력
     @GetMapping("/admin/cs/notice/list")
-    public String adminNoticeList(){
+    public String adminNoticeList(Model model, CsFaqPageRequestDTO requestDTO){
+        CsFaqPageResponseDTO pageResponseDTO = csNoticeService.searchNotices(requestDTO);
+        model.addAttribute("csNotice", pageResponseDTO);
 
         return "/admin/cs/notice/list";
     }
@@ -29,14 +32,12 @@ public class CsNoticeController {
 
         return "/cs/notice/list";
     }
-
     // admin notice 뷰 페이지
     @GetMapping("/admin/cs/notice/view")
     public String adminNoticeView(){
 
         return "/admin/cs/notice/view";
     }
-
     //admin 페이지 공지사항 작성
     @GetMapping("/admin/cs/notice/register")
     public String noticeWrite(){
@@ -49,5 +50,7 @@ public class CsNoticeController {
 
         return "redirect:/admin/cs/notice/write?code=100";
     }
+
+
 
 }

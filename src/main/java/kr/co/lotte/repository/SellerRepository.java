@@ -1,5 +1,6 @@
 package kr.co.lotte.repository;
 
+import com.querydsl.core.Tuple;
 import kr.co.lotte.entity.Categories;
 import kr.co.lotte.entity.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -31,6 +31,9 @@ public class OrdersPageRequestDTO {
     private String fifteen;
     private String dateBegin;
     private String dateEnd;
+    
+    @Builder.Default
+    private String state ="주문 대기";
 
     public Pageable getPageable(String sort){
         return PageRequest.of(this.pg - 1, this.size, Sort.by(sort).descending());

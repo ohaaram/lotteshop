@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
-<section id="admin-cs-faq" layout:fragment="content">
+<section id="admin-cs-" layout:fragment="content">
     <script>
         window.onload = function() {
             const all = document.getElementById('all');
@@ -18,29 +18,153 @@
 
             // 선택 삭제
             const selectDelete = document.getElementById('selectDelete');
-            selectDelete.onclick = async function(e){
+            selectDelete.onclick = async function (e) {
                 e.preventDefault();
 
                 var selectedNoList = [];
 
-                checkAll.forEach(function (item){
-                    if(item.checked){
+                checkAll.forEach(function (item) {
+                    if (item.checked) {
                         selectedNoList.push(parseInt(item.value));
                     }
                 });
 
-                if (selectedNoList.length === 0){
+                if (selectedNoList.length === 0) {
                     alert('선택된 상품이 없습니다.');
-                }else{
-                    if (confirm('삭제 하시겠습니까!?')){
-                        const jsonData = { list: selectedNoList}
-                        const result = await fetchGet('/lotteshop/admin/cs/faq/delete', jsonData);
+                } else {
+                    if (confirm('삭제 하시겠습니까!?')) {
+                        const jsonData = {list: selectedNoList}
+                        const result = await fetchGet('/lotteshop/admin/cs//delete', jsonData);
                         console.log(result.result);
                     }
                     location.reload();
                 }
             };
-        };
+        }
+            // 카테고리별 조회
+            function redirectToCate1Cate2(){
+                const Cate1 = document.querySelector("select[name='Cate1']").value;
+                const Cate2 = document.querySelector("select[name='Cate2']").value;
+
+                console.log("Cate1 : " + Cate1);
+                console.log("Cate2 : " + Cate2);
+
+
+
+            }
+
+            // 타입별 카테조회
+            function firstOption(){
+                const cate1Option = event.target;
+                const cate1Value = cate1Option.value; // 내가 함수를 호출한 현재 태그의 value 값
+                const faqCate2 = document.getElementsByName('faqCate2')[0];
+
+                console.log(cate1Value);
+
+                if(cate1Value == 'user'){
+                    //원래 있던 option 삭제
+                    const faqCate2Child = faqCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="lotteOners">롯데오너스</option>
+                                         <option value="info">정보확인/변경</option>
+                                         <option value="reg">회원가입</option>
+                                         <option value="grade">회원등급</option>
+                                         <option value="del">회원탈퇴</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+                }else if (cate1Value == 'event'){
+                    const faqCate2Child = faqCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="lpoint">L.POINT</option>
+                                         <option value="lstamp">L.STAMP</option>
+                                         <option value="review">리뷰/체험단</option>
+                                         <option value="onmile">온마일리지</option>
+                                         <option value="event">이벤트/쿠폰</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+                }else if (cate1Value == 'order'){
+                    const faqCate2Child = faqCate2.childNodes;
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="lpay">L.PAY</option>
+                                         <option value="etc">기타 결제수단</option>
+                                         <option value="mutong">무통장입금</option>
+                                         <option value="ord">주문/결제방법</option>
+                                         <option value="card">신용카드 자동결제</option>
+                                         <option value="ordlist">주문내역확인/변경</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+                }else if (cate1Value == 'delivery'){
+                    const faqCate2Child = faqCate2.childNodes;
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="buy">구매확정/미수령신고</option>
+                                         <option value="delp">배송비</option>
+                                         <option value="delm">배송일정/방법</option>
+                                         <option value="delinfo">배송정보변경</option>
+                                         <option value="gift">선물포장</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+                }else if (cate1Value == 'cancel'){
+                    const faqCate2Child = faqCate2.childNodes;
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="ordcancel">주문취소</option>
+                                         <option value="refund">환불방법/일정</option>
+                                         <option value="as">AS접수/일정</option>
+                                         <option value="asp">교환/반품 배송비</option>
+                                         <option value="change">교환접수/일정</option>
+                                         <option value="returns">반품접수/일정</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+                }else if (cate1Value == 'receipt'){
+                    const faqCate2Child = faqCate2.childNodes;
+                    Array.from(faqCate2Child).forEach(function (child){
+                        child.remove();
+                    })
+
+                    //새로운옵션삽입
+                    const cate2Option = `<option>유형1</option>
+                                         <option value="etcord">기타제증빙</option>
+                                         <option value="cashreceipt">현금영수증</option>
+                                         <option value="taxreceipt">세금계산서</option>`
+
+                    faqCate2.insertAdjacentHTML('beforeend', cate2Option);
+
+                }
+
+                const search = document.getElementById('search');
+                search.onclick=function (e){
+                    e.preventDefault();
+                    const cate1 =document.getElementById('faqCate1').value;
+                    const cate2 =document.getElementById('faqCate2').value;
+
+                    window.location.href='/lotteshop/admin/cs/faq/list?cate1='+cate1+'&cate2='+cate2;
+                }
+             }
+
 
     </script>
     <nav>
@@ -53,19 +177,29 @@
     <section>
         <div>
             <form id="deleteSelectedForm" th:action="@{/admin/cs/faq/delete/selectDelete}" method="post">
-
                 <input type="hidden" id="selectedNoList" name="selectedNoList" />
+                <!-- 카테고리별 조회 -->
+                <div>
+                    <select name="faqCate1"  id="faqCate1" onchange="firstOption()">
+                        <option>유형1</option>
+                        <option value="user">회원</option>
+                        <option value="event">이벤트/쿠폰</option>
+                        <option value="order">주문/결제</option>
+                        <option value="delivery">배송</option>
+                        <option value="cancel">취소/반품/교환</option>
+                        <option value="receipt">거래증빙서류</option>
+                    </select>
+                    <select name="faqCate2" id="faqCate2" onchange="redirectToCate1Cate2()">
+                        <option>유형2</option>
+                        <option value="info">롯데오너스</option>
+                        <option value="info">정보확인/변경</option>
+                        <option value="reg">회원가입</option>
+                        <option value="grade">회원등급</option>
+                        <option value="del">회원탈퇴</option>
+                    </select>
+                    <input type="button" id="search" value="검색"/>
+                </div>
 
-                <select name="search">
-                    <option value="search1">전체</option>
-                    <option value="search2">제목</option>
-                    <option value="search3">내용</option>
-                    <option value="search3">유형</option>
-                    <option value="search4">제목+내용</option>
-                </select>
-                <input type="text" name="search">
-
-                <span ></span>
                 <table border="0">
                     <tr>
                         <th><input type="checkbox" name="all" id="all"></th>
@@ -76,14 +210,61 @@
                         <th>내용</th>
                         <th>관리</th>
                     </tr>
-                    <tr th:each="faq: ${csFaqs}">
+                    <tr th:each="faq, index: ${csFaqs.dtoList}">
+                        <td class="faq-list-checkbox">
+                            <input type="checkbox" name="selectedNoList" class="check" th:value="${faq.no}" />
+                        </td>
 
-                        <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check" th:value="${faq.no}" /></td>
+                        <td th:if="${faq.cate1 == 'user'}" style="white-space: nowrap;">[회원]</td>
+                        <td th:if="${faq.cate1 == 'event'}" style="white-space: nowrap;">[이벤트/쿠폰]</td>
+                        <td th:if="${faq.cate1 == 'order'}" style="white-space: nowrap;">[주문/결제]</td>
+                        <td th:if="${faq.cate1 == 'delivery'}" style="white-space: nowrap;">[배송]</td>
+                        <td th:if="${faq.cate1 == 'cancel'}" style="white-space: nowrap;">[취소/반품/교환]</td>
+                        <td th:if="${faq.cate1 == 'receipt'}" style="white-space: nowrap;">[거래증빙서류]</td>
 
-                        <td>[[${faq.no}]]</td>
-                        <td>[[${faq.cate1}]]</td>
-                        <td>[[${faq.cate2}]]</td>
-                        <td>[[${faq.title}]]</td>
+                        <td th:if="${faq.cate2 == 'lotteOners'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'info'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'reg'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'grade'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'del'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td th:if="${faq.cate2 == 'lpoint'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'lstamp'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'review'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'onmile'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'event'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td th:if="${faq.cate2 == 'lpay'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'etc'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'mutong'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'ord'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'ordlist'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'card'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td th:if="${faq.cate2 == 'buy'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'delp'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'delm'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'delinfo'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'gift'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td th:if="${faq.cate2 == 'ordcancel'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'refund'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'as'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'asp'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'change'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'returns'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td th:if="${faq.cate2 == 'etcord'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'cashreceipt'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+                        <td th:if="${faq.cate2 == 'taxreceipt'}" style="white-space: nowrap;">[[${faq.catename}]]</td>
+
+                        <td>
+                            <span>
+                                <a th:href="@{/admin/cs/faq/view(no=${faq.no})}">
+                            [[${faq.title}]]
+                                </a>
+                            </span>
+                        </td>
                         <td th:text="${#strings.length(faq.content) > 20 ? #strings.substring(faq.content, 0, 20) + '...' : faq.content} "></td>
                         <td>
                             <a th:href="@{/admin/cs/faq/{no}(no=${faq.no})}">[수정]</a>
@@ -99,20 +280,23 @@
                 <a class="cs-write" style="float: right" th:href="@{/admin/cs/faq/register}">질문 작성</a>
             </div>
             <div class="paging">
-                &laquo;
-                <span class="prev" th:if="${csFaqs.hasPrevious()}">
-                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.previousPageable().pageNumber})}">이전</a>
-                    </span>
-                <span class="num" th:each="page : ${#numbers.sequence(csFaqs.number - 4, csFaqs.number + 5)}" th:if="${page >= 0 && page < csFaqs.totalPages}">
-        <a class="#" th:href="@{${pageURL}(page=${page})}" th:text="${page + 1}" th:classappend="${page eq csFaqs.number ? 'on' : ''}"></a>
-    </span>
-                <span class="next" th:if="${csFaqs.hasNext()}">
-                        <a class="#" th:href="@{${pageURL}(page=${csFaqs.nextPageable().pageNumber})}">다음</a>
-                    </span>
-                &raquo;
-            </div>
-            <div>
-                <p>현재 페이지: [[${csFaqs.number + 1}]] / 전체 페이지 수 : [[${csFaqs.totalPages}]]</p>
+                        <span class="prev" th:if="${csFaqs.prev}">
+                            <a th:href="@{/admin/cs/faq/list(pg=${csFaqs.start -1}, cate1=${csFaqs.getCate1()} , cate2=${csFaqs.getCate2()})}"><&nbsp;이전</a>
+                        </span>
+                <span class="num" th:each="num:${#numbers.sequence(csFaqs.start, csFaqs.end)}">
+                            <th:block th:if="${num == csFaqs.pg}">
+                                 <a th:href="@{/admin/cs/faq/list( pg=${num} , cate1=${csFaqs.getCate1()} , cate2=${csFaqs.getCate2()})}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != csFaqs.pg}">
+
+                                 <a th:href="@{/admin/cs/faq/list( pg=${num} , cate1=${csFaqs.getCate1()} , cate2=${csFaqs.getCate2()})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                <span class="next" th:if="${csFaqs.next}">
+                            <a th:href="@{/admin/cs/faq/list( pg=${csFaqs.end+1} , cate1=${csFaqs.getCate1()} , cate2=${csFaqs.getCate2()})}">다음&nbsp;></a>
+                        </span>
             </div>
         </div>
     </section>

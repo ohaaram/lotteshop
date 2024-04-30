@@ -2,6 +2,8 @@ package kr.co.lotte.controller.cs;
 
 import groovy.util.logging.Slf4j;
 import kr.co.lotte.dto.CsFaqDTO;
+import kr.co.lotte.dto.CsFaqPageRequestDTO;
+import kr.co.lotte.dto.CsFaqPageResponseDTO;
 import kr.co.lotte.entity.CsFaq;
 import kr.co.lotte.service.cs.CsFaqService;
 import lombok.RequiredArgsConstructor;
@@ -10,13 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,17 +31,26 @@ public class CsFaqController {
         return "/cs/index";
     }
 
-    // admin faq 리스트 출력
+    // admin.faq.list 출력
     @GetMapping("/admin/cs/faq/list")
-    public String adminFaqList(Model model,
-                               @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        Page<CsFaq> csFaqs = (Page<CsFaq>) csFaqService.getAdminFaqArticles(pageable);
-        model.addAttribute("csFaqs", csFaqs);
+    public String adminFaqList(Model model, CsFaqPageRequestDTO requestDTO){
+        CsFaqPageResponseDTO pageResponseDTO = csFaqService.getFaqsCate1and2(requestDTO);
+        model.addAttribute("csFaqs", pageResponseDTO);
 
         return "/admin/cs/faq/list";
     }
+
+    // admin.faq.list 특정 게시글 출력
+    /*
+    @GetMapping("/admin/cs/faq/list")
+    @ResponseBody
+    public List<CsFaq> getFaqsCate1and2(@RequestParam("cate1")String cate1,
+                                        @RequestParam("cate2")String cate2){
+        log.info("cate1 나와라");
+        log.info("cate2 나와라");
+        return csFaqService.getFaqsCate1and2(cate1, cate2);
+    }
+     */
 
     // admin.cs.faq 수정 페이지 출력
     @GetMapping("/admin/cs/faq/{no}")
@@ -86,6 +93,7 @@ public class CsFaqController {
     // admin.cs.faq 글 작성
     @PostMapping("/admin/cs/faq/register")
     public String adminFaqWrite(CsFaqDTO csFaqDTO){
+        log.info(csFaqDTO.toString()+"아아아아아");
         csFaqService.adminFaqWrite(csFaqDTO);
         return "redirect:/admin/cs/faq/list";
     }

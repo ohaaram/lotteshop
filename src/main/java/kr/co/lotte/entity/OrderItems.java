@@ -2,9 +2,11 @@ package kr.co.lotte.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JoinFormula;
 
 import javax.naming.Name;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,4 +27,6 @@ public class OrderItems {
     private int itemCount;
 
     private String orderState;
+    @CreationTimestamp
+    private Date orderDate;
 }

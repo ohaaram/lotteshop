@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>롯데ON::4조 관리자 페이지</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://kit.fontawesome.com/20962f3e4b.js" crossorigin="anonymous"></script>
@@ -50,50 +51,46 @@
         <aside>
             <!-- Global Navigation Bar -->
             <ul id="gnb">
-                <li>
+                <li th:if="${#authentication.principal.user.role == 'ADMIN'}">
                     <a href="#"><i class="fa fa-cogs" aria-hidden="true"></i>환경설정</a>
                     <ol>
                         <li><a th:href="@{/admin/config/info}">기본환경설정</a></li>
                         <li><a th:href="@{/admin/config/banner}">배너관리</a></li>
                     </ol>
                 </li>
-                <li>
+                <li th:if="${#authentication.principal.user.role == 'ADMIN'}">
                     <a href="#"><i class="fas fa-store" aria-hidden="true"></i>상점관리</a>
                     <ol>
-                        <li><a href="#">판매자현황</a></li>
+                        <li><a th:href="@{/admin/seller/seller_status}">판매자현황</a></li>
                     </ol>
                 </li>
-                <li>
+                <li th:if="${#authentication.principal.user.role == 'ADMIN'}">
                     <a href="#"><i class="fa fa-users" aria-hidden="true"></i>회원관리</a>
                     <ol>
                         <li><a href="#">회원현황</a></li>
                         <li><a href="#">포인트관리</a></li>
-                        <li><a href="#">비회원관리</a></li>
-                        <li><a href="#">접속자집계</a></li>
                     </ol>
                 </li>
                 <li>
                     <a href="#"><i class="fas fa-box-open" aria-hidden="true"></i>상품관리</a>
                     <ol>
-                        <li><a th:href="@{/admin/product/list}">상품현황</a></li>
-                        <li><a th:href="@{/admin/product/register}">상품등록</a></li>
+                        <li><a th:href="@{/admin/product/list}">상품현황</a></li> <!--manager, admin 다르게 -->
+                        <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/product/register}">상품등록</a></li>
                     </ol>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-credit-card" aria-hidden="true"></i>주문관리</a>
                     <ol>
-                        <li><a href="#">주문현황</a></li>
+                        <li><a th:href="@{/admin/orderList}">주문현황</a></li>
                         <li><a href="#">매출현황</a></li>
-                        <li><a href="#">결제관리</a></li>
-                        <li><a href="#">배송관리</a></li>
                     </ol>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>고객센터</a>
                     <ol>
-                        <li><a th:href="@{/admin/cs/notice/list}">공지사항 관리</a></li>
-                        <li><a th:href="@{/admin/cs/qna/list}">QNA 관리</a></li>
-                        <li><a th:href="@{/admin/cs/faq/list}">FAQ 관리</a></li>
+                        <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/cs/notice/list}">공지사항 관리</a></li>
+                        <li><a th:href="@{/admin/cs/qna/list}">QNA 관리</a></li>  <!--manager, admin 다르게 -->
+                        <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/cs/faq/list}">FAQ 관리</a></li>
                     </ol>
                 </li>
             </ul>
@@ -108,87 +105,6 @@
         </div>
     </footer>
 </div>
-<div id="bannerRegister" class="popup">
-    <div>
-        <nav>
-            <h1>배너등록</h1>
-            <button class="btnClose">X</button>
-        </nav>
-        <section>
-            <article>
-                <h3>배너 정보입력</h3>
-                <form th:action="@{/banner/register}" method="post" enctype="multipart/form-data">
-                    <table border="0">
-                        <tr>
-                            <td>배너이름</td>
-                            <td>
-                                <p>배너명을 입력하세요.</p>
-                                <input type="text" name="name" id="name" placeholder="배너명 입력"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>배너파일</td>
-                            <td>
-                                <p>배너 이미지 파일을 추가하세요.</p>
-                                <input type="file" name="multImage1" placeholder="배너 이미지 파일 선택"/>
-                            </td>
-                        </tr>
-                        <tr>
-                        <tr>
-                            <td>배경색</td>
-                            <td>
-                                <p>메인 상단 배너에 적용되는 배너 배경색입니다. ex) #ffff00</p>
-                                <input type="text" name="color" id="color" placeholder="배너 배경색 입력"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>배너링크</td>
-                            <td>
-                                <p>배너를 클릭했을 떄 이동할 페이지 링크주소를 입력하세요.</p>
-                                <input type="text" name="link" id="link" placeholder="링크주소 입력"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>배너위치</td>
-                            <td>
-                                <p>배너가 노출되는 위치를 선택하십시요.</p>
-                                <select name="position">
-                                    <option value="0">선택</option>
-                                    <option value="MAIN1">메인-상단</option>
-                                    <option value="MAIN2">메인-슬라이더</option>
-                                    <option value="PRODUCT1">상품-상세보기</option>
-                                    <option value="MEMBER1">회원-로그인</option>
-                                    <option value="MY1">마이페이지</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>배너 노출날짜</td>
-                            <td>
-                                <p>배너가 노출되는 기간을 선택하십시요.</p>
-                                <input type="date" name="d_begin" id="d_begin"/>
-                                <span>~</span>
-                                <input type="date" name="d_end" id="d_end"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>배너 노출시간</td>
-                            <td>
-                                <p>배너가 노출되는 시간을 선택하십시요.</p>
-                                <input type="time" name="t_begin" id="t_begin"/>
-                                <span>~</span>
-                                <input type="time" name="t_end" id="t_end"/>
-                            </td>
-                        </tr>
-                    </table>
 
-                    <div>
-                        <input type="submit" class="btnPositive" value="등록하기"/>
-                    </div>
-                </form>
-            </article>
-        </section>
-    </div>
-</div>
 </body>
 </html>

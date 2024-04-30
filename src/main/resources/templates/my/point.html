@@ -115,7 +115,6 @@
                                 <th>주문번호</th>
                                 <th>적립금액</th>
                                 <th>비고</th>
-                                <th>유효기간</th>
                             </tr>
                             <tr th:each="point, index:${pageResponseDTO.dtoList}">
                                 <td >[[${#temporals.format(point.pointDate , 'yyyy-MM-dd')}]]</td>
@@ -123,7 +122,6 @@
                                 <td>[[${point.orderNo}]]</td>
                                 <td>[[${point.point}]]</td>
                                 <td>[[${point.pointDesc}]]</td>
-                                <td >[[${point.endDateTime}]]</td>
                             </tr>
 
                         </table>

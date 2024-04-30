@@ -15,6 +15,7 @@ import java.util.List;
 public interface ProductsRepositoryCustom  {
 
     public Page<Tuple> searchAllProductsForAdmin(ProductsPageRequestDTO pageRequestDTO, Pageable pageable);
+    public Page<Tuple> searchAllProductsForAdmin(ProductsPageRequestDTO pageRequestDTO, Pageable pageable, String uid);
     // market/view 페이지 product 조회
     public List<Tuple> selectProduct(int prodno);
 

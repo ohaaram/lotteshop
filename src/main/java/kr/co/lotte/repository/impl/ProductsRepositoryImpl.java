@@ -47,6 +47,21 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+    @Override
+    public Page<Tuple> searchAllProductsForAdmin(ProductsPageRequestDTO pageRequestDTO, Pageable pageable, String uid) {
+        QueryResults<com.querydsl.core.Tuple> results = jpaQueryFactory.select(qProducts, subProducts)
+                .from(subProducts)
+                .join(qProducts)
+                .on(qProducts.prodNo.eq(subProducts.prodNo))
+                .where(qProducts.sellerUid.eq(uid))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<Tuple> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
 
 
     //(product/view) 출력
@@ -120,4 +135,6 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+
+
 }

@@ -26,5 +26,7 @@ public class Blog {
     private String cate;
     @CreationTimestamp
     private LocalDateTime date;
+    private String images;
+    private String oneLine;
 
 }

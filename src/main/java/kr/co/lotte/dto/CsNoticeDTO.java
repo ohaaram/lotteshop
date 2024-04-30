@@ -17,7 +17,9 @@ public class CsNoticeDTO {
 
     private int no;
     private int hit;
-    private String cate;
+    private String cate1;
+    private String cate2;
+    private String catename;
     private String title;
     private String writer;
     private String content;
@@ -34,7 +36,9 @@ public class CsNoticeDTO {
         CsNotice csNotice = new CsNotice();
         csNotice.setNo(no);
         csNotice.setHit(hit);
-        csNotice.setCate(cate);
+        csNotice.setCate1(cate1);
+        csNotice.setCate2(cate2);
+        csNotice.setCatename(catename);
         csNotice.setTitle(title);
         csNotice.setWriter(writer);
         csNotice.setContent(content);

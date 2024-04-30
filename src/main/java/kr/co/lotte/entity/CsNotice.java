@@ -26,7 +26,9 @@ public class CsNotice {
     @Builder.Default
     private int hit = 0;
 
-    private String cate;
+    private String cate1;
+    private String cate2;
+    private String catename;
     private String title;
     private String writer;
     private String content;
@@ -46,7 +48,9 @@ public class CsNotice {
         return CsNoticeDTO.builder()
                 .no(this.no)
                 .hit(this.hit)
-                .cate(this.cate)
+                .cate1(this.cate1)
+                .cate2(this.cate2)
+                .catename(this.catename)
                 .title(this.title)
                 .writer(this.writer)
                 .content(this.content)

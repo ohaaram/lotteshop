@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+            <section id="admin-index" layout:fragment="content">
+                <nav>
+                    <h3>스토어 메인</h3>
+                    <p>
+                        HOME > <strong>메인</strong>
+                    </p>
+                </nav>
+
+                <h4>쇼핑몰 운영현황</h4>
+                <article>
+                    <table>	
+                        <tr>
+                            <td>
+                                <strong>주문건수(건)</strong>
+                                <span>[[${count}]]</span>
+                            </td>
+                            <td>
+                                <strong>주문금액(원)</strong>
+                                <span>[[${total}]]</span>
+                            </td>
+                            <td>
+                                <strong>회원가입(명)</strong>
+                                <span>[[${user}]]</span>
+                            </td>
+                            <td>
+                                <strong>쇼핑몰 일일 방문(명)</strong>
+                                <span>[[${visitor}]]</span>
+                            </td>
+                            <td>
+                                <strong>신규게시물(건)</strong>
+                                <span>100</span>
+                            </td>
+                        </tr>
+                    </table>
+                </article>
+
+                <h4>주문 업무현황</h4>
+                <article>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>주문대기(건)</strong>
+                                <span>[[${ready}]]</span>
+                            </td>
+                            <td>
+                                <strong>배송준비(건)</strong>
+                                <span>[[${delivery}]]</span>
+                            </td>
+                            <td>
+                                <strong>취소요청(건)</strong>
+                                <span>[[${delete}]]</span>
+                            </td>
+                            <td>
+                                <strong>교환요청(건)</strong>
+                                <span>[[${change}]]</span>
+                            </td>
+                            <td>
+                                <strong>반품요청(건)</strong>
+                                <span>[[${allDelete}]]</span>
+                            </td>
+                        </tr>
+                    </table>
+                </article>
+
+                <div>
+
+
+                    <div>
+                        <h4>고객문의</h4>
+                        <article>
+                            <p>
+                                <span>[문의] 상품이 잘못 왔습니다.</span>
+                                <span>20-07-08 12:23</span>
+                            </p>
+                            <p>
+                                <span>[문의] 안녕하세요. 주문자 입니다. 구매한 상품에 문제가 있어서 이렇게 문의글을 남깁니다.</span>
+                                <span>20-07-08 12:23</span>
+                            </p>
+                            <p>
+                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
+                                <span>20-07-08 12:23</span>
+                            </p>
+                            <p>
+                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
+                                <span>20-07-08 12:23</span>
+                            </p>
+                            <p>
+                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
+                                <span>20-07-08 12:23</span>
+                            </p>                                                                
+                        </article>
+                    </div>
+                </div>
+            </section>
+</html>

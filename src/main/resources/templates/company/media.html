@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/company/layouts/companyLayout.html}">
+<div class="content" layout:fragment="content">
+
+    <style>
+        #main_total_section {
+            width: 100%;
+            height: auto;
+        }
+
+        .container > h2 {
+            font-size: 30px;
+        }
+
+        .container > p {
+            font-size: 20px;
+            color: grey;
+        }
+        .space_feel{
+            padding: 20px 20px;
+        }
+        .container{
+            text-align: center;
+        }
+
+    </style>
+
+    <main>
+        <section id="main_total_section">
+            <div class="container">
+                <h2>미디어 세상 속 롯데ON을 소개합니다!</h2>
+                <p>더 다양한 LotteON 영상을 소개합니다.</p>
+                <div class="space_feel"></div>
+
+                <div th:each="medias : ${media}">
+
+                    <iframe width="300" height="300" th:src="@{${medias.url}}" frameborder="0" allowfullscreen></iframe>
+                    <p th:text="${medias.title}">#영상제목1</p>
+                    <p th:text="${medias.subtitle}"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

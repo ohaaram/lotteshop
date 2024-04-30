@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+            xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+            layout:decorate="~{/admin/layout/adminLayout.html}">
+            <section id="admin-order" layout:fragment="content">
+                <style>
+                    /* 테이블 스타일 */
+                    table {
+                        width: 80%;
+                        border-collapse: collapse;
+                    }
+
+                    table th, table td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: center;
+                    }
+
+                    table th {
+                        background-color: #f2f2f2;
+                    }
+
+                    /* 폼 스타일 */
+                    form {
+                        margin-bottom: 20px;
+                    }
+
+                    form input[type="date"], form button {
+                        padding: 10px;
+                        border: none;
+                        background-color: #4CAF50;
+                        color: white;
+                        cursor: pointer;
+                    }
+
+                    form input[type="date"]:focus, form button:focus {
+                        outline: none;
+                    }
+
+                    form input[type="date"] {
+                        width: 150px;
+                    }
+
+                    form span {
+                        margin: 0 10px;
+                    }
+
+                    form button:hover {
+                        background-color: #45a049;
+                    }
+
+                    /* 주문 정보 스타일 */
+                    td ul {
+                        list-style-type: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    td ul li {
+                        margin-bottom: 5px;
+                    }
+
+                    td ul li.prodName {
+                        font-weight: bold;
+                    }
+
+
+                    td ul li span:hover {
+                        text-decoration: underline;
+                    }
+
+                    /* 주문 상태 스타일 */
+                    td.status {
+                        color: green;
+                        font-weight: bold;
+                    }
+
+                    /* 확인 스타일 */
+                    td.confirm {
+                        text-align: center;
+                    }
+
+
+                    /* 주문 상태 필터링 버튼 스타일 */
+                    #statusFilters {
+                        margin-bottom: 20px;
+                    }
+
+                    #statusFilters button {
+                        padding: 5px 10px;
+                        margin-right: 10px;
+                        background-color: #4CAF50;
+                        border: none;
+                        color: white;
+                        cursor: pointer;
+                    }
+
+                    #statusFilters button:hover {
+                        background-color: #45a049;
+                    }
+
+                    /* 주문 정보 테이블 스타일 */
+                    #orderTable {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    #orderTable th, #orderTable td {
+                        border: 1px solid #ddd;
+                        padding: 8px;
+                        text-align: center;
+                    }
+
+                    #orderTable th {
+                        background-color: #f2f2f2;
+                    }
+
+                    .orderRow:hover {
+                        background-color: #f2f2f2;
+                    }
+
+                </style>
+                <script>
+                    window.onload = function (e) {
+                        //체크박스
+                        const all = document.getElementById('all');
+
+                        const checkboxs = document.querySelectorAll('#checkbox');
+                        all.onclick=function (){
+                            if(all.checked){
+                                checkboxs.forEach(function (item){
+                                   if(!item.checked){
+                                       item.click();
+                                   }
+                                });
+                            }else{
+                                checkboxs.forEach(function (item){
+                                    if(item.checked){
+                                        item.click();
+                                    }
+                                });
+                            }
+
+                        }
+                        const checkConfirm = document.getElementById('checkConfirm');
+                        checkConfirm.onclick=function (e){
+                            e.preventDefault();
+                            let list = [];
+                            if(confirm('확인하시겠습니까?')){
+
+                                checkboxs.forEach(function (item){
+                                    if(item.checked){
+                                        list.push(item.getAttribute('data-order'));
+                                    }
+                                })
+                            }
+                            console.log(list);
+                        }
+
+
+                        // 현재 날짜 가져오기
+                        var currentDate = new Date().toISOString().split('T')[0];
+
+                        // 현재 날짜의 1년 전 날짜 계산
+                        var oneYearAgo = new Date();
+                        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                        var oneYearAgoDate = oneYearAgo.toISOString().split('T')[0];
+
+                        // 최대 날짜 설정
+                        document.getElementsByName("dateBegin")[0].setAttribute('max', currentDate);
+                        document.getElementsByName("dateBegin")[0].setAttribute('min', oneYearAgoDate);
+                        document.getElementsByName("dateEnd")[0].setAttribute('max', currentDate);
+
+
+                        // 입력 필드의 날짜 변경 이벤트 리스너 등록
+                        document.getElementsByName("dateBegin")[0].addEventListener('change', function () {
+                            var startDate = new Date(this.value);
+                            var endDate = new Date(document.getElementsByName("dateEnd")[0].value);
+
+                            // 시작일과 종료일을 비교하여 종료일이 시작일보다 이전이면 종료일을 시작일과 동일하게 설정
+                            if (startDate > endDate) {
+                                document.getElementsByName("dateEnd")[0].value = this.value;
+                            }
+                        });
+
+                        document.getElementsByName("dateEnd")[0].addEventListener('change', function () {
+                            var startDate = new Date(document.getElementsByName("dateBegin")[0].value);
+                            var endDate = new Date(this.value);
+
+                            // 종료일과 시작일을 비교하여 시작일이 종료일보다 이후면 시작일을 종료일과 동일하게 설정
+                            if (endDate < startDate) {
+                                document.getElementsByName("dateBegin")[0].value = this.value;
+                            }
+                        });
+                    }
+                    function openPopup(element) {
+                        var orderNo = element.getAttribute("data-fno");
+                        console.log(orderNo);
+                        window.open("/lotteshop/admin/orderDetail?orderNo="+orderNo, "_blank", "width=600,height=400");
+
+                    }
+                </script>
+                <nav>
+                    <h3>기본환경정보</h3>
+                    <p>
+                        HOME > 주문관리 > <strong>주문현황</strong>
+                    </p>
+                </nav>
+                <!-- 상품등록 컨텐츠 시작 -->
+                <form th:action="@{/admin/orderList}">
+                    <input type="date" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
+                    <span>~</span>
+                    <input type="date" name="dateEnd" max="[CURRENT_DATE]" required>
+                    <button class="btnConfirm" type="submit">조회하기</button>
+                </form>
+                <div id="statusFilters">
+                    <a th:href="@{/admin/orderList(state='주문 대기')}" style="border: 1px solid gray" >주문 대기</a>
+                    <a th:href="@{/admin/orderList(state='배송 준비')}" style="border: 1px solid gray">배송 준비</a>
+                    <a th:href="@{/admin/orderList(state='배송중')}" style="border: 1px solid gray">배송중</a>
+                    <a th:href="@{/admin/orderList(state='취소 요청')}" style="border: 1px solid gray">취소 요청</a>
+                    <a  th:href="@{/admin/orderList(state='교환 요청')}" style="border: 1px solid gray">교환 요청</a>
+                    <a th:href="@{/admin/orderList(state='반품 요청')}" style="border: 1px solid gray" >반품 요청</a>
+                    <a th:href="@{/admin/orderList(state='구매 확정')}" style="border: 1px solid gray" >구매 확정</a>
+                    <a th:href="@{/admin/orderList(state='모든')}" style="border: 1px solid gray">모든 주문 상품</a>
+                </div>
+                <table border="0">
+
+                    <tr>
+                        <th>날짜</th>
+                        <th>주문정보</th>
+                          <th>상태</th>
+                        <th> <input type="checkbox" id="all"/> <button id="checkConfirm">확인</button></th>
+                    </tr>
+                    <th:block  th:each="order , index :${pageResponseDTO.dtoList2}">
+                        <tr>
+                            <td class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</td>
+                            <td>
+                                <!-- <a th:href="@{/product/view(prodno=${products[index.index][0].prodNo})}" class="thumb"><img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>-->
+                                <ul>
+                                    <li class="prodName">[[${products[index.index].prodName}]]</li>
+                                    <li> 주문번호 : [[${order.orderNo}]]</li>
+                                    <li> 수량 : [[${order.itemCount}]]</li>
+                                    <li> 남은재고 : [[${products[index.index].prodStock}]]</li>
+                                    <li class="list-item" >
+                                        <input type="hidden" id="aec" th:value="${index.index}">
+                                        <span onclick="openPopup(this)" th:data-fno="${order.orderNo}" class="detailOrder" > 주문자 상세 보기</span> </li>
+                                </ul>
+                            </td>
+                              <td class="status">[[${order.orderState}]]</td>
+                             <td class="confirm">
+                                 <input  type="checkbox" id="checkbox" class="receive" th:data-order="${order.orderNo}">
+                                 <a th:href="@{/admin/checkOrder(orderNo=${order.orderNo})}">확인</a></input>
+                             </td>
+
+                        </tr>
+                    </th:block>
+                </table>
+
+                <th:block th:if="${pageResponseDTO.dtoList2.size()==0}">
+                    <h3 style="text-align: center">내역이 없습니다.</h3>
+                </th:block>
+                <th:block th:if="${pageResponseDTO.dtoList2.size()>=1}">
+                <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
+                    <div class="paging">
+                        <span class="prev" th:if="${pageResponseDTO.prev}">
+                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}))}"><&nbsp;이전</a>
+                        </span>
+                        <span class="num" th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                            <th:block th:if="${num == pageResponseDTO.pg}">
+                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != pageResponseDTO.pg}">
+
+                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                        <span class="next" th:if="${pageResponseDTO.next}">
+                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}))}">다음&nbsp;></a>
+                        </span>
+                    </div>
+
+                </th:block>
+
+                <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
+
+                    <div class="paging">
+                        <span class="prev" th:if="${pageResponseDTO.prev}">
+                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1})}"><&nbsp;이전</a>
+                        </span>
+                        <span class="num" th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                            <th:block th:if="${num == pageResponseDTO.pg}">
+                                 <a th:href="@{/admin/orderList( pg=${num})}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != pageResponseDTO.pg}">
+
+                                 <a th:href="@{/admin/orderList( pg=${num})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                        <span class="next" th:if="${pageResponseDTO.next}">
+                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1})}">다음&nbsp;></a>
+                        </span>
+                    </div>
+
+                </th:block>
+
+                </th:block>
+                <div id="bannerRegister" class="popup ">
+
+                </div>
+
+
+                <p class="ico alert">
+                    <strong>Warning!</strong>
+                    전자상거래 등에서의 상품 등의 정보제공에 관한 고시에 따라 총 35개 상품군에 대해 상품 특성 등을 양식에 따라 입력할 수 있습니다.
+                </p>
+                <!-- 상품등록 컨텐츠 끝 -->
+
+            </section>
+</html>
+
+

@@ -29,6 +29,10 @@ public class QBlog extends EntityPathBase<Blog> {
 
     public final DateTimePath<java.time.LocalDateTime> date = createDateTime("date", java.time.LocalDateTime.class);
 
+    public final StringPath images = createString("images");
+
+    public final StringPath oneLine = createString("oneLine");
+
     public final StringPath title = createString("title");
 
     public QBlog(String variable) {

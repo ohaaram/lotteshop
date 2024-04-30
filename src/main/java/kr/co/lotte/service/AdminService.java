@@ -27,9 +27,11 @@ import org.springframework.data.domain.Pageable;
 import java.io.Console;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,150 @@ public class AdminService {
     private SellerRepository sellerRepository;
     @Autowired
     private SubProductsRepository subProductsRepository;
+    @Autowired
+    private OrdersItemRepository ordersItemRepository;
+    @Autowired
+    private OrdersRepository ordersRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private VisitorRepository visitorRepository;
 
+    private final Seller_statusRepository seller_statusRepository;
+
+    //mainPage 띄우자
+    public  Map<String , Integer> Formain(){
+        Map<String , Integer> map = new HashMap<>();
+        //주문업무
+        int ready=0;
+        int delivery = 0;
+        int delete = 0;
+        int change =0;
+        int allDelete =0;
+
+        List<OrderItems> totalOrders = ordersItemRepository.findAll();
+        //주문건수
+        int count =totalOrders.size();
+        for(OrderItems orderItems : totalOrders){
+            if(orderItems.getOrderState().equals("주문 대기")){
+                ready++;
+            }else if(orderItems.getOrderState().equals("배송 준비")){
+                delivery ++;
+
+            }else if(orderItems.getOrderState().equals("주문 취소")){
+                delete++;
+            }else if(orderItems.getOrderState().equals("교환 요청")){
+                change++;
+            }else if(orderItems.getOrderState().equals("반품 요청")){
+                allDelete++;
+            }
+        }
+
+        //주문금액
+        int total = 0;
+
+
+        List<Orders> orders = ordersRepository.findAll();
+        for (Orders orders1 : orders){
+            total+= orders1.getOrderTotalPrice();
+            }
+
+        //회원가입
+        int users = memberRepository.findAll().size();
+
+
+        //쇼핑몰방문 (일일)
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        int visitors = visitorRepository.findById(formattedDate).get().getVisitCount();
+
+        //신규게시물 (미완)
+        //고객 문의 (미완)
+
+        //주문업무현황
+        //주문대기
+        //배송준비
+        //취소요청
+        //교환신청
+        //반품요청
+        map.put("count", count);
+        map.put("total", total);
+        map.put("user", users);
+        map.put("ready",ready);
+        map.put("delivery",delivery);
+        map.put("delete",delete);
+        map.put("change",change);
+        map.put("allDelete",allDelete);
+        map.put("visitors",visitors);
+
+
+        return map;
+    }
+
+    //판매자 스토어용
+    public  Map<String , Integer>  forManager(String storUid){
+        Map<String , Integer> map = new HashMap<>();
+
+        List<OrderItems> totalOrders = ordersItemRepository.findAll();
+        //주문건수
+        //주문금액
+        int count = 0;
+        int total = 0;
+
+        //주문업무
+        int ready=0;
+        int delivery = 0;
+        int delete = 0;
+        int change =0;
+        int allDelete =0;
+
+        for(OrderItems orderItems : totalOrders){
+
+            if(orderItems.getOrderState().equals("주문 대기")){
+                ready++;
+            }else if(orderItems.getOrderState().equals("배송 준비")){
+                delivery ++;
+            }else if(orderItems.getOrderState().equals("주문 취소")){
+                delete++;
+            }else if(orderItems.getOrderState().equals("교환 요청")){
+                change++;
+            }else if(orderItems.getOrderState().equals("반품 요청")){
+                allDelete++;
+            }
+
+            int prodNo =subProductsRepository.findById(orderItems.getProdNo()).get().getProdNo();
+            if(productsRepository.findById(prodNo).get().getSellerUid().equals(storUid)){
+                Orders orders = ordersRepository.findById(orderItems.getOrderNo()).get();
+                total += orders.getOrderTotalPrice();
+                count++;
+            }
+        }
+
+
+
+        //회원가입
+        int users = memberRepository.findAll().size();
+
+        //쇼핑몰방문 (일일)
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        int visitors = visitorRepository.findById(formattedDate).get().getVisitCount();
+
+        //신규게시물
+        map.put("count", count);
+        map.put("total", total);
+        map.put("user", users);
+        map.put("ready",ready);
+        map.put("delivery",delivery);
+        map.put("delete",delete);
+        map.put("change",change);
+        map.put("allDelete",allDelete);
+
+        map.put("visitors",visitors);
+        return map;
+    }
 
     //카테고리 조회 method들
     public List<Categories> searchCategories() {
@@ -258,6 +403,23 @@ public class AdminService {
     public ProductsPageResponseDTO searchProducts(ProductsPageRequestDTO requestDTO) {
         Pageable pageable = requestDTO.getPageable("no");
         Page<Tuple> page = productsRepository.searchAllProductsForAdmin(requestDTO, pageable);
+        log.info(page.getContent().toString() + "!!!!?!");
+        List<SubProducts> dtoList = page.getContent().stream()
+                .map(tuple -> {
+                    Products products = new Products();
+                    products = tuple.get(0, Products.class);
+                    SubProducts ss = tuple.get(1, SubProducts.class);
+                    ss.setProducts(products);
+                    return ss;
+                }).toList();
+        int total = (int) page.getTotalElements();
+        return new ProductsPageResponseDTO(requestDTO, total, dtoList);
+
+    }
+
+    public ProductsPageResponseDTO searchProductsForManager(ProductsPageRequestDTO requestDTO, String uid) {
+        Pageable pageable = requestDTO.getPageable("no");
+        Page<Tuple> page = productsRepository.searchAllProductsForAdmin(requestDTO, pageable, uid);
         log.info(page.getContent().toString() + "!!!!?!");
         List<SubProducts> dtoList = page.getContent().stream()
                 .map(tuple -> {
@@ -685,4 +847,88 @@ public class AdminService {
         return banner2;
     }
 
+    //주문현황
+    public OrdersPageResponseDTO searchOrdersForManager(OrdersPageRequestDTO requestDTO, String uid) throws ParseException {
+        Pageable pageable = requestDTO.getPageable("no");
+        Page<OrderItems> page = ordersRepository.searchAllOrdersForManager(requestDTO,pageable,uid);
+        List<OrderItems> dtoList = page.getContent();
+        int total = (int) page.getTotalElements();
+        return new OrdersPageResponseDTO(requestDTO,total, dtoList);
+    }
+
+    //주문현황
+    public OrdersPageResponseDTO searchOrdersForAdmin(OrdersPageRequestDTO requestDTO) throws ParseException {
+        Pageable pageable = requestDTO.getPageable("no");
+        Page<OrderItems> page = ordersRepository.searchAllOrdersForAdmin(requestDTO , pageable);
+        List<OrderItems> dtoList = page.getContent();
+        int total = (int) page.getTotalElements();
+        return new OrdersPageResponseDTO(requestDTO, total, dtoList);
+    }
+
+    //주문현황 별 상품 정보 출력
+    public List<SubProducts> searchProductsForOrder(List<OrderItems> orderItems){
+        List<SubProducts> list = new ArrayList<>();
+
+        for(OrderItems order : orderItems){
+            SubProducts subProducts =subProductsRepository.findById(order.getProdNo()).get();
+            subProducts.setProdName(productsRepository.findById(subProducts.getProdNo()).get().getProdName());
+            list.add(subProducts);
+        }
+        return list;
+    }
+
+    //주문상세 출력
+    public Orders forOrderDetail(int orderNo){
+        return ordersRepository.findById(orderNo).get();
+    }
+
+
+    //판매현황 출력
+    public StatusPageResponseDTO seller_status(CsFaqPageRequestDTO pageRequestDTO){
+
+
+        Pageable pageable = pageRequestDTO.getPageable("status_id");
+
+       Page<Tuple> pageSeller_Status = seller_statusRepository.seller_status(pageRequestDTO ,pageable);
+
+       List<Seller_statusDTO> dtoList = pageSeller_Status.getContent().stream()
+               .map(tuple -> {
+
+                   log.info("tuple : " + tuple);
+
+                   Seller_statusDTO dto = new Seller_statusDTO();
+                   dto.setSellerUid((String) tuple.get(0,String.class)); // 첫 번째 요소는 문자열로 캐스팅하여 id에 설정
+                   dto.setOrderCount(tuple.get(1,Long.class)); // 두 번째 요소는 정수로 캐스팅하여 status에 설정
+                   dto.setTotalPrice(tuple.get(2,Integer.class));
+
+                   log.info("service - page - sellerDTO : " + dto);
+
+                   return dto;
+               })
+               .toList();
+
+       int total = (int) pageSeller_Status.getTotalElements();
+
+       return StatusPageResponseDTO.builder()
+               .pageRequestDTO(pageRequestDTO)
+               .dtoList(dtoList)
+               .total(total)
+               .build();
+    }
+
+    /*
+
+    public int getTotalCount(CsFaqPageRequestDTO pageRequestDTO){
+        Pageable pageable = pageRequestDTO.getPageable("status_id");
+
+        List<Tuple> seller_status = seller_statusRepository.seller_status();
+
+        int total = seller_status.size();
+
+        log.info("adminservice - gettotalCount " +total);
+
+        return total;
+    }
+
+     */
 }

@@ -3,97 +3,103 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
-<section id="admin-cs-notice" layout:fragment="content">
+<section id="admin-cs-faq" layout:fragment="content">
     <script>
-        window.onload=function (){
-            const writeInput = document.getElementById('writeInput');
-            writeInput.onclick=function (e){
+        window.onload = function() {
+            const all = document.getElementById('all');
+            const checkAll = document.querySelectorAll('.check');
+
+            // 전체 선택
+            all.onclick = function () {
+                checkAll.forEach(function (item) {
+                    item.checked = all.checked;
+                });
+            };
+
+            // 선택 삭제
+            const selectDelete = document.getElementById('selectDelete');
+            selectDelete.onclick = async function(e){
                 e.preventDefault();
-                document.getElementById('write').click();
-            }
-        }
+
+                var selectedNoList = [];
+
+                checkAll.forEach(function (item){
+                    if(item.checked){
+                        selectedNoList.push(parseInt(item.value));
+                    }
+                });
+
+                if (selectedNoList.length === 0){
+                    alert('선택된 상품이 없습니다.');
+                }else{
+                    if (confirm('삭제 하시겠습니까!?')){
+                        const jsonData = { list: selectedNoList}
+                        const result = await fetchGet('/lotteshop/admin/cs/faq/delete', jsonData);
+                        console.log(result.result);
+                    }
+                    location.reload();
+                }
+            };
+        };
+
     </script>
     <nav>
-        <h3>고객센터</h3>
+        <h3>공지사항 보기</h3>
         <p>
-            HOME > 고객센터 > <strong>공지사항</strong>
+            HOME > 고객센터 > <strong>공지사항 관리</strong>
         </p>
     </nav>
 
     <section>
         <div>
-            <select name="search">
-                <option value="search1">전체</option>
-                <option value="search2">고객서비스</option>
-                <option value="search3">안전거래</option>
-                <option value="search4">위해상품</option>
-                <option value="search5">이벤트당첨</option>
-            </select>
-            <input type="text" name="search">
+            <form id="deleteSelectedForm" th:action="@{#}" method="post">
 
-            <span >#</span>
-            <table border="0">
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>번호</th>
-                    <th>유형</th>
-                    <th>제목</th>
-                    <th>조회</th>
-                    <th>날짜</th>
-                    <th>관리</th>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
-                    <td>#</td>
-                    <td>2022.11.21</td>
-                    <td>
-                        <a>수정</a>
-                        <a>삭제</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
-                    <td>#</td>
-                    <td>2022.11.21</td>
-                    <td>#</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
-                    <td>#</td>
-                    <td>2022.11.21</td>
-                    <td>#</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>#</td>
-                    <td>#</td>
-                    <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
-                    <td>#</td>
-                    <td>2022.11.21</td>
-                    <td>#</td>
-                </tr>
+                <input type="hidden" id="selectedNoList" name="selectedNoList" />
 
+                <select name="search">
+                    <option value="search1">전체</option>
+                    <option value="search2">제목</option>
+                    <option value="search3">내용</option>
+                    <option value="search3">유형</option>
+                    <option value="search4">제목+내용</option>
+                </select>
+                <input type="text" name="search">
 
-            </table>
+                <span ></span>
+                <table border="0">
+                    <tr>
+                        <th><input type="checkbox" name="all" id="all"></th>
+                        <th>번호</th>
+                        <th>유형1</th>
+                        <th>유형2</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>관리</th>
+                    </tr>
+                    <tr>
 
+                        <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check"/></td>
+
+                        <td>#</td>
+                        <td>#</td>
+                        <td>#</td>
+                        <td>#</td>
+                        <td>
+                            <a th:href="@{#}">[수정]</a>
+                            <a th:href="@{#}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <input type="button" value="선택삭제" id="selectDelete"/>
+                </div>
+            </form>
             <div>
-                <input type="button" value="선택삭제" id="selectDelete" style="float: left; margin-right: 10px;"/>
+                <a class="cs-write" style="float: right" th:href="@{/admin/cs/notice/register}">공지 작성</a>
             </div>
-            <div>
-                <a class="cs-write" style="float: right" th:href="@{/admin/cs/notice/register}">질문 작성</a>
-            </div>
+
 
         </div>
-
     </section>
 </section>
 </html>

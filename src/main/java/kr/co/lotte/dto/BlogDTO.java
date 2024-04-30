@@ -19,5 +19,7 @@ public class BlogDTO {
     private String cate;
     private String author;
     private LocalDateTime date;
+    private String oneLine;
+    private String iamges;
 
 }

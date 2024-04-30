@@ -1,17 +1,21 @@
 package kr.co.lotte.controller;
 
 
+import com.querydsl.core.Tuple;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.*;
-import kr.co.lotte.entity.Banner;
-import kr.co.lotte.entity.Categories;
+import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.BannerRepository;
+import kr.co.lotte.security.MyManagerDetails;
+import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +23,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URI;
 import java.security.AlgorithmConstraints;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.System.out;
@@ -38,8 +40,66 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping("/admin/index")
-    public String adminIndex(){
-        return "/admin/index";
+    public String adminIndex(Authentication authentication , Model model){
+
+        try{
+            //여기는 관리자
+            MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+            Map<String, Integer> map= adminService.Formain();
+            int count = map.get("count");
+            int total = map.get("total");
+            int user = map.get("user");
+
+            int ready = map.get("ready");
+            int delivery = map.get("delivery");
+            int change = map.get("change");
+            int allDelete = map.get("allDelete");
+            int delete = map.get("delete");
+
+            model.addAttribute("count", count);
+            model.addAttribute("total", total);
+            model.addAttribute("user", user);
+            int visitor = map.get("visitors");
+
+            model.addAttribute("ready", ready);
+            model.addAttribute("delivery", delivery);
+            model.addAttribute("delete", delete);
+            model.addAttribute("change", change);
+            model.addAttribute("allDelete", allDelete);
+            model.addAttribute("visitor", visitor);
+            return "/admin/index";
+
+        }catch (Exception e){
+            //여기는 매니저
+            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            Seller seller = myManagerDetails.getUser();
+            String uid= seller.getSellerUid();
+
+            Map<String, Integer> map= adminService.forManager(uid);
+            int count = map.get("count");
+            int total = map.get("total");
+            int user = map.get("user");
+            model.addAttribute("count", count);
+            model.addAttribute("total", total);
+            model.addAttribute("user", user);
+
+            int ready = map.get("ready");
+            int delivery = map.get("delivery");
+            int delete = map.get("delete");
+            int change = map.get("change");
+            int allDelete = map.get("allDelete");
+            int visitor = map.get("visitors");
+
+            model.addAttribute("ready", ready);
+            model.addAttribute("delivery", delivery);
+            model.addAttribute("delete", delete);
+            model.addAttribute("change", change);
+            model.addAttribute("allDelete", allDelete);
+            model.addAttribute("visitor", visitor);
+            return "/admin/index2";
+        }
+
+
     }
 
     //config
@@ -86,9 +146,23 @@ public class AdminController {
 
     //product
     @GetMapping("/admin/product/list")
-    public String list(Model model, ProductsPageRequestDTO pageRequestDTO){
-        ProductsPageResponseDTO pageResponseDTO = adminService.searchProducts(pageRequestDTO);
-        model.addAttribute("page", pageResponseDTO);
+    public String list(Model model, ProductsPageRequestDTO pageRequestDTO, Authentication authentication){
+        try{
+            MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+            ProductsPageResponseDTO pageResponseDTO = adminService.searchProducts(pageRequestDTO);
+            model.addAttribute("page", pageResponseDTO);
+        }catch (Exception e){
+
+            //여기는 매니저
+            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            Seller seller = myManagerDetails.getUser();
+            String uid= seller.getSellerUid();
+
+            ProductsPageResponseDTO pageResponseDTO = adminService.searchProductsForManager(pageRequestDTO, uid);
+            model.addAttribute("page", pageResponseDTO);
+
+        }
+
         return "/admin/product/list";
     }
 
@@ -224,5 +298,59 @@ public class AdminController {
         adminService.findByIdForDelete(bannerNo);//status 0으로 바꾸기
 
         return "redirect:/admin/config/banner";
+    }
+
+
+    //주문현황
+    @GetMapping("/admin/orderList")
+    public String orderList(Model model , Authentication authentication , OrdersPageRequestDTO requestDTO) throws ParseException {
+        OrdersPageResponseDTO pageResponseDTO =null;
+        List<SubProducts> products = new ArrayList<>();
+        //모두 조회 해주자..
+        try {
+            //여기는 관리자
+            MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+            pageResponseDTO=adminService.searchOrdersForAdmin(requestDTO);
+            log.info(pageResponseDTO.getDtoList2().toString());
+            products = adminService.searchProductsForOrder(pageResponseDTO.getDtoList2());
+
+        }catch (Exception e){
+            log.info(e.getMessage());
+            log.info("??");
+            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            Seller seller = myManagerDetails.getUser();
+            pageResponseDTO=adminService.searchOrdersForManager(requestDTO, seller.getSellerUid());
+            products = adminService.searchProductsForOrder(pageResponseDTO.getDtoList2());
+        }
+        model.addAttribute("pageResponseDTO", pageResponseDTO);
+        model.addAttribute("products", products);
+        return "/admin/order/order";
+    }
+
+    //주문 상세 현황
+    @GetMapping("/admin/orderDetail")
+    public String orderDetail(@RequestParam(name = "orderNo")int orderNo , Model model){
+        model.addAttribute("order", adminService.forOrderDetail(orderNo));
+        return "/admin/order/orderView";
+    }
+
+    //주문 바꾸기
+
+
+
+    //판매자 현황 띄우기
+    @GetMapping("/admin/seller/seller_status")
+    public String seller_status(Model model,CsFaqPageRequestDTO pageRequestDTO){
+
+        StatusPageResponseDTO pageResponseDTO =null;
+
+        pageResponseDTO = adminService.seller_status(pageRequestDTO);
+
+        model.addAttribute("pageResponseDTO", pageResponseDTO);
+
+        log.info("adminController - seller_status : "+pageResponseDTO.toString());
+
+
+        return "/admin/seller/seller_status";
     }
 }

@@ -124,9 +124,9 @@
         <div class="top">
             <div>
                 <p>
-                    <a th:href="@{/member/login.html}">로그인</a>
-                    <a th:href="@{#}">회원가입</a>
-                    <a th:href="@{#}">마이페이지</a>
+                    <a th:href="@{/member/login}">로그인</a>
+                    <a th:href="@{/member/register.html}">회원가입</a>
+                    <a th:href="@{/my/info}">마이페이지</a>
                     <a th:href="@{#}"
                     ><i class="fa fa-shopping-cart" aria-hidden="true"></i
                     >&nbsp;장바구니</a
@@ -147,14 +147,14 @@
                         <a class="nav-link active" aria-current="page" th:href="@{/company/culture}" style="color: black; font-weight:bold;">기업문화</a>
                     </li>
                     <li class="nav-story">
-                        <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">소식과
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/story}" style="color: black; font-weight:bold;">소식과
                             이야기</a>
                     </li>
                     <li class="nav-recruit">
-                        <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">채용</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/recruit}" style="color: black; font-weight:bold;">채용</a>
                     </li>
                     <li class="nav-media">
-                        <a class="nav-link active" aria-current="page" href="#" style="color: black; font-weight:bold;">미디어</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/media}" style="color: black; font-weight:bold;">미디어</a>
                     </li>
                 </ul>
             </div>
@@ -172,8 +172,8 @@
                 <div id="f_menu">
                     <a th:href="@{/company/index}">HOME</a>
                     <a th:href="@{/company/culture}">기업문화</a>
-                    <a href="#">소식과 이야기</a>
-                    <a href="#">채용</a>
+                    <a th:href="@{/company/story}">소식과 이야기</a>
+                    <a th:href="@{/company/recruit}">채용</a>
                 </div>
                 <div id="f_email">
                     <p style="font-size:large; font-weight: bold; color: #2e8de5">peoplevalue@lotte.net</p>

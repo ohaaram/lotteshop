@@ -1,5 +1,6 @@
 package kr.co.lotte.service;
 
+import groovy.lang.Tuple;
 import kr.co.lotte.dto.BlogDTO;
 import kr.co.lotte.entity.Blog;
 import kr.co.lotte.repository.BlogRepository;
@@ -30,5 +31,23 @@ public class BlogService {
         Blog blog = blogRepository.findById(bno).orElse(null);
 
         return modelMapper.map(blog, BlogDTO.class);
+    }
+
+    public List<Blog> findAll(){
+
+        return blogRepository.findAll();//블로그에 있는 내용 전부다 들고오기
+    }
+
+    //카테고리에 따른 블로그 내용들
+    public List<Blog> selectBlogForStory(String cate){
+        List<Blog> card = null;
+
+        if(cate.equals("전체")) {
+           card = blogRepository.selectBlogForStory("");
+        }else{
+            card = blogRepository.selectBlogForStory(cate);
+        }
+
+        return card;
     }
 }

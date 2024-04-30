@@ -30,7 +30,7 @@ public class MyServiceForGahee {
     @Autowired
     private SubProductsRepository subProductsRepository;
 
-    public List<Points> forPoint(String uid){
+    public List<Points> forPoint(String uid) {
         //최근 주문 내역
         //포인트 적립내역
         return pointsRepository.findAllByUserId(uid);
@@ -38,12 +38,12 @@ public class MyServiceForGahee {
         //문의내역은 상도님께
     }
 
-    public PointsPageResponseDTO searPoints(PointsPageRequestDTO requestDTO , String uid){
+    public PointsPageResponseDTO searPoints(PointsPageRequestDTO requestDTO, String uid) {
         Pageable pageable = requestDTO.getPageable("no");
         Page<Points> page = pointsRepository.searchAllPointsForList(requestDTO, pageable, uid);
         List<Points> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
-        return  new PointsPageResponseDTO(requestDTO, dtoList ,total);
+        return new PointsPageResponseDTO(requestDTO, dtoList, total);
 
     }
 
@@ -52,7 +52,7 @@ public class MyServiceForGahee {
         Page<Orders> page = ordersRepository.searchAllOrders(requestDTO, pageable, uid);
         List<Orders> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
-        return new OrdersPageResponseDTO(requestDTO,dtoList, total);
+        return new OrdersPageResponseDTO(requestDTO, dtoList, total);
     }
 
     public List<List<OrderItems>> searchOrderItems(List<Orders> orders) {
@@ -64,13 +64,18 @@ public class MyServiceForGahee {
         return lists;
     }
 
-    public List<Products> searchProducts(List<List<OrderItems>> orders) {
-        List<Products>  lists = new ArrayList<>();
-        for (List<OrderItems> orderItems: orders) {
-            SubProducts subProducts = subProductsRepository.findById(orderItems.get(0).getProdNo()).get();
-            Products products = productsRepository.findById(subProducts.getProdNo()).get();
-            lists.add(products);
+    public List<List<Products>> searchProducts(List<List<OrderItems>> orders) {
+        List<List<Products>> lists = new ArrayList<>();
+        for (List<OrderItems> orderItems : orders) {
+            List<Products> nLists = new ArrayList<>();
+            for (OrderItems items : orderItems) {
+                SubProducts subProducts = subProductsRepository.findById(items.getProdNo()).get();
+                Products products = productsRepository.findById(subProducts.getProdNo()).get();
+                nLists.add(products);
+            }
+            lists.add(nLists);
         }
         return lists;
     }
+
 }

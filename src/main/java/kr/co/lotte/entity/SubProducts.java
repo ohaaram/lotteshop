@@ -28,5 +28,7 @@ public class SubProducts {
 
     @Transient
     private Products products;
+    @Transient
+    private String prodName;
 
 }

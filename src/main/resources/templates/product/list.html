@@ -108,7 +108,11 @@
             <!-- 제목, 페이지 네비게이션 -->
             <nav>
                 <h1>상품목록</h1>
-                <p>HOME > <span>[[${pageResponseDTO.cateName1}]]</span></p>
+                <p>HOME > <span>[[${pageResponseDTO.cateName1}]]</span>
+                    <span th:if="${pageResponseDTO.cateName2!='' && pageResponseDTO.cateName2!=null}"> > [[${pageResponseDTO.cateName2}]]</span>
+                    <span th:if="${pageResponseDTO.cateName3!= '' && pageResponseDTO.cateName3!=null}"> > [[${pageResponseDTO.cateName3}]]</span>
+
+                </p>
             </nav>
 
             <!-- 정렬 메뉴 -->

@@ -14,6 +14,108 @@
                 document.getElementById("faqWriteForm").submit();
             }
         }
+
+        // 타입별 카테조회
+        function firstOption(){
+            const cate1Option = event.target;
+            const cate1Value = cate1Option.value; // 내가 함수를 호출한 현재 태그의 value 값
+            const cate2 = document.getElementsByName('cate2')[0];
+
+            console.log(cate1Value);
+
+            if(cate1Value == 'user'){
+                //원래 있던 option 삭제
+                const cate2Child = cate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option style="text-decoration: underline">유형1</option>
+                                         <option value="lotteOners">롯데오너스</option>
+                                         <option value="info">정보확인/변경</option>
+                                         <option value="reg">회원가입</option>
+                                         <option value="grade">회원등급</option>
+                                         <option value="del">회원탈퇴</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }else if (cate1Value == 'event'){
+                const cate2Child = cate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option>유형1</option>
+                                         <option value="lpoint">L.POINT</option>
+                                         <option value="lstamp">L.STAMP</option>
+                                         <option value="review">리뷰/체험단</option>
+                                         <option value="onmile">온마일리지</option>
+                                         <option value="event">이벤트/쿠폰</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }else if (cate1Value == 'order'){
+                const cate2Child = cate2.childNodes;
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option>유형1</option>
+                                         <option value="lpay">L.PAY</option>
+                                         <option value="etc">기타 결제수단</option>
+                                         <option value="mutong">무통장입금</option>
+                                         <option value="ord">주문/결제방법</option>
+                                         <option value="card">신용카드 자동결제</option>
+                                         <option value="ordlist">주문내역확인/변경</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }else if (cate1Value == 'delivery'){
+                const cate2Child = cate2.childNodes;
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option>유형1</option>
+                                         <option value="buy">구매확정/미수령신고</option>
+                                         <option value="delp">배송비</option>
+                                         <option value="delm">배송일정/방법</option>
+                                         <option value="delinfo">배송정보변경</option>
+                                         <option value="gift">선물포장</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }else if (cate1Value == 'cancel'){
+                const cate2Child = cate2.childNodes;
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option>유형1</option>
+                                         <option value="ordcancel">주문취소</option>
+                                         <option value="refund">환불방법/일정</option>
+                                         <option value="as">AS접수/일정</option>
+                                         <option value="asp">교환/반품 배송비</option>
+                                         <option value="change">교환접수/일정</option>
+                                         <option value="returns">반품접수/일정</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }else if (cate1Value == 'receipt'){
+                const cate2Child = cate2.childNodes;
+                Array.from(cate2Child).forEach(function (child){
+                    child.remove();
+                })
+
+                //새로운옵션삽입
+                const cate2Option = `<option>유형1</option>
+                                         <option value="etcord">기타제증빙</option>
+                                         <option value="cashreceipt">현금영수증</option>
+                                         <option value="taxreceipt">세금계산서</option>`
+
+                cate2.insertAdjacentHTML('beforeend', cate2Option);
+            }
+        }
     </script>
     <nav>
         <h3>FAQ 작성페이지</h3>
@@ -23,7 +125,7 @@
     </nav>
     <section class="faq-modify">
         <article>
-            <form id="faqWriteForm" th:action="@{/admin/cs/faq}" method="post">
+            <form id="faqWriteForm" th:action="@{/admin/cs/faq/register}" method="post">
                 <table class="">
                     <tr>
                         <td>제목:</td>
@@ -32,13 +134,21 @@
                                 <textarea class="faq-title" name="title"></textarea>
                             </label>
                         </td>
-                    </tr>                    <tr>
                         <td>카테고리:</td>
-                        <td class="faq-title">
-                            <label>
-                                <textarea class="faq-title" name="cate"></textarea>
-                            </label>
-                        </td>
+                        <tr>
+                    <select name="cate1" onchange="firstOption()">
+                            <option>유형1</option>
+                            <option value="user">회원</option>
+                            <option value="event">이벤트/쿠폰</option>
+                            <option value="order">주문/결제</option>
+                            <option value="delivery">배송</option>
+                            <option value="cancel">취소/반품/교환</option>
+                            <option value="receipt">거래증빙서류</option>
+                        </select>
+                        <select name="cate2" onchange="redirectToCate1Cate2()">
+                            <option>유형2</option>
+
+                        </select>
                     </tr>
                     <tr>
                         <td>내용:</td>

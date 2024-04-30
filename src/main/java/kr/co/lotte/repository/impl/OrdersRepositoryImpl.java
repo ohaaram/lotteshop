@@ -148,4 +148,83 @@ public class OrdersRepositoryImpl implements OrdersRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
+
+    @Override
+    public Page<OrderItems> searchAllOrdersForManager(OrdersPageRequestDTO requestDTO, Pageable pageable, String uid) throws ParseException {
+        QueryResults<OrderItems> results = null;
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+        //선택 날짜 조회
+
+        if(requestDTO.getDateBegin() != null && requestDTO.getDateBegin() != ""){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateBegin =  dateFormat.parse(requestDTO.getDateBegin());
+            Date dateEnd = dateFormat.parse(requestDTO.getDateEnd());
+            dateEnd.setHours(23);
+            dateEnd.setMinutes(59);
+            dateEnd.setSeconds(59);
+
+            results = jpaQueryFactory.select(orderItems)
+                    .from(orderItems)
+                    .leftJoin(qProducts)
+                    .on(qProducts.prodNo.eq(orderItems.prodNo))
+                    .where(qProducts.sellerUid.eq(uid).and(orderItems.orderDate.between(dateBegin,dateEnd)).and(orderItems.orderState.eq(requestDTO.getState())))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+        }
+
+       else{
+
+            results = jpaQueryFactory.select(orderItems)
+                    .from(orderItems)
+                    .leftJoin(qProducts)
+                    .on(qProducts.prodNo.eq(orderItems.prodNo))
+                    .where(qProducts.sellerUid.eq(uid).and(orderItems.orderState.eq(requestDTO.getState())))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+
+        }
+        List<OrderItems> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<OrderItems> searchAllOrdersForAdmin(OrdersPageRequestDTO requestDTO, Pageable pageable) throws ParseException {
+        QueryResults<OrderItems> results = null;
+        LocalDateTime startDate;
+        LocalDateTime endDate;
+        //선택 날짜 조회
+
+        if(requestDTO.getDateBegin() != null && requestDTO.getDateBegin() != ""){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date dateBegin =  dateFormat.parse(requestDTO.getDateBegin());
+            Date dateEnd = dateFormat.parse(requestDTO.getDateEnd());
+            dateEnd.setHours(23);
+            dateEnd.setMinutes(59);
+            dateEnd.setSeconds(59);
+
+            results = jpaQueryFactory.select(orderItems)
+                    .from(orderItems)
+                    .where(orderItems.orderDate.between(dateBegin,dateEnd).and(orderItems.orderState.eq(requestDTO.getState())))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+        }
+
+        else{
+            results = jpaQueryFactory.select(orderItems)
+                    .from(orderItems)
+                    .where(orderItems.orderState.eq(requestDTO.getState()))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+
+        }
+        List<OrderItems> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
 }

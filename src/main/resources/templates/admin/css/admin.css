@@ -447,18 +447,17 @@ button[type=submit] {
     font-size: 11px;
     letter-spacing: -1px;
 }
-  
+
 #admin-product-list .paging > span > a:hover {
     text-decoration: underline;
 }
-  
+
 #admin-product-list .paging > .num > a {
     display: inline-block;
     min-width: 14px;
     margin: 0 2px;
     padding: 8px 9px;
     border: 1px solid #c4c4c4;
-    background: url() 0 0 repeat-x;
     color: #000;
     font-family: Tahoma;
     font-size: 12px;
@@ -470,6 +469,44 @@ button[type=submit] {
     text-decoration: none;
 }
 #admin-product-list .paging > .num > a.on {
+    color: #fe434c;
+    font-weight: bold;
+}
+/* 내가 만들어보자 */
+#admin-order .paging {
+    width: 100%;
+    padding: 30px 0;
+    text-align: center;
+}
+
+#admin-order .paging > span > a {
+    color: #777;
+    font-family: "돋움", Dotum, Tahoma, sans-serif;
+    font-size: 11px;
+    letter-spacing: -1px;
+}
+
+#admin-order .paging > span > a:hover {
+    text-decoration: underline;
+}
+
+#admin-order .paging > .num > a {
+    display: inline-block;
+    min-width: 14px;
+    margin: 0 2px;
+    padding: 8px 9px;
+    border: 1px solid #c4c4c4;
+    color: #000;
+    font-family: Tahoma;
+    font-size: 12px;
+    text-align: center;
+    text-decoration: none;
+}
+#admin-order .paging > .num > a:hover {
+    border: 1px solid #454c5f;
+    text-decoration: none;
+}
+#admin-order .paging > .num > a.on {
     color: #fe434c;
     font-weight: bold;
 }
@@ -563,4 +600,8 @@ button[type=submit] {
 #admin-cs-notice > section > table  tr > td:nth-child(5) {width: 80px;}
 #admin-cs-notice > section > table  tr > td:nth-child(6) {width: 80px;}
 #admin-cs-notice > section > table  tr > td:nth-child(7) {width: 80px;}
+
+
+
+
 

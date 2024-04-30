@@ -33,8 +33,8 @@
 
     <!-- admin.cs.faq 글 작성 -->
     <insert id="adminFaqWrite" parameterType="kr.co.lotte.dto.CsFaqDTO">
-        INSERT INTO `csfaq` (title, content)
-        VALUES (#{title}, #{content})
+        INSERT INTO `csfaq` (title, cate1, cate2, content)
+        VALUES (#{title}, #{cate1}, #{cate2}, #{content})
     </insert>
 
 

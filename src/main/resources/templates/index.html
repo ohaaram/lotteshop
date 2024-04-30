@@ -105,7 +105,7 @@
 <body>
 <!--메인 배너 시작-->
 <th:block th:if="${banner1 != null }">
-    <th:block th:each="banner : ${banner1}" th:if="${banner.status}==1">
+    <th:block th:each="banner : ${banner1}">
         <div id="bannerTop" class="on"
              th:style="${banner.status == 0 ? 'background-color: #0000;' : 'background-color: ' + banner.color + ';'}">
             <article>
