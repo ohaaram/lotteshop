@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
-<section id="admin-cs-faq" layout:fragment="content">
+<section id="admin-cs-notice" layout:fragment="content">
     <script>
         window.onload = function() {
             const all = document.getElementById('all');
@@ -34,7 +34,7 @@
                 }else{
                     if (confirm('삭제 하시겠습니까!?')){
                         const jsonData = { list: selectedNoList}
-                        const result = await fetchGet('/lotteshop/admin/cs/faq/delete', jsonData);
+                        const result = await fetchGet('/lotteshop/admin/cs/notice/delete', jsonData);
                         console.log(result.result);
                     }
                     location.reload();
@@ -53,7 +53,6 @@
     <section>
         <div>
             <form id="deleteSelectedForm" th:action="@{#}" method="post">
-
                 <input type="hidden" id="selectedNoList" name="selectedNoList" />
 
                 <select name="search">
@@ -63,8 +62,6 @@
                     <option value="search3">유형</option>
                     <option value="search4">제목+내용</option>
                 </select>
-                <input type="text" name="search">
-
                 <span ></span>
                 <table border="0">
                     <tr>
@@ -76,14 +73,22 @@
                         <th>내용</th>
                         <th>관리</th>
                     </tr>
-                    <tr>
+                    <tr th:each="csNotice, index : ${csNotice.dtoList2}">
+                        <td class="notice-list-checkbox"><input type="checkbox" name="selectedNoList" class="check"/></td>
+                        <td>[[${csNotice.no}]]</td>
 
-                        <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check"/></td>
+                        <td th:if="${csNotice.cate1 == 'customer'}" style="white-space: nowrap;">고객서비스</td>
+                        <td th:if="${csNotice.cate1 == 'safe'}" style="white-space: nowrap;">안전거래</td>
+                        <td th:if="${csNotice.cate1 == 'danger'}" style="white-space: nowrap;">위해상품</td>
+                        <td th:if="${csNotice.cate1 == 'event'}" style="white-space: nowrap;">이벤트 당첨</td>
 
-                        <td>#</td>
-                        <td>#</td>
-                        <td>#</td>
-                        <td>#</td>
+                        <td th:if="${csNotice.cate2 == 'info'}" style="white-space: nowrap;">안내</td>
+                        <td th:if="${csNotice.cate2 == 'report'}" style="white-space: nowrap;">발표</td>
+                        <td th:if="${csNotice.cate2 == 'check'}" style="white-space: nowrap;">점검</td>
+                        <td th:if="${csNotice.cate2 == 'news'}" style="white-space: nowrap;">뉴스</td>
+
+                        <td>[[${csNotice.title}]]</td>
+                        <td>[[${csNotice.content}]]</td>
                         <td>
                             <a th:href="@{#}">[수정]</a>
                             <a th:href="@{#}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
@@ -97,8 +102,25 @@
             <div>
                 <a class="cs-write" style="float: right" th:href="@{/admin/cs/notice/register}">공지 작성</a>
             </div>
+            <div class="paging">
+                        <span class="prev" th:if="${csNotice.prev}">
+                            <a th:href="@{/admin/cs/notice/list(pg=${csNotice.start -1}, cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}"><&nbsp;이전</a>
+                        </span>
+                <span class="num" th:each="num:${#numbers.sequence(csNotice.start, csNotice.end)}">
+                            <th:block th:if="${num == csNotice.pg}">
+                                 <a th:href="@{/admin/cs/notice/list( pg=${num} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}" class="on">[[${num}]]</a>
+                            </th:block>
 
+                            <th:block th:if="${num != csNotice.pg}">
 
+                                 <a th:href="@{/admin/cs/notice/list( pg=${num} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                <span class="next" th:if="${csNotice.next}">
+                            <a th:href="@{/admin/cs/notice/list( pg=${csNotice.end+1} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}">다음&nbsp;></a>
+                        </span>
+            </div>
         </div>
     </section>
 </section>

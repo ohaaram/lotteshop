@@ -221,6 +221,22 @@ public class MarketController {
         return "/product/complete";
     }
 
+    //주문취소/반품
+    @GetMapping("/product/checkOrder")
+    public ResponseEntity checkOrder(Model model, @RequestParam(name = "itemNo") int itemNo) {
+        return marketService.checkOrder(itemNo);
+    }
+
+
+    @GetMapping("/product/orderDelete")
+    public ResponseEntity orderDelete(Model model, @RequestParam(name = "itemNo") int itemNo, Authentication authentication){
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+
+        return marketService.orderDelete(itemNo, user.getUid());
+
+    }
+
 
 
 

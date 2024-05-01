@@ -13,6 +13,4 @@ public class CsNoticeRepositoryImpl implements CsNoticeRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-
-
 }

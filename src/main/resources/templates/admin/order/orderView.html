@@ -43,7 +43,11 @@
 
     <tr style="background-color: #cdcdcd">
         <td data-label="주문자 아이디">[[${order.userId}]]</td>
+    </tr>
+    <tr>
         <td data-label="주문 번호">[[${order.orderNo}]]</td>
+    </tr>
+    <tr>
         <td data-label="주소">
             [[${order.zip}]]
             <br>
@@ -52,7 +56,12 @@
             [[${order.addr2}]]
 
         </td>
+    </tr>
+    <tr>
         <td data-label="결제방식">[[${order.payment}]]</td>
+    </tr>
+    <tr>
+        <td data-label="휴대폰 번호">[[${order.sendHp}]]</td>
     </tr>
     <!-- 여기에 다른 주문자 정보를 추가하십시오 -->
 </table>

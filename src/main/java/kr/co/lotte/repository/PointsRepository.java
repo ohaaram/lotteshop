@@ -14,4 +14,7 @@ public interface PointsRepository extends JpaRepository<Points, Integer> , Point
 
     public List<Points> findAllByUserId(String userId);
 
+
+    public Points findByOrderNoAndState(int orderNo, String state);
+
 }

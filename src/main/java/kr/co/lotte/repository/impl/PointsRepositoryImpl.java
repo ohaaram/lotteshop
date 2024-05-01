@@ -66,6 +66,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
                   .where(qPoints.pointDate.between(dateBegin, dateEnd).and(qPoints.userId.eq(uid)))
+                  .orderBy(qPoints.pointNo.desc())
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();
@@ -74,6 +75,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
                   .where(qPoints.pointDate.between(fifteenDaysAgo, LocalDateTime.now()).and(qPoints.userId.eq(uid)))
+                  .orderBy(qPoints.pointNo.desc())
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();
@@ -82,6 +84,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
                   .where(qPoints.pointDate.between(fifteenDaysAgo, LocalDateTime.now()).and(qPoints.userId.eq(uid)))
+                  .orderBy(qPoints.pointNo.desc())
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();
@@ -90,6 +93,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
                   .where(qPoints.pointDate.between(startDate, endDate).and(qPoints.userId.eq(uid)))
+                  .orderBy(qPoints.pointNo.desc())
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();

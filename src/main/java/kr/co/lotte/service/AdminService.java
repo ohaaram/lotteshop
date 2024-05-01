@@ -1,6 +1,9 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kr.co.lotte.repository.ProductsRepository;
 import kr.co.lotte.dto.*;
@@ -18,21 +21,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.plaf.PanelUI;
+
 import org.springframework.data.domain.Pageable;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class AdminService {
     @Autowired
     private CategoriesRepository categoriesRepository;
@@ -71,7 +78,6 @@ public class AdminService {
         int ready=0;
         int delivery = 0;
         int delete = 0;
-        int change =0;
         int allDelete =0;
 
         List<OrderItems> totalOrders = ordersItemRepository.findAll();
@@ -85,9 +91,7 @@ public class AdminService {
 
             }else if(orderItems.getOrderState().equals("주문 취소")){
                 delete++;
-            }else if(orderItems.getOrderState().equals("교환 요청")){
-                change++;
-            }else if(orderItems.getOrderState().equals("반품 요청")){
+            }else if(orderItems.getOrderState().equals("환불")){
                 allDelete++;
             }
         }
@@ -126,7 +130,6 @@ public class AdminService {
         map.put("ready",ready);
         map.put("delivery",delivery);
         map.put("delete",delete);
-        map.put("change",change);
         map.put("allDelete",allDelete);
         map.put("visitors",visitors);
 
@@ -148,7 +151,6 @@ public class AdminService {
         int ready=0;
         int delivery = 0;
         int delete = 0;
-        int change =0;
         int allDelete =0;
 
         for(OrderItems orderItems : totalOrders){
@@ -159,9 +161,7 @@ public class AdminService {
                 delivery ++;
             }else if(orderItems.getOrderState().equals("주문 취소")){
                 delete++;
-            }else if(orderItems.getOrderState().equals("교환 요청")){
-                change++;
-            }else if(orderItems.getOrderState().equals("반품 요청")){
+            }else if(orderItems.getOrderState().equals("환불")){
                 allDelete++;
             }
 
@@ -191,7 +191,6 @@ public class AdminService {
         map.put("ready",ready);
         map.put("delivery",delivery);
         map.put("delete",delete);
-        map.put("change",change);
         map.put("allDelete",allDelete);
 
         map.put("visitors",visitors);
@@ -282,8 +281,8 @@ public class AdminService {
     }
 
 
+    //여기 하다가 말았음!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //(아래는)파일 크기 조정
-
     @Value("${file.upload.path}")
     private String fileUploadPath;
 
@@ -878,6 +877,7 @@ public class AdminService {
     }
 
 
+
     //판매현황 출력
     public StatusPageResponseDTO seller_status(CsFaqPageRequestDTO pageRequestDTO){
 
@@ -912,13 +912,158 @@ public class AdminService {
     }
 
     //판매자 아이디를 이용해 판매자 정보 출력
-    public SellerDTO findSellerInfo(String uid){
+    public SellerDTO findSellerInfo(String uid) {
 
-        Optional<Seller> seller  = sellerRepository.findById(uid);
+        Optional<Seller> seller = sellerRepository.findById(uid);
 
         SellerDTO sellerDTO = modelMapper.map(seller, SellerDTO.class);
 
         return sellerDTO;
     }
 
+    //주문상태변경
+    public ResponseEntity changeOrderState(int orderNo){
+        Map<String , String> map = new HashMap<>();
+        //주문대기이면 배송준비로
+        OrderItems orders = ordersItemRepository.findById(orderNo).get();
+        if(orders.getOrderState().equals("주문 대기")){
+            orders.setOrderState("배송 준비");
+        }else if(orders.getOrderState().equals("배송 준비")){
+            orders.setOrderState("배송 중");
+        }
+        map.put("data","1");
+
+        return  ResponseEntity.ok().body(map);
+    }
+
+    public ResponseEntity changeOrderStates(List<Integer> itemNos){
+        Map<String , String> map = new HashMap<>();
+        //주문대기이면 배송준비로
+        for(int orderNo : itemNos){
+            OrderItems orders = ordersItemRepository.findById(orderNo).get();
+            if(orders.getOrderState().equals("주문 대기")){
+                orders.setOrderState("배송 준비");
+            }else if(orders.getOrderState().equals("배송 준비")){
+                orders.setOrderState("배송 중");
+            }
+        }
+
+        map.put("data","1");
+
+        return  ResponseEntity.ok().body(map);
+    }
+
+    //우리 매출현황을 해 보아요~ 이거는 pagination이 필요없다네~
+    public List<String> forDays(String state){
+       List<String> days = new ArrayList<>();
+        if(state.equals("week")){
+            LocalDate currentDate = LocalDate.now();
+            for (int i = 6 ; i >= 0; i--) {
+                LocalDate date = currentDate.minusDays(i);
+                DayOfWeek dayOfWeek = date.getDayOfWeek();
+                String dayName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+                days.add(dayName);
+            }
+
+            }else if(state.equals("month")){
+                //현재 날짜를 가져오고
+                LocalDate currentDate = LocalDate.now();
+
+                // 한 달 전의 날짜를 계산
+                LocalDate oneMonthAgo = currentDate.minusMonths(1);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
+                for (LocalDate date = oneMonthAgo; date.compareTo(currentDate) <= 0; date = date.plusDays(1)){
+                    log.info(formatter.format(date).toString() + "이거!");
+                    days.add(formatter.format(date));
+                }
+            }else if(state.equals("year")){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM");
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate oneYearAgo = currentDate.minusYears(1);
+
+            for (LocalDate date = oneYearAgo; !date.isAfter(currentDate); date = date.plusMonths(1)) {
+                days.add(formatter.format(date));
+            }
+        }
+        return days;
+        }
+
+
+    public Map<String , List<Integer>> saleForAdmin (String state) {
+        Map<String , List<Integer>> map = new HashMap<>();
+        //매출건수를 어떻게 조회하지?
+        //일주일 별
+        if(state.equals("week")){
+            //주문건수
+            List<Integer> listWeek = ordersRepository.searchOrdersWeekForAdmin();
+            
+            //매출액
+            List<Integer> weekPrice = ordersRepository.searchPriceWeekForAdmin();
+
+            map.put("order", listWeek);
+            map.put("price", weekPrice);
+
+        }
+        //한 달
+        if(state.equals("month")){
+            List<Integer> listMonth = ordersRepository.searchOrdersMonthForAdmin();
+            //매출액
+            List<Integer> monthPrice = ordersRepository.searchPriceMonthForAdmin();
+
+            map.put("order", listMonth);
+            map.put("price", monthPrice);
+        }
+
+        //월 별
+        if(state.equals("year")){
+            List<Integer> listYear = ordersRepository.searchOrdersYearForAdmin();
+            //매출액
+            List<Integer> yearPrice = ordersRepository.searchPriceYearForAdmin();
+
+
+            map.put("order", listYear);
+            map.put("price", yearPrice);
+        }
+        return map;
+        
+    }
+
+    public Map<String , List<Integer>> saleForManager(String state, String uid){
+        Map<String , List<Integer>> map = new HashMap<>();
+        //매출건수를 어떻게 조회하지?
+        //일주일 별
+        if(state.equals("week")){
+            //주문건수
+            List<Integer> listWeek = ordersRepository.searchOrdersWeekForManager(uid);
+
+            //매출액
+            List<Integer> weekPrice = ordersRepository.searchPriceWeekForManager(uid);
+
+            map.put("order", listWeek);
+            map.put("price", weekPrice);
+
+        }
+        //한 달
+        if(state.equals("month")){
+            List<Integer> listMonth = ordersRepository.searchOrdersMonthForManager(uid);
+            //매출액
+            List<Integer> monthPrice = ordersRepository.searchPriceMonthForManager(uid);
+
+            map.put("order", listMonth);
+            map.put("price", monthPrice);
+        }
+
+        //월 별
+        if(state.equals("year")){
+            List<Integer> listYear = ordersRepository.searchOrdersYearForManager(uid);
+            //매출액
+            List<Integer> yearPrice = ordersRepository.searchPriceYearForManager(uid);
+            map.put("order", listYear);
+            map.put("price", yearPrice);
+        }
+        return map;
+
+
+    }
 }

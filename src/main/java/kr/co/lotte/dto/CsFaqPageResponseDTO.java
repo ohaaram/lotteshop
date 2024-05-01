@@ -2,7 +2,6 @@ package kr.co.lotte.dto;
 
 import kr.co.lotte.entity.CsFaq;
 import kr.co.lotte.entity.CsNotice;
-import kr.co.lotte.entity.Orders;
 import lombok.*;
 
 import java.util.List;

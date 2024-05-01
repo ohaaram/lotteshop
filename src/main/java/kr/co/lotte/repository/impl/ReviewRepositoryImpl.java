@@ -4,9 +4,12 @@ package kr.co.lotte.repository.impl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import kr.co.lotte.dto.ReviewDTO;
 import kr.co.lotte.dto.ReviewPageRequestDTO;
+import kr.co.lotte.entity.QProducts;
 import kr.co.lotte.entity.QReview;
 import kr.co.lotte.entity.QUser;
+import kr.co.lotte.entity.Review;
 import kr.co.lotte.repository.custom.ReviewRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     private final QReview qReview = QReview.review;
     private final QUser qUser = QUser.user;
+    private final QProducts qProducts = QProducts.products;
 
     // market/newview 리뷰 목록 조회
     @Override
@@ -78,6 +82,23 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .fetch();
         log.info("리뷰 score별 count 조회 : " + results);
         return results;
+    }
+    
+    //상품명을 찾기위해 리뷰에서부터 여기까지 옴
+    public List<Tuple> findProdName(List<Review> reviews){
+
+        for (Review r : reviews) {
+            String prodname = jpaQueryFactory
+                    .select(qProducts.prodName)
+                    .from(qReview)
+                    .join(qProducts).on(qReview.prodno.eq(qProducts.prodNo))
+                    .where(qReview.prodno.eq(r.getProdno())) // prodno를 이용해서 prodname을 구하기
+                    .fetchOne();
+
+            //reviews.add(prodname);
+        }
+        return null;
+        
     }
 
 }

@@ -39,6 +39,10 @@ public class QOrders extends EntityPathBase<Orders> {
 
     public final NumberPath<Integer> point = createNumber("point", Integer.class);
 
+    public final StringPath sendHp = createString("sendHp");
+
+    public final StringPath sendName = createString("sendName");
+
     public final StringPath userId = createString("userId");
 
     public final StringPath zip = createString("zip");

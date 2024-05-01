@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class MarketService {
 
     private final ProductsRepository marketRepository;
@@ -261,6 +263,170 @@ public class MarketService {
         map.put("data" , "success");
         return ResponseEntity.ok().body(map);
     }
+
+    //주문취소/반품
+    //일단 확인
+    public ResponseEntity checkOrder(int itemNo){
+        Map<String , String> map = new HashMap<>();
+
+        OrderItems orderItems = ordersItemRepository.findById(itemNo).get();
+        Orders order = ordersRepository.findById(orderItems.getOrderNo()).get();
+        if(order.getPoint() >0){
+            map.put("data","1");
+        }else{
+            map.put("data","0");
+        }
+        return ResponseEntity.ok().body(map);
+    }
+
+    //주문 취소반품 본격시작
+    public ResponseEntity orderDelete(int itemNo , String uid){
+        Map<String , Integer> map = new HashMap<>();
+        User user = memberRepository.findById(uid).get();
+        OrderItems orderItems = ordersItemRepository.findById(itemNo).get();
+        Orders order = ordersRepository.findById(orderItems.getOrderNo()).get();
+        int state =0;
+        if(orderItems.getOrderState().equals("주문 대기")){
+            if(order.getPoint() >0){
+                //포인트를 사용한 경우 전체 취소
+                List<OrderItems> lists = ordersItemRepository.findAllByOrderNo(order.getOrderNo());
+
+                for(OrderItems orderItem : lists){
+                    if(orderItem.getOrderState().equals("주문 대기")){
+                        SubProducts subProducts = subProductsRepository.findById(orderItem.getProdNo()).get();
+                        subProducts.setProdStock(subProducts.getProdStock() + orderItem.getItemCount());
+                        subProductsRepository.save(subProducts);
+                        orderItem.setOrderState("주문 취소");   
+                    }else{
+                        SubProducts subProducts = subProductsRepository.findById(orderItem.getProdNo()).get();
+                        subProducts.setProdStock(subProducts.getProdStock() + orderItem.getItemCount());
+                        subProductsRepository.save(subProducts);
+                        state=1;
+                        orderItem.setOrderState("환불");
+                    }
+                    ordersItemRepository.save(orderItem);
+                }
+                //포인트를 돌려주자
+                Points points = new Points();
+                points.setPoint(order.getPoint());
+                points.setPointDesc("주문 취소 환불");
+                points.setState("취소환불");
+                points.setOrderNo(order.getOrderNo());
+                points.setUserId(user.getUid());
+
+                int pointCurrent = order.getPoint();
+
+                //적립된 포인트는 빼자
+                Points points2 = new Points();
+                Points oldPoint = pointsRepository.findByOrderNoAndState(order.getOrderNo(),"적립");
+                int old = oldPoint.getPoint();
+
+                points2.setPoint(-old);
+                points2.setPointDesc("주문 취소 환불");
+                points2.setState("취소환불");
+                points2.setOrderNo(order.getOrderNo());
+                points2.setUserId(user.getUid());
+
+                pointCurrent -= old;
+
+                user.setTotalPoint(user.getTotalPoint() + pointCurrent);
+
+                memberRepository.save(user);
+                pointsRepository.save(points);
+                pointsRepository.save(points2);
+            }else{
+                SubProducts subProducts = subProductsRepository.findById(orderItems.getProdNo()).get();
+                subProducts.setProdStock(subProducts.getProdStock() + orderItems.getItemCount());
+                subProductsRepository.save(subProducts);
+                orderItems.setOrderState("주문 취소");
+                ordersItemRepository.save(orderItems);
+
+                //적립된 포인트는 빼자
+                Points points2 = new Points();
+
+                int minus = (int)(orderItems.getItemPrice() * orderItems.getItemCount() * 0.01);
+
+                points2.setPoint(- minus);
+                points2.setPointDesc("주문 취소 환불");
+                points2.setOrderNo(order.getOrderNo());
+                user.setTotalPoint(user.getTotalPoint() - minus);
+                memberRepository.save(user);
+
+            }
+
+        }else{
+            state=1;
+
+            if(order.getPoint() >0){
+                //포인트를 사용한 경우 전체 취소
+                List<OrderItems> lists = ordersItemRepository.findAllByOrderNo(order.getOrderNo());
+
+                for(OrderItems orderItem : lists){
+                    if(orderItem.getOrderState().equals("주문 대기")){
+                        SubProducts subProducts = subProductsRepository.findById(orderItem.getProdNo()).get();
+                        subProducts.setProdStock(subProducts.getProdStock() + orderItem.getItemCount());
+                        subProductsRepository.save(subProducts);
+                        orderItem.setOrderState("주문 취소");
+                    }else{
+                        SubProducts subProducts = subProductsRepository.findById(orderItem.getProdNo()).get();
+                        subProducts.setProdStock(subProducts.getProdStock() + orderItem.getItemCount());
+                        subProductsRepository.save(subProducts);
+                        orderItem.setOrderState("환불");
+                    }
+                    ordersItemRepository.save(orderItem);
+                }
+                //포인트를 돌려주자
+                Points points = new Points();
+                points.setPoint(order.getPoint());
+                points.setPointDesc("주문 취소 환불");
+                points.setOrderNo(order.getOrderNo());
+                points.setUserId(user.getUid());
+
+                int pointCurrent = order.getPoint();
+
+                //적립된 포인트는 빼자
+                Points points2 = new Points();
+                Points oldPoint = pointsRepository.findByOrderNoAndState(order.getOrderNo(),"적립");
+                int old = oldPoint.getPoint();
+
+                points2.setPoint(-old);
+                points2.setPointDesc("주문 취소 환불");
+                points2.setState("취소환불");
+                points2.setOrderNo(order.getOrderNo());
+                points2.setUserId(user.getUid());
+
+                pointCurrent -= old;
+
+                user.setTotalPoint(user.getTotalPoint() + pointCurrent);
+
+                memberRepository.save(user);
+                pointsRepository.save(points);
+                pointsRepository.save(points2);
+            }else{
+                SubProducts subProducts = subProductsRepository.findById(orderItems.getProdNo()).get();
+                subProducts.setProdStock(subProducts.getProdStock() + orderItems.getItemCount());
+                subProductsRepository.save(subProducts);
+                orderItems.setOrderState("환불");
+                ordersItemRepository.save(orderItems);
+
+                //적립된 포인트는 빼자
+                Points points2 = new Points();
+
+                int minus = (int)(orderItems.getItemPrice() * orderItems.getItemCount() * 0.01);
+
+                points2.setPoint(- minus);
+                points2.setPointDesc("주문 취소 환불");
+                points2.setOrderNo(order.getOrderNo());
+                user.setTotalPoint(user.getTotalPoint() - minus);
+                memberRepository.save(user);
+
+            }
+        
+        }
+        map.put("data", state);
+        return ResponseEntity.ok().body(map);
+    }
+
 
 
 }

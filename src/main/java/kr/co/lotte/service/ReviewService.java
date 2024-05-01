@@ -1,13 +1,12 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
-import kr.co.lotte.dto.ReviewDTO;
-import kr.co.lotte.dto.ReviewPageRequestDTO;
-import kr.co.lotte.dto.ReviewPageResponseDTO;
-import kr.co.lotte.dto.ReviewRatioDTO;
+import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.Review;
+import kr.co.lotte.entity.ReviewImg;
 import kr.co.lotte.repository.ProductsRepository;
+import kr.co.lotte.repository.ReviewImgRepository;
 import kr.co.lotte.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +16,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -33,6 +35,7 @@ import java.util.UUID;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final ReviewImgRepository reviewImgRepository;
     private final ProductsRepository productRepository;
     private final ModelMapper modelMapper;
 
@@ -196,6 +199,110 @@ public class ReviewService {
         // product update
         productRepository.save(product);
         return null;
+    }
+
+    //작성한 리뷰를 저장함
+    public ResponseEntity<?> rRegister(ReviewDTO reviewDTO) {
+        try {
+
+            Review review = modelMapper.map(reviewDTO, Review.class);
+
+            MultipartFile image1 = reviewDTO.getMultImage1();
+
+            ReviewImgDTO uploadedImage = uploadReviewImage(image1);
+
+
+            if (uploadedImage != null) {
+
+                ReviewImgDTO imageDTO = uploadedImage;
+
+                review.setThumbnail(uploadedImage.getSName());
+            }
+
+
+            log.info("service - rRegister : " + review);
+
+            Review saveReview = reviewRepository.save(review);
+
+            log.info("service - saveReview 저장성공?! : " + saveReview);
+
+            int saveReviewNo = saveReview.getRno();//리뷰저장하면 리뷰번호가 자동으로 생성됨. -> 그거 불러옴
+
+            log.info("service - saveReviewNo : " + saveReviewNo);//리뷰번호 찍어보기
+
+            ReviewImgDTO reviewImgDTO = uploadedImage;
+            reviewImgDTO.setRno(saveReviewNo);
+
+            ReviewImg reviewImg = modelMapper.map(reviewImgDTO, ReviewImg.class);
+
+            reviewImgRepository.save(reviewImg);
+            reviewRepository.flush();
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("data", saveReviewNo);//리뷰 번호임
+
+            return ResponseEntity.ok().body(map);
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(e.getMessage());
+        }
+    }
+
+    //리뷰이미지 저장
+    public ReviewImgDTO uploadReviewImage(MultipartFile file) {
+        // 파일을 저장할 경로 설정
+
+        String path = new java.io.File(fileUploadPath).getAbsolutePath();
+
+        if (!file.isEmpty()) {
+            try {
+                // 원본 파일 이름과 확장자 추출
+                String originalFileName = file.getOriginalFilename();//원본 파일 네임
+                String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+                log.info("uploadReviewImage - originalFileName :  잘 들어오나요? : "+originalFileName);
+
+                // 저장될 파일 이름 생성
+                String sName = UUID.randomUUID().toString() + extension;//변환된 파일 이름
+
+
+                log.info("파일 변환 후 이름 - sName : "+sName);
+
+                // 파일 저장 경로 설정
+                java.io.File dest = new File(path, sName);
+
+                Thumbnails.of(file.getInputStream())
+                        .forceSize(80, 80)//여기를 size에서 forceSize로 강제 사이즈 변환
+                        .toFile(dest);
+
+
+                log.info("service - dest : "+ dest);
+
+                // 리뷰이미지 정보를 담은 DTO 생성 및 반환
+                return ReviewImgDTO.builder()
+                        .oName(originalFileName)
+                        .sName(sName)
+                        .build();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null; // 업로드 실패 시 null 반환
+    }
+
+
+    //내가 작성한 리뷰를 싹 다 불러오기
+    public List<Review> findReview(String uid){
+
+        List<Review> reviews= reviewRepository.findByuid(uid);
+
+        reviewRepository.findProdName(reviews);
+
+        log.info("reviews : "+reviews);
+
+        return reviews;
+
     }
 
 }

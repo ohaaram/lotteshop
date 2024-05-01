@@ -143,20 +143,46 @@
 
                         }
                         const checkConfirm = document.getElementById('checkConfirm');
-                        checkConfirm.onclick=function (e){
+                        checkConfirm.onclick=async function (e) {
                             e.preventDefault();
                             let list = [];
-                            if(confirm('확인하시겠습니까?')){
+                            if (confirm('확인하시겠습니까?')) {
 
-                                checkboxs.forEach(function (item){
-                                    if(item.checked){
+                                checkboxs.forEach(function (item) {
+                                    if (item.checked) {
                                         list.push(item.getAttribute('data-order'));
                                     }
                                 })
                             }
-                            console.log(list);
+                            if(list.length <= 0){
+                                alert('체크 박스를 선택해주세요.')
+                            }else{
+                                const jsonData = {list: list};
+                                console.log(list);
+                                const result = await fetchPut('/lotteshop/admin/checkOrders', jsonData);
+
+                                if(result != null){
+                                    alert('확인되었습니다.');
+                                    location.reload();
+                                }
+                            }
+
                         }
 
+                        //단일확인
+                        const checkMe = document.querySelectorAll('#checkMe');
+                        checkMe.forEach(function (item){
+                            item.onclick=async function (e) {
+                                e.preventDefault();
+                                if (confirm('확인하시겠습니까?')) {
+                                    const result = await fetchGet('/lotteshop/admin/checkOrder?orderNo=' + item.getAttribute('data-order'));
+                                    if(result != null){
+                                        alert('확인되었습니다.')
+                                        location.reload();
+                                    }
+                                }
+                            }
+                        })
 
                         // 현재 날짜 가져오기
                         var currentDate = new Date().toISOString().split('T')[0];
@@ -216,11 +242,9 @@
                 <div id="statusFilters">
                     <a th:href="@{/admin/orderList(state='주문 대기')}" style="border: 1px solid gray" >주문 대기</a>
                     <a th:href="@{/admin/orderList(state='배송 준비')}" style="border: 1px solid gray">배송 준비</a>
-                    <a th:href="@{/admin/orderList(state='배송중')}" style="border: 1px solid gray">배송중</a>
-                    <a th:href="@{/admin/orderList(state='취소 요청')}" style="border: 1px solid gray">취소 요청</a>
-                    <a  th:href="@{/admin/orderList(state='교환 요청')}" style="border: 1px solid gray">교환 요청</a>
-                    <a th:href="@{/admin/orderList(state='반품 요청')}" style="border: 1px solid gray" >반품 요청</a>
-                    <a th:href="@{/admin/orderList(state='구매 확정')}" style="border: 1px solid gray" >구매 확정</a>
+                    <a th:href="@{/admin/orderList(state='배송 중')}" style="border: 1px solid gray">배송 중</a>
+                    <a th:href="@{/admin/orderList(state='주문 취소')}" style="border: 1px solid gray">주문 취소</a>
+                    <a th:href="@{/admin/orderList(state='환불')}" style="border: 1px solid gray" >환불</a>
                     <a th:href="@{/admin/orderList(state='모든')}" style="border: 1px solid gray">모든 주문 상품</a>
                 </div>
                 <table border="0">
@@ -229,7 +253,7 @@
                         <th>날짜</th>
                         <th>주문정보</th>
                           <th>상태</th>
-                        <th> <input type="checkbox" id="all"/> <button id="checkConfirm">확인</button></th>
+                        <th th:if="${pageResponseDTO.state == '주문 대기' || pageResponseDTO.state == '배송 준비'}"> <input type="checkbox" id="all"/> <button id="checkConfirm">확인</button></th>
                     </tr>
                     <th:block  th:each="order , index :${pageResponseDTO.dtoList2}">
                         <tr>
@@ -238,7 +262,8 @@
                                 <!-- <a th:href="@{/product/view(prodno=${products[index.index][0].prodNo})}" class="thumb"><img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>-->
                                 <ul>
                                     <li class="prodName">[[${products[index.index].prodName}]]</li>
-                                    <li> 주문번호 : [[${order.orderNo}]]</li>
+                                    <li> 주문번호 : [[${order.itemNo}]]</li>
+                                    <li th:if="${products[index.index].color != '' }"> 옵션 : [[${products[index.index].color}]] , [[${products[index.index].size}]]</li>
                                     <li> 수량 : [[${order.itemCount}]]</li>
                                     <li> 남은재고 : [[${products[index.index].prodStock}]]</li>
                                     <li class="list-item" >
@@ -247,9 +272,9 @@
                                 </ul>
                             </td>
                               <td class="status">[[${order.orderState}]]</td>
-                             <td class="confirm">
-                                 <input  type="checkbox" id="checkbox" class="receive" th:data-order="${order.orderNo}">
-                                 <a th:href="@{/admin/checkOrder(orderNo=${order.orderNo})}">확인</a></input>
+                             <td class="confirm" th:if="${pageResponseDTO.state == '주문 대기' || pageResponseDTO.state == '배송 준비'}">
+                                 <input  type="checkbox" id="checkbox" class="receive" th:data-order="${order.itemNo}">
+                                 <a th:href="@{/admin/checkOrder(orderNo=${order.orderNo})}"  id="checkMe" th:data-order="${order.itemNo}">확인</a></input>
                              </td>
 
                         </tr>
@@ -263,21 +288,21 @@
                 <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
                     <div class="paging">
                         <span class="prev" th:if="${pageResponseDTO.prev}">
-                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}))}"><&nbsp;이전</a>
+                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd} , state=${pageResponseDTO.getState()})}"><&nbsp;이전</a>
                         </span>
                         <span class="num" th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
                             <th:block th:if="${num == pageResponseDTO.pg}">
-                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="on">[[${num}]]</a>
+                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}, state=${pageResponseDTO.getState()})}" class="on">[[${num}]]</a>
                             </th:block>
 
                             <th:block th:if="${num != pageResponseDTO.pg}">
 
-                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" >[[${num}]]</a>
+                                 <a th:href="@{/admin/orderList( pg=${num} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}, state=${pageResponseDTO.getState()})}" >[[${num}]]</a>
                             </th:block>
 
                         </span>
                         <span class="next" th:if="${pageResponseDTO.next}">
-                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd}))}">다음&nbsp;></a>
+                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1} , dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd} , state=${pageResponseDTO.getState()})}">다음&nbsp;></a>
                         </span>
                     </div>
 
@@ -287,21 +312,21 @@
 
                     <div class="paging">
                         <span class="prev" th:if="${pageResponseDTO.prev}">
-                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1})}"><&nbsp;이전</a>
+                            <a th:href="@{/admin/orderList(pg=${pageResponseDTO.start -1} , state=${pageResponseDTO.getState()})}"><&nbsp;이전</a>
                         </span>
                         <span class="num" th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
                             <th:block th:if="${num == pageResponseDTO.pg}">
-                                 <a th:href="@{/admin/orderList( pg=${num})}" class="on">[[${num}]]</a>
+                                 <a th:href="@{/admin/orderList( pg=${num} , state=${pageResponseDTO.getState()})}" class="on">[[${num}]]</a>
                             </th:block>
 
                             <th:block th:if="${num != pageResponseDTO.pg}">
 
-                                 <a th:href="@{/admin/orderList( pg=${num})}" >[[${num}]]</a>
+                                 <a th:href="@{/admin/orderList( pg=${num} , state=${pageResponseDTO.getState()})}" >[[${num}]]</a>
                             </th:block>
 
                         </span>
                         <span class="next" th:if="${pageResponseDTO.next}">
-                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1})}">다음&nbsp;></a>
+                            <a th:href="@{/admin/orderList( pg=${pageResponseDTO.end+1}, state=${pageResponseDTO.getState()})}">다음&nbsp;></a>
                         </span>
                     </div>
 

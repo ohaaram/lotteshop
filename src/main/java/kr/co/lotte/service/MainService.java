@@ -1,6 +1,8 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
+import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
 import kr.co.lotte.dto.MainProductsPageRequestDTO;
 import kr.co.lotte.dto.MainProductsPageResponseDTO;
 import kr.co.lotte.dto.ProductsPageRequestDTO;
@@ -8,6 +10,7 @@ import kr.co.lotte.dto.ProductsPageResponseDTO;
 import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.SubProducts;
 import kr.co.lotte.entity.Visitor;
+import kr.co.lotte.repository.OrdersRepository;
 import kr.co.lotte.repository.ProductsRepository;
 import kr.co.lotte.repository.VisitorRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +27,15 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class MainService {
     @Autowired
     private ProductsRepository productsRepository;
     @Autowired
     private VisitorRepository visitorRepository;
+    @Autowired
+    private AdminService adminService;
 
     //히트상품 (많이 판매된 순)
     public List<Products> selectHitProducts(){
@@ -66,6 +72,7 @@ public class MainService {
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = currentDate.format(formatter);
+
         if(visitorRepository.findById(formattedDate).isPresent()){
             Visitor visitor =visitorRepository.findById(formattedDate).get();
             visitor.setVisitCount(visitor.getVisitCount()+1);
@@ -76,6 +83,5 @@ public class MainService {
             visitor.setVisitCount(1);
             visitorRepository.save(visitor);
         }
-
     }
 }

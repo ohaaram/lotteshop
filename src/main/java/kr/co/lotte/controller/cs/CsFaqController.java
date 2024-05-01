@@ -52,7 +52,7 @@ public class CsFaqController {
     }
      */
 
-    // admin.cs.faq 수정 페이지 출력
+    // admin.cs.faq 수정 폼 출력
     @GetMapping("/admin/cs/faq/{no}")
     public String adminFaqModify(@PathVariable int no, Model model){
 

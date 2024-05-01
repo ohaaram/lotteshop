@@ -4,22 +4,16 @@ import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
-import kr.co.lotte.dto.SellerDTO;
-import kr.co.lotte.dto.TermsDTO;
-import kr.co.lotte.dto.UserDTO;
+import kr.co.lotte.dto.*;
 
-import kr.co.lotte.dto.UserUpdateDTO;
-import kr.co.lotte.entity.Points;
+import kr.co.lotte.entity.*;
 
-import kr.co.lotte.entity.Seller;
-import kr.co.lotte.entity.User;
 import kr.co.lotte.mapper.MemberMapper;
 import kr.co.lotte.mapper.TermsMapper;
-import kr.co.lotte.repository.MemberRepository;
-import kr.co.lotte.repository.PointsRepository;
-import kr.co.lotte.repository.SellerRepository;
+import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +21,16 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -53,6 +46,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TermsMapper termsMapper;
     private final PointsRepository pointsRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewImgRepository reviewImgRepository;
 
 
     //회원 등록이 되어 있는지 확인하는 서비스(0또는 1)
@@ -170,6 +165,7 @@ public class MemberService {
 
         memberMapper.updateUserPassword(userDTO);
     }
+
 }
 
 

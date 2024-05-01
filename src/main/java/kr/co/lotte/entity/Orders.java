@@ -29,7 +29,8 @@ public class Orders {
     private int itemDiscount;
     @CreationTimestamp
     private Date orderDate;
-
+    private String sendHp;
+    private String sendName;
 
     private String zip;
     private String orderState;

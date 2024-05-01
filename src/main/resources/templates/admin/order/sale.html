@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org"
+            xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+            layout:decorate="~{/admin/layout/adminLayout.html}">
+            <section  layout:fragment="content">
+                <style>
+                    a {
+                        color: #424242;
+                    }
+                </style>
+                <nav>
+                    <h3>기본환경정보</h3>
+                    <p>
+                        HOME > 주문관리 > <strong>매출현황</strong>
+                    </p>
+                </nav>
+
+                <a th:href="@{/admin/sale(state='week')}" style="border: 1px solid gray" >일주일</a>
+                <a th:href="@{/admin/sale(state='month')}" style="border: 1px solid gray">한 달</a>
+                <a th:href="@{/admin/sale(state='year')}" style="border: 1px solid gray">월 별(1년)</a>
+                <br>
+                <br>
+                <div class="container " style=" display: flex; justify-content: center ; max-width: 75%; height: auto; border: 1px solid #8d8d8d" >
+                    <canvas id="myChart" ></canvas>
+                </div>
+                <br>
+                <br>
+                <div class="container " style=" display: flex; justify-content: center; max-width: 75%; height: auto; border: 1px solid #8c8c8c" >
+                    <canvas id="myChart2" ></canvas>
+                </div>
+
+                <script th:inline="javascript">
+
+                    var ctx = document.getElementById('myChart');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [[${days}]],
+                            datasets: [{
+                                label: '매출액',
+                                data: [[${price}]],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    var ctx2 = document.getElementById('myChart2').getContext('2d');
+                    var chart = new Chart(ctx2, {
+                        // 챠트 종류를 선택
+                        type: 'line',
+                        data: {
+                            labels: [[${days}]],
+                            datasets: [{
+                                label: '주문건수',
+                                backgroundColor: 'transparent',
+                                borderColor: 'Gray',
+                                data: [[${order}]]
+                            }]
+                        },
+                        // 옵션
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display : true,
+                                text: '주문 건수'
+                            }
+                        }
+                    });
+
+                </script>
+<!--
+                <div class="container " >
+                    <div class="row my-3 text-center">
+                        <div class="col ">
+                            <h4>매출 현황</h4>
+                        </div>
+                    </div>
+                    <div class="row my-4 justify-content-center">
+                        <div class="col-md-8 " >
+                            <div class="card">
+                                <div class="card-body">
+                                    <canvas class="myChart"></canvas>
+                                </div>
+                                <div class="card-body text-center text-align-center">
+                                    <h3>여기에 제목을 입력해도 좋을 듯</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <script th:inline="javascript">
+                    const mydata = [[${price}]];
+                    const mydataHalf = [[${order}]];
+                    const listC =[[${days}]];
+
+                    var ctx = document.getElementsByClassName("myChart");
+
+                    var mixedChart = {
+                        type: 'bar',
+                        labels: listC,
+                        datasets : [
+                            {
+                                label: '매출액', //라벨
+                                data : mydata,
+                                backgroundColor: 'rgba(256, 0, 0, 0.1)'
+                            },
+                            {
+                                label: '주문건수',
+                                data: mydataHalf,
+                                backgroundColor: 'transparent',
+                                borderColor: 'skyblue',
+                                type: 'line'
+                            }
+                        ]
+                    };
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: mixedChart,
+                        options: {
+                            legend: {
+                                display: true
+                            }
+                        }
+                    });
+
+                </script>
+-->
+                <p class="ico alert">
+                    <strong>Warning!</strong>
+                    전자상거래 등에서의 상품 등의 정보제공에 관한 고시에 따라 총 35개 상품군에 대해 상품 특성 등을 양식에 따라 입력할 수 있습니다.
+                </p>
+                <!-- 상품등록 컨텐츠 끝 -->
+
+            </section>
+</html>
+
+

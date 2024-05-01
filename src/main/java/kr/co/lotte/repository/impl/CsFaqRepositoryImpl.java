@@ -32,6 +32,7 @@ public class CsFaqRepositoryImpl implements CsRepositoryCustom {
     @Autowired
     private final JPAQueryFactory jpaQueryFactory;
 
+    //faq 페이징처리
     @Override
     public Page<CsFaq> searchAllCsFaq(CsFaqPageRequestDTO pageRequestDTO, Pageable pageable) {
         String cate1 = pageRequestDTO.getCate1();
@@ -56,6 +57,7 @@ public class CsFaqRepositoryImpl implements CsRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    //notice 페이징처리
     @Override
     public Page<CsNotice> searchAllCsNotice(CsFaqPageRequestDTO pageRequestDTO, Pageable pageable) {
         QueryResults<CsNotice> results =null;
@@ -63,7 +65,7 @@ public class CsFaqRepositoryImpl implements CsRepositoryCustom {
         if(cate1 != null && cate1 != ""){
             results = jpaQueryFactory.select( csNotice)
                     .from( csNotice)
-                    .where(csFaq.cate1.eq(cate1))
+                    .where(csNotice.cate1.eq(cate1))
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .fetchResults();

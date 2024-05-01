@@ -27,18 +27,18 @@
             background-color: #f2f2f2;
         }
 
-             /* 모달 */
-         .modal {
-             display: none;
-             position: fixed;
-             z-index: 1000;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             overflow: auto;
-             background-color: rgba(0, 0, 0, 0.5);
-         }
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
 
         .modal-content {
             background-color: #fff;
@@ -83,6 +83,9 @@
         .close_btn:hover {
             color: #555;
         }
+        .paging{
+            text-align: center;
+        }
     </style>
 
 
@@ -94,7 +97,7 @@
 
                     const uid = event.target.getAttribute('data-sellerUid');
                     event.preventDefault();
-                    alert(uid);
+                    //alert(uid);
                     openModal(uid);
                 });
             });
@@ -129,6 +132,11 @@
             function setModalContent(data) {
                 document.getElementById('sellerId').innerText = data.result.sellerUid;
                 document.getElementById('companyName').innerText = data.result.sellerName;
+                document.getElementById('sellerCEO').innerText = data.result.sellerCEO;
+                document.getElementById('sellerSaNumber').innerText = data.result.sellerSaNumber;
+                document.getElementById('companyHp').innerText = data.result.sellerHp;
+                document.getElementById('companyEmail').innerText = data.result.sellerEmail;
+                document.getElementById('companyAddr').innerText = data.result.sellerAddr1 + data.result.sellerAddr2;
             }
 
             async function fetchGet(url) {
@@ -193,8 +201,13 @@
             <div class="modal-content">
                 <span class="close_btn">&times;</span>
                 <h3>판매자 정보</h3>
-                <p>판매자 아이디: <span id="sellerId"></span></p>
-                <p>회사명: <span id="companyName"></span></p>
+                <p>아 이 디 : <span id="sellerId"></span></p>
+                <p>회 사 명 : <span id="companyName"></span></p>
+                <p>대 표 자 : <span id="sellerCEO"></span></p>
+                <p>사업자번호: <span id="sellerSaNumber"></span></p>
+                <p>대표전화 : <span id="companyHp"></span></p>
+                <p>이 메 일 : <span id="companyEmail"></span></p>
+                <p>주   소  : <span id="companyAddr"></span></p>
             </div>
         </div>
         <!--모달 팝업 끝!-->
