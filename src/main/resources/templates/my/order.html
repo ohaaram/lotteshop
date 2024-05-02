@@ -12,7 +12,7 @@
         <li><a th:href="@{/my/favorite}">관심상품</a></li>
         <li><a th:href="@{/my/point}">포인트내역</a></li>
         <li><a th:href="@{/my/coupon}">쿠폰</a></li>
-        <li><a th:href="@{/my/review/view(uid=${#authentication.principal.username})}">나의리뷰</a></li>
+        <li><a th:href="@{/my/review(uid=${#authentication.principal.username})}">나의리뷰</a></li>
         <li><a th:href="@{/my/qna}">문의하기</a></li>
         <li><a th:href="@{/my/info}">나의설정</a></li>
     </ul>
@@ -119,6 +119,7 @@
                         <input type="hidden" id="prodname" name="prodname"/>
                         <input type="hidden" id="uid" name="uid"/>
                         <input type="hidden" id="orderno" name="orderno"/>
+                        <input type="hidden" id="itemno" name="itemno"/>
 
                         <div class="form-group">
                             <label for="reviewTitle">제목:</label>
@@ -214,6 +215,7 @@
                                                 <li th:href="@{#}" class="receive">수취확인</li>
                                                 <li th:if="${orderItem.orderState == '구매확정'}" th:href="@{#}"
                                                     class="review" th:data-orderno="${order.orderNo}"
+                                                    th:data-itemno="${orderItem.itemNo}"
                                                     th:data-prodname="${products[index.index][orderindex.index].prodName}"
                                                     th:data-uid="${#authentication.principal.user.uid}"
                                                     th:data-prodno="${products[index.index][orderindex.index].prodNo}">
@@ -347,13 +349,15 @@
                             const uid = link.getAttribute("data-uid");
                             const prodname = link.getAttribute("data-prodname");
                             const orderno = link.getAttribute("data-orderno");
+                            const itemno = link.getAttribute("data-itemno");
 
                             console.log(prodno); // prodno 값 확인
                             console.log(uid);
                             console.log(prodname);
+                            console.log(itemno);
 
                             //똑같은 주문번호가 있는지 확인 후, 없으면 리뷰쓰기
-                            const data = await fetchGet(`/lotteshop/review/${orderno}/${prodno}`);
+                            const data = await fetchGet(`/lotteshop/review/${orderno}/${prodno}/${itemno}`);
 
                             console.log("같은 주문번호가 몇개 있는지 가져옴 : " + data.count);
 
@@ -368,7 +372,7 @@
                                 });
 
                                 event.preventDefault();
-                                openModal(uid, prodno, prodname, orderno);
+                                openModal(uid, prodno, prodname, orderno,itemno);
                             }
 
                         });
@@ -388,9 +392,9 @@
 
 
                     //모달 띄우기
-                    function openModal(uid, prodno, prodname, orderno) {
+                    function openModal(uid, prodno, prodname, orderno,itemno) {
                         document.getElementById('reviewModal').style.display = 'block';
-                        setModalContent(uid, prodno, prodname, orderno);
+                        setModalContent(uid, prodno, prodname, orderno,itemno);
                     }
 
                     // 모달 닫기
@@ -399,11 +403,12 @@
                     }
 
                     // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
-                    function setModalContent(uid, prodno, prodname, orderno) {
+                    function setModalContent(uid, prodno, prodname, orderno,itemno) {
                         document.getElementById('uid').value = uid;
                         document.getElementById('prodno').value = prodno;
                         document.getElementById('prodname').value = prodname;
                         document.getElementById('orderno').value = orderno;
+                        document.getElementById('itemno').value = itemno;
 
                     }
 

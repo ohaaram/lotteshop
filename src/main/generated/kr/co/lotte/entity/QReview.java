@@ -21,6 +21,8 @@ public class QReview extends EntityPathBase<Review> {
 
     public final StringPath comment = createString("comment");
 
+    public final NumberPath<Integer> itemno = createNumber("itemno", Integer.class);
+
     public final NumberPath<Integer> orderno = createNumber("orderno", Integer.class);
 
     public final StringPath prodname = createString("prodname");

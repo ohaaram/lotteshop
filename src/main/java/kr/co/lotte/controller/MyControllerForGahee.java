@@ -47,10 +47,6 @@ public class MyControllerForGahee {
         model.addAttribute("points", myServiceForGahee.forPoint(uid));
         //최근 주문 내역
 
-
-
-
-
         //상품평 출력
         List<Review> reviews= reviewService.find_five(uid);
         log.info("reviews : "+reviews);

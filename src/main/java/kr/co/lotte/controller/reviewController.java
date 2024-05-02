@@ -76,13 +76,14 @@ public class reviewController {
     }
 
     //리뷰는 한번만 쓰게 하기!(내가 시킨 하나의 상품당 하나의 리뷰)
-    @GetMapping("/review/{orderno}/{prodno}")
-    public ResponseEntity<Map<String, Integer>> rCheck(@PathVariable("orderno") int orderno, @PathVariable("prodno")int prodno, Model model){
+    @GetMapping("/review/{orderno}/{prodno}/{itemno}")
+    public ResponseEntity<Map<String, Integer>> rCheck(@PathVariable("orderno") int orderno, @PathVariable("prodno")int prodno, @PathVariable("itemno")int itemno, Model model){
 
         log.info("review- controller - orderno : "+orderno);
         log.info("review- controller - prodno : "+prodno);
+        log.info("review- controller - itemno : "+itemno);
 
-        int count = reviewService.findByorderno(orderno,prodno);
+        int count = reviewService.findByorderno(orderno,prodno,itemno);
 
         log.info("review - controller - result : "+count);
 

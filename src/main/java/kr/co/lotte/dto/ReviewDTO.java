@@ -32,6 +32,7 @@ public class ReviewDTO {
     private String prodname;
 
     private int orderno;
+    private int itemno;
 
 
 }

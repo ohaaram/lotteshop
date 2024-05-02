@@ -5,45 +5,17 @@
 <div class="container" layout:fragment="content">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script>
-        const score1 = [[${reviewRatioDTO.percent1}]];
-        const score2 = [[${reviewRatioDTO.percent2}]];
-        const score3 = [[${reviewRatioDTO.percent3}]];
-        const score4 = [[${reviewRatioDTO.percent4}]];
-        const score5 = [[${reviewRatioDTO.percent5}]];
-        // 리뷰로 스크롤 이동 //
-        const prodReviewBox = document.getElementsByClassName('prodReviewBox')[0];
-        const moveReview = document.getElementsByClassName('moveReview')[0];
-        moveReview.onclick = function (){
-            prodReviewBox.scrollIntoView();
-        }
-        // 별점 그래프
-        new Chart(document.getElementById("pie-chart"), {
-            type: 'pie',
-            data: {
-                labels: ["1점", "2점", "3점", "4점", "5점"],
 
-                datasets: [{
-                    label: "ReviewScore (percent)",
-                    backgroundColor: ["#FFF8E1", "#187498","#F9D923","#EB5353","#36AE7C"],
-                    data: [score1,score2,score3,score4,score5]
-                }]
-            },
-            options: {
-                // 크기 조절을 위해 false
-                responsive: false,
-                title: {
-                    display: true,
-                }
-            }
-        });
+
     </script>
 
     <style>
-        #like{
+        #like {
             background-color: white;
             border: none;
         }
-        #unlike{
+
+        #unlike {
             background-color: white;
             border: none;
         }
@@ -58,37 +30,95 @@
             height: 50px;
         }
 
-        .prodReview {
-            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
-            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
-            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+        /* 배경색 및 패딩 등의 스타일링 */
+        .prodReviewBox {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .prodReviewHeader {
-            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
-            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
-            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+            margin-bottom: 20px;
         }
 
         .head {
-            border-bottom: 1px solid #ccc; /* 구분 선 스타일 및 색상 지정 */
-            padding-bottom: 20px; /* 리뷰 사이의 간격 조정 */
-            margin-bottom: 20px; /* 리뷰와 다음 리뷰 사이의 간격 조정 */
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .PageBox {
+        .starRating img {
+            width: 20px;
+            height: auto;
+        }
+
+        .prodReview {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prodReview p {
+            margin-bottom: 10px;
+        }
+
+        /* 평점 비율 막대 그래프 스타일링 */
+        .rating-bar {
             display: flex;
-            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .PageBox ul {
+        .bar-label {
+            width: 60px; /* 막대 그래프 레이블의 너비 지정 */
+        }
+
+        .bar {
+            background-color: #007bff; /* 막대 그래프 색상 지정 */
+            height: 20px; /* 막대 그래프 높이 지정 */
+            margin-right: 10px; /* 막대 그래프 간격 지정 */
+        }
+
+        /* 별점 이미지 스타일링 */
+        .prodReviewHeader img {
+            max-width: 80px;
+            height: auto;
+            margin-right: 5px; /* 별점 이미지 간격 조정 */
+        }
+
+        .page {
+            margin-top: 20px;
+        }
+
+        .page ul {
             list-style: none;
             padding: 0;
         }
 
-        .PageBox ul li {
+        .page li {
             display: inline-block;
-            margin: 0 5px; /* 필요한 여백 설정 */
+            margin-right: 10px;
+        }
+
+        .page li:last-child {
+            margin-right: 0;
+        }
+
+
+        .pagination-link {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+
+        .pagination-link:hover {
+            background-color: #e0e0e0;
         }
 
         .detail {
@@ -162,20 +192,28 @@
                     <a th:href="@{/product/list(cateName1='의류/패션')}"><i class="fas fa-tshirt"></i>의류/패션<i
                             class="fas fa-angle-right"></i></a>
                     <ol>
-                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류')}" >남성의류</a>
+                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류')}">남성의류</a>
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='상의')}">상의</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='하의')}">하의</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='신발')}">신발</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='상의')}">상의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='하의')}">하의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='신발')}">신발</a>
                             </ol>
                         </li>
                         <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류')}">여성의류</a>
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '상의')}">상의</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '하의')}">하의</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
-                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '신발')}">신발</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '상의')}">상의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '하의')}">하의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '신발')}">신발</a>
                             </ol>
                         </li>
                     </ol>
@@ -186,16 +224,21 @@
                     <ol>
                         <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전')}">생활가전</a>
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='세탁기/세탁기용품')}">세탁기/세탁기용품</a>
-                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='청소기')}">청소기</a>
-                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='에어컨')}">에어컨</a>
-                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='냉장고')}">냉장고</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='세탁기/세탁기용품')}">세탁기/세탁기용품</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='청소기')}">청소기</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='에어컨')}">에어컨</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='냉장고')}">냉장고</a>
                             </ol>
                         </li>
                         <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전')}">TV/영상가전</a>
                             <ol>
                                 <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전', cateName3='TV')}">TV</a>
-                                <li><a th:href="@{/product/list(cateName1='가전',cateName2='TV/영상가전', cateName3='영상플레이어')}">영상플레이어</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전',cateName2='TV/영상가전', cateName3='영상플레이어')}">영상플레이어</a>
                             </ol>
                         </li>
                     </ol>
@@ -217,10 +260,14 @@
                         <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물')}">수산/건어물</a>
 
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='생선')}">생선</a>
-                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='김/해조류')}">김/해조류</a>
-                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='전복/굴/조개류')}">전복/굴/조개류</a>
-                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='오징어/낙지/쭈꾸미')}">오징어/낙지/쭈꾸미</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='생선')}">생선</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='김/해조류')}">김/해조류</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='전복/굴/조개류')}">전복/굴/조개류</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='오징어/낙지/쭈꾸미')}">오징어/낙지/쭈꾸미</a>
                             </ol>
                         </li>
                     </ol>
@@ -233,19 +280,33 @@
                         <li>
                             <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지')}">강아지</a>
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='사료/영양제')}">사료/영양제</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='간식')}">간식</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='배변용품')}">배변용품</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='사료/영양제')}">사료/영양제</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='간식')}">간식</a>
+                                </li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='배변용품')}">배변용품</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='장난감/훈련용품')}">장난감/훈련용품</a>
+                                </li>
                             </ol>
                         </li>
                         <li>
                             <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이')}">고양이</a>
                             <ol>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='사료/영양제')}">사료/영양제</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='간식')}">간식</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='배변용품')}">배변용품</a></li>
-                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='사료/영양제')}">사료/영양제</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='간식')}">간식</a>
+                                </li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='배변용품')}">배변용품</a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='장난감/훈련용품')}">장난감/훈련용품</a>
+                                </li>
                             </ol>
                         </li>
                     </ol>
@@ -275,8 +336,14 @@
                         <p style="position: relative">
                             <span style="font-size: larger; font-weight: bold;">(주)</span>
                             <span th:text="${product.sellerName}" style="font-size: larger; font-weight: bold;"></span>
-                            <button id="unlike" style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none ">🤍</button>
-                            <button id="like" style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none">❤️</button>
+                            <button id="unlike"
+                                    style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none ">
+                                🤍
+                            </button>
+                            <button id="like"
+                                    style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none">
+                                ❤️
+                            </button>
 
                         </p>
                         <h2>상품번호&nbsp;:&nbsp;<span id="prodId" th:text="${product.prodNo}">10010118412</span></h2>
@@ -308,7 +375,8 @@
                         </div>
                         <div class="dis_price">
                             <ins id="disCount"
-                                 th:text="${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1, 0 )}">할인된 가격
+                                 th:text="${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1, 0 )}">
+                                할인된 가격
                             </ins>
                         </div>
                     </nav>
@@ -331,7 +399,16 @@
                     </nav>
                     <!-- 만약에 옵션이 있는 경우-->
                     <script>
-                        window.onload=async function () {
+                        window.onload = async function () {
+
+
+                            const score1 = [[${reviewRatioDTO.percent1}]];
+                            const score2 = [[${reviewRatioDTO.percent2}]];
+                            const score3 = [[${reviewRatioDTO.percent3}]];
+                            const score4 = [[${reviewRatioDTO.percent4}]];
+                            const score5 = [[${reviewRatioDTO.percent5}]];
+
+
                             const color = document.getElementById('color');
                             const size = document.getElementById('size');
                             const totalPrice = document.getElementById('total_price');
@@ -340,6 +417,16 @@
                             var price = [[${product.prodPrice}]];
                             const like = document.getElementById('like');
                             const unlike = document.getElementById('unlike');
+
+
+                            // 리뷰로 스크롤 이동 //
+                            const prodReviewBox = document.getElementsByClassName('prodReviewBox')[0];
+                            const moveReview = document.getElementsByClassName('moveReview')[0];
+                            moveReview.onclick = function (e) {
+                                e.preventDefault();
+                                prodReviewBox.scrollIntoView();
+                            }
+
                             try {
                                 const userID = document.getElementById('userId').value;
                                 const result = await fetchGet('/lotteshop/product/likeSearch?userId=' + userID + '&prodNo=' + [[${product.prodNo}]]);
@@ -414,7 +501,7 @@
                                 try {
                                     const userID = document.getElementById('userId').value;
                                     const result = await fetchGet('/lotteshop/product/like?prodNo=' + [[${product.prodNo}]] + '&userId=' + userID);
-                                    console.log(result.data +"!");
+                                    console.log(result.data + "!");
                                     if (result.data == 1) {
                                         like.style.display = '';
                                         unlike.style.display = 'none';
@@ -432,18 +519,16 @@
 
                             like.onclick = async function (e) {
                                 e.preventDefault();
-                                    const userID = document.getElementById('userId').value;
-                                    const result = await fetchGet('/lotteshop/product/like?prodNo=' + [[${product.prodNo}]] + '&userId=' + userID);
-                                    console.log(result.data +"!");
-                                    if (result.data == 1) {
-                                        like.style.display = '';
-                                        unlike.style.display = 'none';
-                                    } else {
-                                        like.style.display = 'none';
-                                        unlike.style.display = '';
-                                    }
-
-
+                                const userID = document.getElementById('userId').value;
+                                const result = await fetchGet('/lotteshop/product/like?prodNo=' + [[${product.prodNo}]] + '&userId=' + userID);
+                                console.log(result.data + "!");
+                                if (result.data == 1) {
+                                    like.style.display = '';
+                                    unlike.style.display = 'none';
+                                } else {
+                                    like.style.display = 'none';
+                                    unlike.style.display = '';
+                                }
 
                             }
 
@@ -630,7 +715,7 @@
                         <input type="text" id="optionColor" readonly value="">
                         <input type="text" id="optionSize" readonly value="">
                         <input type="text" id="optionPrice" readonly value="">
-                        <input type="hidden"  id="optionNo" readonly value="">
+                        <input type="hidden" id="optionNo" readonly value="">
                         <button class="delete">삭제</button>
                     </div>
                     <th:block th:if="${options.size()>1}">
@@ -639,48 +724,49 @@
                             <select id="color" name="color">
                                 <option style="font-size: x-large" value="" disabled selected>::(필수)옵션 색상 선택</option>
                                 <th:block th:each="option : ${options}">
-                                    <option th:value="${option.color}" th:text="${option.color}" style="font-size: x-large"></option>
-                            </th:block>
-                        </select>
-                        <br>
-                        <br>
-                        <label for="size" style="font-size: medium"></label>
-                        <select id="size" name="size" class="size">
-                            <option style="font-size: x-large" value="" disabled selected>::(필수)옵션 사이즈 선택</option>
-                        </select>
-                    </nav>
+                                    <option th:value="${option.color}" th:text="${option.color}"
+                                            style="font-size: x-large"></option>
+                                </th:block>
+                            </select>
+                            <br>
+                            <br>
+                            <label for="size" style="font-size: medium"></label>
+                            <select id="size" name="size" class="size">
+                                <option style="font-size: x-large" value="" disabled selected>::(필수)옵션 사이즈 선택</option>
+                            </select>
+                        </nav>
                         <img th:src="@{/images/vip_plcc_banner.png}" alt="100원만 결제해도 1만원 적립!" class="banner"/>
 
 
-                            <div class="option-container" id="option-container">
+                        <div class="option-container" id="option-container">
 
-                            </div>
+                        </div>
                         <div class="button">
                             <input type="button" class="cart" id="cartSub" value="장바구니"/>
-                            <input type="button" class="order"  id="cartBuy"  value="구매하기"/>
+                            <input type="button" class="order" id="cartBuy" value="구매하기"/>
                         </div>
                         <div class="total">
                         <span id="total_price"
                               th:text="${0}"></span>
                             <em>총 상품금액</em>
                         </div>
-                </th:block>
+                    </th:block>
 
                     <th:block th:if="${options.size()==1}" th:each="option , index:${options}">
 
                         <img th:src="@{/images/vip_plcc_banner.png}" alt="100원만 결제해도 1만원 적립!" class="banner"/>
                         <div class="option-container" id="option-container">
-                            <div class="quantity-container" id="plus" >
+                            <div class="quantity-container" id="plus">
                                 <button class="minus">-</button>
                                 <input type="number" id="optionCount" min="1" value="1">
                                 <button class="plus">+</button>
-                                <input type="hidden"  id="optionNo" readonly th:value="${option.subProdNo}">
+                                <input type="hidden" id="optionNo" readonly th:value="${option.subProdNo}">
                                 <input type="text" th:value="${product.getProdName()}">
                             </div>
                         </div>
                         <div class="button">
-                            <input type="button" class="cart"  id="cartSub2" value="장바구니"/>
-                            <input type="button" class="order"  id="cartBuy2" value="구매하기"/>
+                            <input type="button" class="cart" id="cartSub2" value="장바구니"/>
+                            <input type="button" class="order" id="cartBuy2" value="구매하기"/>
                         </div>
                         <div class="total">
                         <span id="total_price"
@@ -689,9 +775,6 @@
                         </div>
                     </th:block>
 
-
-
-
                 </div>
             </article>
 
@@ -699,7 +782,7 @@
             <article class="detail">
                 <nav>
                     <a href="#" style="font-size: xx-large">상세정보</a>&nbsp;&nbsp;
-                    <a href="#" style="font-size: xx-large">리뷰</a>&nbsp;&nbsp;
+                    <a class="moveReview" href="#" style="font-size: xx-large">리뷰</a>&nbsp;&nbsp;
                 </nav>
                 <!-- 상품상세페이지 이미지 -->
                 <img th:src="@{/uploads/__${product.image4}__}" th:alt="${product.prodName}" alt="상세페이지1">
@@ -800,23 +883,40 @@
             <div class="prodReviewBox">
                 <div class="prodReviewHeader">
                     <div>
-                        <p class="head" style="font-size: xx-large">리뷰(<span style="font-size: xx-large"
-                                                                             th:text="${reviewPage.dtoList.size()}"></span>)
+                        <p class="head" style="font-size: xx-large">상품 리뷰
                         </p>
                         <br>
-                        <h3>평균</h3>
 
-                        <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 2, 'POINT')}"> 점</h1>
-                        <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}" alt="oneStar"
-                             style="max-width: 80px; height: auto;">
-                        <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}" alt="oneStar"
-                             style="max-width: 80px; height: auto;">
-                        <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}" alt="oneStar"
-                             style="max-width: 80px; height: auto;">
-                        <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}" alt="oneStar"
-                             style="max-width: 80px; height: auto;">
-                        <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}" alt="oneStar"
-                             style="max-width: 80px; height: auto;">
+                        <th:block th:if="${reviewPage.dtoList.size()}>0">
+                            <h3>평균</h3>
+                            <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 1, 'POINT')}+'/5'">
+                                점</h1>
+                        </th:block>
+                        <div>
+                            <p>
+                                전체 리뷰수<br>
+                                <span th:text="${reviewPage.dtoList.size()}"></span>
+                            </p>
+                        </div>
+
+                        <th:block th:if="${reviewPage.dtoList.size()}==0">
+                            <span style="font-size: 15px">리뷰가 없습니다.</span>
+                        </th:block>
                     </div>
                 </div>
 
@@ -845,74 +945,93 @@
                         </div>
                     </li>
                 </ul>
-                <div style="border: 1px solid #c9c9c9;" class="container">
-                    <h2>문의 내용</h2>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>내용</th>
-                            <th>작성 시간</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                            <td>2024-04-21 19:18:51</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                            <td>2024-04-21 19:18:51</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                            <td>2024-04-21 19:18:51</td>
-                        </tr>
-                        <!-- 여기에 나머지 문의 내용 추가 -->
-                        </tbody>
-                    </table>
-                </div>
-                <div>
-                    <div>
-                        <div>
-                            <strong>Q&A</strong>
-                            <span>(943)</span>
-                        </div>
-                    </div>
-                    <div>
-                        <p>"답변은"
-                        <strong>마이롯데 > 나의 문의 내역</strong>
-                            "에서 확인하실 수 있습니다."
-                        </p>
-                        <button>문의하기</button>
-                    </div>
+
+                <!--페이지 네이션-->
+                <div class="page" style="text-align: center">
                     <ul>
-                        <li>
-                            <div>
-                                <span>상품정보</span>
-                                <span>::before
-                                "옵션":061 포피 코랄
-                                </span>
-                                <div>
-                                    <button>
-                                        <span>메뉴더보기</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <p>
-                                    <span>비밀글입니다</span>
-                                    <span>비밀글답변입니다</span>
-                                </p>
-                            </div>
-                            <div></div>
-                            <div></div>
+                        <li th:if="${reviewPage.prev}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno=${product.prodNo}, pg=${reviewPage.start - 1})}">이전</a>
+                        </li>
+                        <li th:each="n : ${#numbers.sequence(reviewPage.start, reviewPage.end)}">
+                            <a class="pagination-link" th:href="@{/product/view(prodno=${product.prodNo}, pg=${n})}"
+                               th:text="${n}"></a>
+                        </li>
+                        <li th:if="${reviewPage.next}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno=${product.prodNo}, pg=${reviewPage.end + 1})}">다음</a>
                         </li>
                     </ul>
                 </div>
+            </div>
+
+            <div style="border: 1px solid #c9c9c9;" class="container">
+                <h2>문의 내용</h2>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>내용</th>
+                        <th>작성 시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
+                        <td>2024-04-21 19:18:51</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
+                        <td>2024-04-21 19:18:51</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
+                        <td>2024-04-21 19:18:51</td>
+                    </tr>
+                    <!-- 여기에 나머지 문의 내용 추가 -->
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <div>
+                    <div>
+                        <strong>Q&A</strong>
+                        <span>(943)</span>
+                    </div>
+                </div>
+                <div>
+                    <p>"답변은"
+                        <strong>마이롯데 > 나의 문의 내역</strong>
+                        "에서 확인하실 수 있습니다."
+                    </p>
+                    <button>문의하기</button>
+                </div>
+                <ul>
+                    <li>
+                        <div>
+                            <span>상품정보</span>
+                            <span>::before
+                                "옵션":061 포피 코랄
+                                </span>
+                            <div>
+                                <button>
+                                    <span>메뉴더보기</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <p>
+                                <span>비밀글입니다</span>
+                                <span>비밀글답변입니다</span>
+                            </p>
+                        </div>
+                        <div></div>
+                        <div></div>
+                    </li>
+                </ul>
             </div>
 
 

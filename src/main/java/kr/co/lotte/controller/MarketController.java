@@ -83,6 +83,7 @@ public class MarketController {
         //리뷰 조회
         ReviewPageResponseDTO reviewPageResponseDTO = reviewService.selectReviews(prodno,reviewPageRequestDTO);
 
+        log.info("페이지 네이션 할 prodview - reviewPageResponseDTO : "+reviewPageResponseDTO);
 
 
         //리뷰 별점 - 평균, 비율 구하기

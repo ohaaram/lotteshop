@@ -319,9 +319,9 @@ public class ReviewService {
 
 
     //리뷰 유효성 검사
-    public int findByorderno(int orderno,int prodno){
+    public int findByorderno(int orderno,int prodno,int itemno){
 
-        int count = reviewRepository.countByOrdernoAndProdno(orderno,prodno);
+        int count = reviewRepository.countByOrdernoAndProdnoAndItemno(orderno,prodno,itemno);
 
         log.info("service - findByorderno - count : "+count);
 
