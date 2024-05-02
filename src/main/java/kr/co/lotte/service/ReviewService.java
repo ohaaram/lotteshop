@@ -14,6 +14,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -292,17 +293,38 @@ public class ReviewService {
     }
 
 
-    //내가 작성한 리뷰를 싹 다 불러오기
-    public List<Review> findReview(String uid){
+    //내가 작성한 리뷰를 싹 다 불러오기(페이지네이션 추가)
+    public ReviewPageResponseDTO findReview(String uid,ReviewPageRequestDTO reviewPageRequestDTO){
 
-        List<Review> reviews= reviewRepository.findByuid(uid);
+        Pageable pageable = reviewPageRequestDTO.getPageable("no");
 
-        reviewRepository.findProdName(reviews);
+        log.info("여기는 reviewService입니다.");
 
-        log.info("reviews : "+reviews);
+        Page<Review> reviews = reviewRepository.findByUid(uid,reviewPageRequestDTO,pageable);
 
-        return reviews;
+        log.info("review_service - findReview - reviews : "+reviews);
+        List<Review> reviews1= reviews.getContent();
 
+        int total = (int) reviews.getTotalElements();
+        return new ReviewPageResponseDTO(reviewPageRequestDTO , reviews.getSize() , reviews1);
     }
 
+    //최근에 작성한 리뷰 5개만 뽑아오기
+    public List<Review> find_five(String uid){
+
+       List<Review> reviews= reviewRepository.findTop5ByUidOrderByRdateDesc(uid);
+
+        return reviews;
+    }
+
+
+    //리뷰 유효성 검사
+    public int findByorderno(int orderno,int prodno){
+
+        int count = reviewRepository.countByOrdernoAndProdno(orderno,prodno);
+
+        log.info("service - findByorderno - count : "+count);
+
+        return count;
+    }
 }

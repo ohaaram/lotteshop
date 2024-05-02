@@ -53,7 +53,7 @@ public class CsFaqService {
         return dtoLists;
     }
 
-    // admin.cs.faq.modify 출력
+    // admin.cs.faq 이거저거 출력
     public CsFaqDTO faqSelectNo(int no){
         return adminCsMapper.faqSelectNo(no);
     }

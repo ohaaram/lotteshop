@@ -10,6 +10,7 @@ import kr.co.lotte.dto.ProductsPageResponseDTO;
 import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.SubProducts;
 import kr.co.lotte.entity.Visitor;
+import kr.co.lotte.repository.LikeRepository;
 import kr.co.lotte.repository.OrdersRepository;
 import kr.co.lotte.repository.ProductsRepository;
 import kr.co.lotte.repository.VisitorRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,6 +38,8 @@ public class MainService {
     private VisitorRepository visitorRepository;
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private LikeRepository likeRepository;
 
     //히트상품 (많이 판매된 순)
     public List<Products> selectHitProducts(){
@@ -64,7 +68,6 @@ public class MainService {
         List<Products> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
         return new MainProductsPageResponseDTO(requestDTO, dtoList , total);
-
     }
 
     //방문자수
@@ -84,4 +87,28 @@ public class MainService {
             visitorRepository.save(visitor);
         }
     }
+
+
+    public List<Products> hahaha (List<Products> products, String uid){
+        for (Products product : products){
+            if(likeRepository.findByUserIdAndProdNo(uid, product.getProdNo()).isEmpty()){
+                product.setLikeState(0);
+            }else{
+                product.setLikeState(1);
+            }
+        }
+        return products;
+    }
+
+    //상품 검색
+    public ProductsPageResponseDTO searchForProduct(ProductsPageRequestDTO requestDTO, String keyword){
+        Pageable pageable = requestDTO.getPageable("no");
+
+        //키워드를 받아와서 검색 후  페이지 네이션
+        Page<Products> page = productsRepository.searchForProduct(requestDTO,pageable,keyword);
+        List<Products>  dtoList = page.getContent();
+        int total = (int) page.getTotalElements();
+        return new ProductsPageResponseDTO(requestDTO,dtoList,total);
+    }
+
 }

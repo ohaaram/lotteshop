@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,20 @@ public class MarketController {
 
 
     @GetMapping("/product/list")
-    public String list(Model model, MainProductsPageRequestDTO requestDTO){
-        model.addAttribute("pageResponseDTO", mainService.searchListProducts(requestDTO));
+    public String list(Model model, MainProductsPageRequestDTO requestDTO ,@AuthenticationPrincipal MyUserDetails userDetails){
+        MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
+        List<Products> products = pageResponseDTO.getDtoList();
+        try{
+            User user = userDetails.getUser();
+            List<Products> newProducts = mainService.hahaha(products, user.getUid());
+            pageResponseDTO.setDtoList(newProducts);
+        }catch (Exception e){
+            for(Products p : products){
+                p.setLikeState(0);
+            }
+            pageResponseDTO.setDtoList(products);
+        }
+        model.addAttribute("pageResponseDTO", pageResponseDTO);
         return "/product/list";
     }
 
@@ -209,8 +222,11 @@ public class MarketController {
 
     }
 
+    //상품 검색기능
     @GetMapping("/product/search")
-    public String search(){
+    public String search(String keyword,ProductsPageRequestDTO requestDTO){
+
+        mainService.searchForProduct(requestDTO, keyword);
 
         return "/product/search";
     }
@@ -238,6 +254,18 @@ public class MarketController {
     }
 
 
+    //like
+    @GetMapping("/product/like")
+    public ResponseEntity like(@RequestParam(name = "userId") String uid , @RequestParam(name = "prodNo") int prodNo){
+        return marketService.likeButton(uid,prodNo);
+    }
 
+
+    //like
+
+    @GetMapping("/product/likeSearch")
+    public ResponseEntity likeSearch(@RequestParam(name = "userId") String uid , @RequestParam(name = "prodNo") int prodNo){
+        return marketService.search(uid,prodNo);
+    }
 
 }

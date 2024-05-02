@@ -427,6 +427,38 @@ public class MarketService {
         return ResponseEntity.ok().body(map);
     }
 
+    @Autowired
+    private LikeRepository likeRepository;
+
+    public ResponseEntity likeButton(String uid, int prodNo){
+        Map<String , Integer> map =new HashMap<>();
+        int state = 0; //없음
+        if(likeRepository.findByUserIdAndProdNo(uid, prodNo).isEmpty()){
+            Like like = new Like();
+            like.setUserId(uid);
+            like.setProdNo(prodNo);
+            likeRepository.save(like);
+            state=1;
+        }else{
+            likeRepository.deleteByUserIdAndProdNo(uid,prodNo);
+            state=0;
+        }
+        map.put("data", state);
+        return ResponseEntity.ok().body(map);
+    }
+
+
+    public ResponseEntity search(String uid, int prodNo){
+        Map<String , Integer> map =new HashMap<>();
+        int state = 0; //없음
+        if(likeRepository.findByUserIdAndProdNo(uid, prodNo).isEmpty()){
+            state=0;
+        }else{
+            state=1;
+        }
+        map.put("data", state);
+        return ResponseEntity.ok().body(map);
+    }
 
 
 }

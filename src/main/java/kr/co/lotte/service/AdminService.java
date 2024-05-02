@@ -408,7 +408,6 @@ public class AdminService {
                 }).toList();
         int total = (int) page.getTotalElements();
         return new ProductsPageResponseDTO(requestDTO, total, dtoList);
-
     }
 
     public ProductsPageResponseDTO searchProductsForManager(ProductsPageRequestDTO requestDTO, String uid) {

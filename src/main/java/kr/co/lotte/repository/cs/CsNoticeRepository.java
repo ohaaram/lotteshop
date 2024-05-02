@@ -13,4 +13,5 @@ public interface CsNoticeRepository extends JpaRepository<CsNotice, Integer>{
     List<CsNotice> findByCate1(String cate1);
     CsNotice findFirstByCate2(String cate2);
 
+
 }

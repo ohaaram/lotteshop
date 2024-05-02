@@ -51,12 +51,12 @@ public class AdminControllerForSangdo {
     @GetMapping("/admin/member/graph")
     public String memberGraph(Model model) {
 
-        log.info("index Started");
-        model.addAttribute("graphTitle", "일일 방문자 수");
-        model.addAttribute("col0", "Date");
-        model.addAttribute("col1", "Sales");
-        model.addAttribute("col2", "Expense");
-        model.addAttribute("chartData", adminServiceForSangdo.getGraphData());
+//        log.info("index Started");
+//        model.addAttribute("graphTitle", "일일 방문자 수");
+//        model.addAttribute("col0", "Date");
+//        model.addAttribute("col1", "Sales");
+//        model.addAttribute("col2", "Expense");
+//        model.addAttribute("chartData", adminServiceForSangdo.getGraphData());
 
         return "/admin/member/graph";
 

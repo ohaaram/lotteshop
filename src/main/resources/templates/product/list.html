@@ -3,8 +3,54 @@
       layout:decorate="~{/layout/productLayout}">
 
 <div class="container" layout:fragment="content">
+        <script>
+            window.onload=async function () {
+                const likes = document.querySelectorAll('#like');
+                const unlikes = document.querySelectorAll('#unlike');
 
+                likes.forEach(function (like){
+                    like.onclick=async function (e) {
+                        try {
+                            const userId = document.getElementById('userId').value;
+                            const result = await fetchGet('/lotteshop/product/like?prodNo=' + like.getAttribute('data-prodNo') + '&userId=' + userId);
+                            if (result.data == 1) {
+                                like.innerText='❤️';
+                            } else {
+                                like.innerText='🤍';
+
+                            }
+                        } catch (e) {
+                            alert('로그인 후 이용해주세요');
+                        }
+
+                    }
+                })
+
+                unlikes.forEach(function (like){
+                    like.onclick=async function (e) {
+                        try {
+                            const userId = document.getElementById('userId').value;
+                            const result = await fetchGet('/lotteshop/product/like?prodNo=' + like.getAttribute('data-prodNo') + '&userId=' + userId);
+                            if (result.data == 1) {
+                                like.innerText = '❤️';
+                            } else {
+                                like.innerText = '🤍';
+
+                            }
+                        } catch (e) {
+                            alert('로그인 후 이용해주세요');
+                        }
+                    }
+                })
+
+            }
+
+
+        </script>
     <main id="product">
+        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+            <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
+        </th:block>
         <aside>
             <!-- 카테고리 -->
             <ul class="category">
@@ -144,6 +190,8 @@
                                 </li>
                                 <li> <span class="free" th:if="${product.delivery == 0}">무료배송</span></li>
                                 <li> <span class="free" th:if="${product.delivery != 0}"><i class="fa fa-truck"></i>  [[${product.delivery}]]</span></li>
+                                <li><span id="like" style="font-size: large" th:data-prodNo="${product.prodNo}" th:if="${product.getLikeState() != 0}">❤️</span></li>
+                                <li><span id="unlike" style="font-size: large" th:data-prodNo="${product.prodNo}" th:if="${product.getLikeState() == 0}">🤍</span></li>
                             </ul>
                         </td>
                     </th:block>
@@ -153,6 +201,8 @@
                                 <li><ins class="dis-price">[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins></li>
                                 <li> <span class="free" th:if="${product.delivery == 0}">무료배송</span></li>
                                 <li> <span class="free" th:if="${product.delivery != 0}"><i class="fa fa-truck"></i>  [[${product.delivery}]]</span></li>
+                                <li><span id="like" style="font-size: large" th:data-prodNo="${product.prodNo}"  th:if="${product.getLikeState() != 0}">❤️</span></li>
+                                <li><span id="unlike" style="font-size: large"  th:data-prodNo="${product.prodNo}"  th:if="${product.getLikeState() == 0}">🤍</span></li>
                             </ul>
                         </td>
                     </th:block>

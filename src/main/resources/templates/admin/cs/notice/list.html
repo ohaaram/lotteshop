@@ -87,11 +87,13 @@
                         <td th:if="${csNotice.cate2 == 'check'}" style="white-space: nowrap;">점검</td>
                         <td th:if="${csNotice.cate2 == 'news'}" style="white-space: nowrap;">뉴스</td>
 
-                        <td>[[${csNotice.title}]]</td>
+
+                        <td><a th:href="@{/admin/cs/notice/view(no=${csNotice.no})}">[[${csNotice.title}]]</a></td>
+
                         <td>[[${csNotice.content}]]</td>
                         <td>
-                            <a th:href="@{#}">[수정]</a>
-                            <a th:href="@{#}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
+                            <a th:href="@{/admin/cs/notice/modify(no=${csNotice.no})}">[수정]</a>
+                            <a th:href="@{/admin/cs/notice/delete(csNoticeNo=${csNotice.no})}" onclick="return confirm('정말 삭제하시겠습니까?')">[삭제]</a>
                         </td>
                     </tr>
                 </table>

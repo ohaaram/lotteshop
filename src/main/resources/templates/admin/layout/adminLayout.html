@@ -49,11 +49,13 @@
         <div>
             <a th:href="@{/admin/index}" class="logo"><img th:src="@{/admin/images/admin_logo.png}" alt="admin_logo"/></a>
             <p>
+
                 <span th:if="${#authentication.principal.user.role == 'ADMIN'}">[[${#authentication.principal.user.name}]]님 반갑습니다.</span>
                 <span th:if="${#authentication.principal.user.role != 'ADMIN'}">[[${#authentication.principal.user.sellerName}]]님 반갑습니다.</span>
 
                 <a th:href="@{/admin/index}">HOME |</a>
                 <a th:href="@{/member/logout}">로그아웃 |</a>
+
                 <a href="#">고객센터</a>
             </p>
         </div>

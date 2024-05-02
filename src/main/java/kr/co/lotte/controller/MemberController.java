@@ -118,8 +118,8 @@ public class MemberController {
     //약관 동의 페이지 매핑
     @GetMapping("/member/signup")
     public String signup(Model model){
-        model.addAttribute("terms", memberService.findTerms(1));
         TermsDTO terms = memberService.findTerms(1);
+        model.addAttribute("terms", memberService.findTerms(1));
         return "/member/signup";
     }
 

@@ -3,6 +3,8 @@ package kr.co.lotte.repository.custom;
 import com.querydsl.core.Tuple;
 import kr.co.lotte.dto.MainProductsPageRequestDTO;
 import kr.co.lotte.dto.ProductsPageRequestDTO;
+import kr.co.lotte.dto.ProductsPageResponseDTO;
+import kr.co.lotte.entity.Like;
 import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.SubProducts;
 import org.springframework.data.domain.Page;
@@ -22,4 +24,10 @@ public interface ProductsRepositoryCustom  {
     public Tuple serachOnlyOne(int subProductNo);
 
     public Page<Products> searchAllProductsForList(MainProductsPageRequestDTO pageRequestDTO, Pageable pageable);
+
+
+    public Page<Like> searchAllLike(ProductsPageRequestDTO pageRequestDTO, Pageable pageable, String uid);
+
+    public Page<Products> searchForProduct(ProductsPageRequestDTO productsPageRequestDTO, Pageable pageable,String keyword);
+
 }

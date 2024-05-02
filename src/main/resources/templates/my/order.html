@@ -4,548 +4,622 @@
       layout:decorate="~{/my/layout/myLayout.html}">
 
 
-            <div class="ordered" layout:fragment="content">
-                <!-- 주문상세 팝업 -->
-                <ul>
-                    <span class="menu_else"></span>
-                    <li class="on"><a th:href="@{/my/order}">전체주문내역</a></li>
-                    <!--<li><a href="./favorite.html">관심상품</a></li>-->
-                    <li><a th:href="@{/my/point}">포인트내역</a></li>
-                    <li><a th:href="@{/my/coupon}">쿠폰</a></li>
-                    <li><a th:href="@{/my/review}">나의리뷰</a></li>
-                    <li><a th:href="@{/my/qna}">문의하기</a></li>
-                    <li><a th:href="@{/my/info}">나의설정</a></li>
-                </ul>
+<div class="ordered" layout:fragment="content">
+    <!-- 주문상세 팝업 -->
+    <ul>
+        <span class="menu_else"></span>
+        <li class="on"><a th:href="@{/my/order}">전체주문내역</a></li>
+        <li><a th:href="@{/my/favorite}">관심상품</a></li>
+        <li><a th:href="@{/my/point}">포인트내역</a></li>
+        <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+        <li><a th:href="@{/my/review/view(uid=${#authentication.principal.username})}">나의리뷰</a></li>
+        <li><a th:href="@{/my/qna}">문의하기</a></li>
+        <li><a th:href="@{/my/info}">나의설정</a></li>
+    </ul>
 
-                <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
-                    <article>
-                        <h3>전체주문내역</h3>
+    <section>
+        <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+        <article>
+            <h3>전체주문내역</h3>
 
-                        <div class="byDate">
-                            <span class="tit">기간별조회</span>
-                            <ul class="date_3ea">
-                                <th:block th:if="${pageResponseDTO.oneWeek =='yes'}">
-                                    <li ><a  class="on" th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
-                                    <li><a th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
-                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
-                                        <li><a th:href="@{/my/order(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
-                                    </th:block>
-                                </th:block>
-
-                                <th:block th:if="${pageResponseDTO.fifteen =='yes'}">
-                                    <li ><a th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
-                                    <li ><a  class="on" th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
-                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
-                                        <li><a th:href="@{/my/order(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
-                                    </th:block>
-                                </th:block>
-
-                                <th:block th:if="${pageResponseDTO.fifteen !='yes' && pageResponseDTO.oneWeek != 'yes'}">
-                                    <li ><a th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
-                                    <li ><a th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
-                                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
-                                        <li ><a  class="on" th:href="@{/my/order(currentMonth = ${currentMonth})}" ><em>1</em>개월</a></li>
-                                    </th:block>
-                                </th:block>
-                            </ul>
-                            <ul class="date_5ea">
-                                <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
-                                    <li th:each="i : ${#numbers.sequence(0, 4)}">
-                                        <a  th:href="@{/my/order(currentMonth = ${currentMonth - i})}">
-                                            <em th:if="${currentMonth - i > 0}" th:text="${(currentMonth - i)}"></em>
-                                            <em th:if="${currentMonth - i <= 0}" th:text="${(currentMonth - i) + 12}"></em>월
-                                            <span th:if="${currentMonth - i <= 0}"></span>
-                                        </a>
-
-                                    </li>
-                                </th:block>
-                            </ul>
-                            <form th:action="@{/my/order}">
-                                <input type="date" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
-                                <span>~</span>
-                                <input type="date" name="dateEnd" max="[CURRENT_DATE]" required>
-                                <button class="btnConfirm" type="submit">조회하기</button>
-                            </form>
-                        </div>
-
-                        <table border="0">
-                            <tr>
-                                <th>날짜</th>
-                                <th>주문정보</th>
-                            <!--    <th>상태</th>
-                                <th>확인/신청</th> -->
-                            </tr>
-                            <th:block  th:each="order , index :${pageResponseDTO.dtoList}">
-                            <tr>
-                                <td class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</td>
-                                <td>
-                                    <a th:href="@{/product/view(prodno=${products[index.index][0].prodNo})}" class="thumb"><img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>
-                                    <ul>
-                                        <li class="prodName"><span th:href="@{#}"  onclick="openPopup()">[[${products[index.index][0].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]개</span></li>
-                                         주문번호 : <span class="ordNo">[[${order.orderNo}]]</span></li>
-                                        <li class="prodPrice">[[${order.orderTotalPrice}]]</li>
-                                        <li class="list-item" >
-                                            <input type="hidden" id="aec" th:value="${index.index}">
-                                            <span  class="detailOrder" th:data-orderNo="${order.orderNo}"> 주문 내역 상세 보기</span> </li>
-                                    </ul>
-                                </td>
-                                <!--  <td class="status">[[${order.orderState}]]</td>
-                                 <td class="confirm">
-                                     <a th:href="@{#}" class="receive">수취확인</a>
-                                     <a th:href="@{#}" class="review">상품평</a>
-                                     <a th:href="@{#}" class="refund">반품신청</a>
-                                     <a th:href="@{#}" class="exchange">교환신청</a>
-                                 </td>-->
-
-                             </tr>
-                            </th:block>
-                         </table>
-
-
-
-                        <!-- 리뷰 작성을 위한 모달 -->
-                        <div id="reviewModal" class="modal">
-                            <div class="modal-content">
-                                <span id="close_btn" class="close_btn">&times;</span>
-                                <h3>리뷰 작성</h3>
-                                <form th:action="@{/my/order/write_review}" id="reviewForm" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" id="prodno" name="prodno"/>
-                                    <input type="hidden" id="uid" name="uid"/>
-                                    <div class="form-group">
-                                        <label for="reviewTitle">제목:</label>
-                                        <input type="text" id="reviewTitle" name="title" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="reviewContent">내용:</label>
-                                        <textarea id="reviewContent" name="comment" rows="5" required></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="reviewRating">평점:</label>
-                                        <div class="rating" id="reviewRating">
-                                            <span class="star" data-rating="1">&#9733;</span>
-                                            <span class="star" data-rating="2">&#9733;</span>
-                                            <span class="star" data-rating="3">&#9733;</span>
-                                            <span class="star" data-rating="4">&#9733;</span>
-                                            <span class="star" data-rating="5">&#9733;</span>
-                                        </div>
-                                        <input type="hidden" name="score" id="rating">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="reviewImage">이미지 업로드:</label>
-                                        <input type="file" id="reviewImage" name="multImage1">
-                                    </div>
-                                    <button class="btn_review" type="submit">리뷰 작성</button>
-                                </form>
-                            </div>
-                        </div>
-                        <!-- 리뷰 작성 모달 끝 -->
-
-                        <th:block th:each="order , index :${pageResponseDTO.dtoList}">
-                            <div id="popOrder" class="popup">
-                                <div>
-                                    <nav>
-                                        <h1>주문상세</h1>
-                                        <button class="btnClose">X</button>
-                                    </nav>
-                                    <section>
-                                        <article class="order">
-                                            <h3>주문정보</h3>
-                                            <table border="0">
-                                                <tr>
-                                                    <th>날짜</th>
-                                                    <th>상품정보</th>
-                                                    <th>결제금액</th>
-                                                    <th>상태</th>
-                                                    <th>확인/신청</th>
-                                                </tr>
-                                                <tr th:each="orderItem , orderindex :${orderItems[index.index]}">
-                                                    <td>
-                                                        <p class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</p>
-                                                        주문번호 : <span class="ordNo">[[${order.orderNo}]]</span>
-                                                    </td>
-                                                    <td>
-                                                        <img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index][orderindex.index].image1}__}" alt="">
-                                                        <ul>
-                                                            <li class="company">상호명 수정</li>
-                                                            <li class="prodName">[[${products[index.index][orderindex.index].prodName}]]</li>
-                                                            <li>수량 : <span class="prodCount">[[${orderItem.itemCount}]]</span>개</li>
-                                                            <li class="prodPrice">개당 : [[${orderItem.itemPrice}]]</li>
-                                                        </ul>
-                                                    </td>
-                                                    <td class="payment">
-                                                        <ol>
-                                                            <li class="price">
-                                                                <span>총 판매가</span>
-                                                                <span>[[${orderItem.itemPrice * orderItem.itemCount}]]</span>
-                                                            </li>
-                                                            <li class="discount">
-                                                                <span>할인 ( [[${orderItem.itemDiscount}]] %)</span>
-                                                                <span>[[${#numbers.formatDecimal(orderItem.itemPrice * orderItem.itemDiscount *0.01 * orderItem.itemCount , 1, 0)}]]</span>
-                                                            </li>
-                                                            <li class="total">
-                                                                <span>결제금액</span>
-                                                                <span>[[${#numbers.formatDecimal(orderItem.itemPrice * (100 - orderItem.itemDiscount ) *0.01 * orderItem.itemCount , 1, 0)}]]</span>
-                                                            </li>
-                                                        </ol>
-                                                    </td>
-                                                    <td class="status">[[${orderItem.orderState}]]</td>
-                                                    <td th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}" class="confirm" style="text-align: center">
-                                                        <ol>
-                                                        <li th:href="@{#}" class="receive">수취확인</li>
-                                                        <li  th:if="${orderItem.orderState == '구매확정'}" th:href="@{#}" class="review"  th:data-uid ="${#authentication.principal.user.uid}" th:data-prodno="${products[index.index][orderindex.index].prodNo}">상품평</li><!--구매확정이 되면 상품평 입력이 가능함-->
-                                                        <li th:href="@{#}" class="exchange">교환신청</li>
-                                                        <li id="delete" th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}" th:data-itemNo="${orderItem.itemNo}" class="refund">환불(주문취소)신청</li>
-                                                        </ol>
-                                                    </td>
-                                                    <td th:if="${orderItem.orderState == '주문 취소' || orderItem.orderState == '환불'}">
-                                                        <ol>
-                                                            <li> </li>
-
-                                                        </ol>
-                                                    </td>
-                                                </tr>
-
-                                            </table>
-                                            <p>배송 준비 이전의 주문은 취소 처리가 되며, 이후의 상품의 경우 배송비(3,000원)가 부가됩니다.</p>
-                                            <br>
-                                        </article>
-                                        <article class="delivery">
-                                            <h3>결제 및 배송정보</h3>
-                                            <table border="0">
-                                                <tr>
-                                                    <th>최종 결제 금액</th>
-                                                    <td class="request" >[[${#numbers.formatCurrency(order.orderTotalPrice)}]] (사용 포인트 : [[${order.point}]] )</td>
-                                                </tr>
-
-                                                <tr>
-                                                    <th>받으실 분</th>
-                                                    <td class="name">[[${order.sendName}]]</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>연락처</th>
-                                                    <td class="hp">[[${order.sendHp}]]</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>배송지</th>
-                                                    <td class="address">[ [[${order.zip}]] ]  [[${order.addr1}]] [[${order.addr2}]]</td>
-                                                </tr>
-
-                                            </table>
-                                        </article>
-                                    </section>
-                                </div>
-                            </div>
+            <div class="byDate">
+                <span class="tit">기간별조회</span>
+                <ul class="date_3ea">
+                    <th:block th:if="${pageResponseDTO.oneWeek =='yes'}">
+                        <li><a class="on" th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                        <li><a th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
+                        <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                            <li><a th:href="@{/my/order(currentMonth = ${currentMonth})}"><em>1</em>개월</a></li>
                         </th:block>
-                        <script>
-                            window.onload=function (){
+                    </th:block>
 
-                                //주문취소
-                                const deletes = document.querySelectorAll('#delete');
+                    <th:block th:if="${pageResponseDTO.fifteen =='yes'}">
+                        <li><a th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                        <li><a class="on" th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
+                        <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                            <li><a th:href="@{/my/order(currentMonth = ${currentMonth})}"><em>1</em>개월</a></li>
+                        </th:block>
+                    </th:block>
 
-                                deletes.forEach(function (item){
-                                   item.onclick=async function () {
-                                       const result = await fetchGet('/lotteshop/product/checkOrder?itemNo='+item.getAttribute('data-itemNo'));
-                                       if(result.data == "1"){
-                                           if(confirm('포인트를 사용한 경우 부분 취소가 아닌, 전체 취소만 가능합니다. 그렇게 하시겠습니까?')){
-                                               const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo='+item.getAttribute('data-itemNo'));
-                                               if(result2.data ==1){
-                                                   alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
-                                               }else{
-                                                   alert("취소가 완료되었습니다.")
-                                               }
-                                           }
-                                       }else{
-                                           if(confirm('정말 취소하시겠습니까?')){
-                                               const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo='+item.getAttribute('data-itemNo'));
-                                               if(result2.data ==1){
-                                                   alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
-                                               }else{
-                                                   alert("취소가 완료되었습니다.")
-                                               }
-                                           }
-                                       }
-                                   }
-                                });
+                    <th:block th:if="${pageResponseDTO.fifteen !='yes' && pageResponseDTO.oneWeek != 'yes'}">
+                        <li><a th:href="@{/my/order(oneWeek = 'yes')}"><em>1</em>주일</a></li>
+                        <li><a th:href="@{/my/order(fifteen = 'yes')}"><em>15</em>일</a></li>
+                        <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                            <li><a class="on" th:href="@{/my/order(currentMonth = ${currentMonth})}"><em>1</em>개월</a>
+                            </li>
+                        </th:block>
+                    </th:block>
+                </ul>
+                <ul class="date_5ea">
+                    <th:block th:with="currentMonth=${T(java.time.LocalDate).now().getMonthValue()}">
+                        <li th:each="i : ${#numbers.sequence(0, 4)}">
+                            <a th:href="@{/my/order(currentMonth = ${currentMonth - i})}">
+                                <em th:if="${currentMonth - i > 0}" th:text="${(currentMonth - i)}"></em>
+                                <em th:if="${currentMonth - i <= 0}" th:text="${(currentMonth - i) + 12}"></em>월
+                                <span th:if="${currentMonth - i <= 0}"></span>
+                            </a>
 
-                                // 현재 날짜 가져오기
-                                var currentDate = new Date().toISOString().split('T')[0];
+                        </li>
+                    </th:block>
+                </ul>
+                <form th:action="@{/my/order}">
+                    <input type="date" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
+                    <span>~</span>
+                    <input type="date" name="dateEnd" max="[CURRENT_DATE]" required>
+                    <button class="btnConfirm" type="submit">조회하기</button>
+                </form>
+            </div>
 
-                                // 현재 날짜의 1년 전 날짜 계산
-                                var oneYearAgo = new Date();
-                                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-                                var oneYearAgoDate = oneYearAgo.toISOString().split('T')[0];
+            <table border="0">
+                <tr>
+                    <th>날짜</th>
+                    <th>주문정보</th>
+                    <!--    <th>상태</th>
+                        <th>확인/신청</th> -->
+                </tr>
+                <th:block th:each="order , index :${pageResponseDTO.dtoList}">
+                    <tr>
+                        <td class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</td>
+                        <td>
+                            <a th:href="@{/product/view(prodno=${products[index.index][0].prodNo})}" class="thumb"><img
+                                    style="width: 100px; height: 100px"
+                                    th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>
+                            <ul>
+                                <li class="prodName"><span th:href="@{#}" onclick="openPopup()">[[${products[index.index][0].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]개</span>
+                                </li>
+                                주문번호 : <span class="ordNo">[[${order.orderNo}]]</span></li>
+                                <li class="prodPrice">[[${order.orderTotalPrice}]]</li>
+                                <li class="list-item">
+                                    <input type="hidden" id="aec" th:value="${index.index}">
+                                    <span class="detailOrder" th:data-orderNo="${order.orderNo}"> 주문 내역 상세 보기</span>
+                                </li>
+                            </ul>
+                        </td>
+                        <!--  <td class="status">[[${order.orderState}]]</td>
+                         <td class="confirm">
+                             <a th:href="@{#}" class="receive">수취확인</a>
+                             <a th:href="@{#}" class="review">상품평</a>
+                             <a th:href="@{#}" class="refund">반품신청</a>
+                             <a th:href="@{#}" class="exchange">교환신청</a>
+                         </td>-->
 
-                                // 최대 날짜 설정
-                                document.getElementsByName("dateBegin")[0].setAttribute('max', currentDate);
-                                document.getElementsByName("dateBegin")[0].setAttribute('min', oneYearAgoDate);
-                                document.getElementsByName("dateEnd")[0].setAttribute('max', currentDate);
+                    </tr>
+                </th:block>
+            </table>
 
 
-                                // 입력 필드의 날짜 변경 이벤트 리스너 등록
-                                document.getElementsByName("dateBegin")[0].addEventListener('change', function() {
-                                    var startDate = new Date(this.value);
-                                    var endDate = new Date(document.getElementsByName("dateEnd")[0].value);
+            <!-- 리뷰 작성을 위한 모달 -->
+            <div id="reviewModal" class="modal">
+                <div class="modal-content">
+                    <span id="close_btn" class="close_btn">&times;</span>
+                    <h3>리뷰 작성</h3>
+                    <form th:action="@{/my/order/write_review}" id="reviewForm" method="post"
+                          enctype="multipart/form-data">
+                        <input type="hidden" id="prodno" name="prodno"/>
+                        <input type="hidden" id="prodname" name="prodname"/>
+                        <input type="hidden" id="uid" name="uid"/>
+                        <input type="hidden" id="orderno" name="orderno"/>
 
-                                    // 시작일과 종료일을 비교하여 종료일이 시작일보다 이전이면 종료일을 시작일과 동일하게 설정
-                                    if (startDate > endDate) {
-                                        document.getElementsByName("dateEnd")[0].value = this.value;
-                                    }
-                                });
+                        <div class="form-group">
+                            <label for="reviewTitle">제목:</label>
+                            <input type="text" id="reviewTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewContent">내용:</label>
+                            <textarea id="reviewContent" name="comment" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewRating">평점:</label>
+                            <div class="rating" id="reviewRating">
+                                <span class="star" data-rating="1">&#9733;</span>
+                                <span class="star" data-rating="2">&#9733;</span>
+                                <span class="star" data-rating="3">&#9733;</span>
+                                <span class="star" data-rating="4">&#9733;</span>
+                                <span class="star" data-rating="5">&#9733;</span>
+                            </div>
+                            <input type="hidden" name="score" id="rating">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewImage">이미지 업로드:</label>
+                            <input type="file" id="reviewImage" name="multImage1">
+                        </div>
+                        <button class="btn_review" type="submit">리뷰 작성</button>
+                    </form>
+                </div>
+            </div>
+            <!-- 리뷰 작성 모달 끝 -->
 
-                                document.getElementsByName("dateEnd")[0].addEventListener('change', function() {
-                                    var startDate = new Date(document.getElementsByName("dateBegin")[0].value);
-                                    var endDate = new Date(this.value);
+            <th:block th:each="order , index :${pageResponseDTO.dtoList}">
+                <div id="popOrder" class="popup">
+                    <div>
+                        <nav>
+                            <h1>주문상세</h1>
+                            <button class="btnClose">X</button>
+                        </nav>
+                        <section>
+                            <article class="order">
+                                <h3>주문정보</h3>
+                                <table border="0">
+                                    <tr>
+                                        <th>날짜</th>
+                                        <th>상품정보</th>
+                                        <th>결제금액</th>
+                                        <th>상태</th>
+                                        <th>확인/신청</th>
+                                    </tr>
+                                    <tr th:each="orderItem , orderindex :${orderItems[index.index]}">
+                                        <td>
+                                            <p class="date">[[${#dates.format(order.orderDate, 'yyyy-MM-dd')}]]</p>
+                                            주문번호 : <span class="ordNo">[[${order.orderNo}]]</span>
+                                        </td>
+                                        <td>
+                                            <img style="width: 100px; height: 100px"
+                                                 th:src="@{/uploads/__${products[index.index][orderindex.index].image1}__}"
+                                                 alt="">
+                                            <ul>
+                                                <li class="company">상호명 수정</li>
+                                                <li class="prodName">
+                                                    [[${products[index.index][orderindex.index].prodName}]]
+                                                </li>
+                                                <li>수량 : <span class="prodCount">[[${orderItem.itemCount}]]</span>개</li>
+                                                <li class="prodPrice">개당 : [[${orderItem.itemPrice}]]</li>
+                                            </ul>
+                                        </td>
+                                        <td class="payment">
+                                            <ol>
+                                                <li class="price">
+                                                    <span>총 판매가</span>
+                                                    <span>[[${orderItem.itemPrice * orderItem.itemCount}]]</span>
+                                                </li>
+                                                <li class="discount">
+                                                    <span>할인 ( [[${orderItem.itemDiscount}]] %)</span>
+                                                    <span>[[${#numbers.formatDecimal(orderItem.itemPrice * orderItem.itemDiscount *0.01 * orderItem.itemCount , 1, 0)}]]</span>
+                                                </li>
+                                                <li class="total">
+                                                    <span>결제금액</span>
+                                                    <span>[[${#numbers.formatDecimal(orderItem.itemPrice * (100 - orderItem.itemDiscount ) *0.01 * orderItem.itemCount , 1, 0)}]]</span>
+                                                </li>
+                                            </ol>
+                                        </td>
+                                        <td class="status">[[${orderItem.orderState}]]</td>
 
-                                    // 종료일과 시작일을 비교하여 시작일이 종료일보다 이후면 시작일을 종료일과 동일하게 설정
-                                    if (endDate < startDate) {
-                                        document.getElementsByName("dateBegin")[0].value = this.value;
-                                    }
-                                });
+                                        <td th:if="${orderItem.orderState == '주문 취소' || orderItem.orderState == '환불'}">
+                                            <ol>
+                                                <li></li>
 
+                                            </ol>
+                                        <td th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
+                                            class="confirm" style="text-align: center">
+                                            <ol>
+                                                <li th:href="@{#}" class="receive">수취확인</li>
+                                                <li th:if="${orderItem.orderState == '구매확정'}" th:href="@{#}"
+                                                    class="review" th:data-orderno="${order.orderNo}"
+                                                    th:data-prodname="${products[index.index][orderindex.index].prodName}"
+                                                    th:data-uid="${#authentication.principal.user.uid}"
+                                                    th:data-prodno="${products[index.index][orderindex.index].prodNo}">
+                                                    상품평
+                                                </li><!--구매확정이 되면 상품평 입력이 가능함-->
+                                                <li th:href="@{#}" class="exchange">교환신청</li>
+                                                <li id="delete"
+                                                    th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
+                                                    th:data-itemNo="${orderItem.itemNo}" class="refund">환불(주문취소)신청
+                                                </li>
+                                            </ol>
+                                        </td>
+                                        </td>
+                                    </tr>
 
-                                /*주문 상세 창 띄우기*/
-                                const detailOrders = document.querySelectorAll('.detailOrder');
-                                const popOrder = document.querySelectorAll('#popOrder');
+                                </table>
+                                <p>배송 준비 이전의 주문은 취소 처리가 되며, 이후의 상품의 경우 배송비(3,000원)가 부가됩니다.</p>
+                                <br>
+                            </article>
+                            <article class="delivery">
+                                <h3>결제 및 배송정보</h3>
+                                <table border="0">
+                                    <tr>
+                                        <th>최종 결제 금액</th>
+                                        <td class="request">[[${#numbers.formatCurrency(order.orderTotalPrice)}]] (사용
+                                            포인트 : [[${order.point}]] )
+                                        </td>
+                                    </tr>
 
-                                detailOrders.forEach(function (item , index){
-                                    item.onclick=function (){
-                                        popOrder[index].classList.add('on');
-                                    }
-                                })
+                                    <tr>
+                                        <th>받으실 분</th>
+                                        <td class="name">[[${order.sendName}]]</td>
+                                    </tr>
+                                    <tr>
+                                        <th>연락처</th>
+                                        <td class="hp">[[${order.sendHp}]]</td>
+                                    </tr>
+                                    <tr>
+                                        <th>배송지</th>
+                                        <td class="address">[ [[${order.zip}]] ] [[${order.addr1}]] [[${order.addr2}]]
+                                        </td>
+                                    </tr>
 
-                                /*리뷰 창 띄우기 시작*/
-                                document.querySelectorAll('.review').forEach(function (link) {
-                                    link.addEventListener('click', function (event) {
-                                        const prodNo = link.getAttribute("data-prodno");
-                                        const uid = link.getAttribute("data-uid");
+                                </table>
+                            </article>
+                        </section>
+                    </div>
+                </div>
+            </th:block>
+            <script>
+                window.onload = function () {
 
-                                        console.log(prodNo); // prodno 값 확인
-                                        console.log(uid);
+                    //주문취소
+                    const deletes = document.querySelectorAll('#delete');
 
-                                        // 필요한 동작을 수행합니다. 여기서는 팝업창을 없애는 코드를 추가합니다.
-                                        popOrder.forEach(function(pop) {
-                                            pop.classList.remove('on');
-                                        });
-
-                                        event.preventDefault();
-                                        openModal(uid,prodNo);
-
-                                    });
-
-                                });
-
-                                // 사용자가 모달 바깥을 클릭하면 모달이 닫히도록 설정
-                                window.onclick = function(event) {
-                                    var modal = document.getElementById('reviewModal');
-                                    var close = document.getElementById('close_btn');
-
-                                    if (event.target === modal || event.target===close) {
-                                        closeModal();
+                    deletes.forEach(function (item) {
+                        item.onclick = async function () {
+                            const result = await fetchGet('/lotteshop/product/checkOrder?itemNo=' + item.getAttribute('data-itemNo'));
+                            if (result.data == "1") {
+                                if (confirm('포인트를 사용한 경우 부분 취소가 아닌, 전체 취소만 가능합니다. 그렇게 하시겠습니까?')) {
+                                    const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
+                                    if (result2.data == 1) {
+                                        alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
+                                    } else {
+                                        alert("취소가 완료되었습니다.")
                                     }
                                 }
-
-
-                                //모달 띄우기
-                                async function openModal(uid,prodno) {
-                                    document.getElementById('reviewModal').style.display = 'block';
-                                    setModalContent(uid,prodno);
-
+                            } else {
+                                if (confirm('정말 취소하시겠습니까?')) {
+                                    const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
+                                    if (result2.data == 1) {
+                                        alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
+                                    } else {
+                                        alert("취소가 완료되었습니다.")
+                                    }
                                 }
+                            }
+                        }
+                    });
 
-                                // 모달 닫기
-                                function closeModal() {
-                                    document.getElementById('reviewModal').style.display = 'none';
-                                }
+                    // 현재 날짜 가져오기
+                    var currentDate = new Date().toISOString().split('T')[0];
 
-                                // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
-                                function setModalContent(uid,prodno) {
-                                    document.getElementById('uid').value = uid;
-                                    document.getElementById('prodno').value = prodno;
+                    // 현재 날짜의 1년 전 날짜 계산
+                    var oneYearAgo = new Date();
+                    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                    var oneYearAgoDate = oneYearAgo.toISOString().split('T')[0];
 
-                                }
+                    // 최대 날짜 설정
+                    document.getElementsByName("dateBegin")[0].setAttribute('max', currentDate);
+                    document.getElementsByName("dateBegin")[0].setAttribute('min', oneYearAgoDate);
+                    document.getElementsByName("dateEnd")[0].setAttribute('max', currentDate);
 
-                                //리뷰에 별 색상 스타일
-                                const stars = document.querySelectorAll('.star');
-                                const ratingInput = document.getElementById('rating');
 
-                                stars.forEach(function(star) {
-                                    star.addEventListener('click', function() {
-                                        const ratingValue = parseInt(star.getAttribute('data-rating'));
-                                        ratingInput.value = ratingValue;
-                                        stars.forEach(function(s, index) {
-                                            if (index < ratingValue) {
-                                                s.classList.add('active');
-                                            } else {
-                                                s.classList.remove('active');
-                                            }
-                                        });
-                                    });
+                    // 입력 필드의 날짜 변경 이벤트 리스너 등록
+                    document.getElementsByName("dateBegin")[0].addEventListener('change', function () {
+                        var startDate = new Date(this.value);
+                        var endDate = new Date(document.getElementsByName("dateEnd")[0].value);
+
+                        // 시작일과 종료일을 비교하여 종료일이 시작일보다 이전이면 종료일을 시작일과 동일하게 설정
+                        if (startDate > endDate) {
+                            document.getElementsByName("dateEnd")[0].value = this.value;
+                        }
+                    });
+
+                    document.getElementsByName("dateEnd")[0].addEventListener('change', function () {
+                        var startDate = new Date(document.getElementsByName("dateBegin")[0].value);
+                        var endDate = new Date(this.value);
+
+                        // 종료일과 시작일을 비교하여 시작일이 종료일보다 이후면 시작일을 종료일과 동일하게 설정
+                        if (endDate < startDate) {
+                            document.getElementsByName("dateBegin")[0].value = this.value;
+                        }
+                    });
+
+
+                    /*주문 상세 창 띄우기*/
+                    const detailOrders = document.querySelectorAll('.detailOrder');
+                    const popOrder = document.querySelectorAll('#popOrder');
+
+                    detailOrders.forEach(function (item, index) {
+                        item.onclick = function () {
+                            popOrder[index].classList.add('on');
+                        }
+                    })
+
+                    /*리뷰 창 띄우기 시작*/
+                    document.querySelectorAll('.review').forEach(function (link) {
+                        link.addEventListener('click', async function (event) {
+                            const prodno = link.getAttribute("data-prodno");
+                            const uid = link.getAttribute("data-uid");
+                            const prodname = link.getAttribute("data-prodname");
+                            const orderno = link.getAttribute("data-orderno");
+
+                            console.log(prodno); // prodno 값 확인
+                            console.log(uid);
+                            console.log(prodname);
+
+                            //똑같은 주문번호가 있는지 확인 후, 없으면 리뷰쓰기
+                            const data = await fetchGet(`/lotteshop/review/${orderno}/${prodno}`);
+
+                            console.log("같은 주문번호가 몇개 있는지 가져옴 : " + data.count);
+
+
+                            if (data.count >= 1) {
+                                alert('이미 리뷰를 작성하셨습니다.');
+                            } else {
+
+                                // 필요한 동작을 수행합니다. 여기서는 팝업창을 없애는 코드를 추가합니다.
+                                popOrder.forEach(function (pop) {
+                                    pop.classList.remove('on');
                                 });
-                            }
-                        </script>
 
-                        <style>
-                            .list-item {
-                                position: relative;
-                                top: 12px; /* 원하는 만큼 조절 */
+                                event.preventDefault();
+                                openModal(uid, prodno, prodname, orderno);
                             }
 
-                            /* 모달 시작! */
-                            .modal {
-                                display: none;
-                                position: fixed;
-                                z-index: 1000;
-                                top: 0;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                overflow: auto;
-                                background-color: rgba(0, 0, 0, 0.5);
+                        });
+
+                    });
+
+
+                    // 사용자가 모달 바깥을 클릭하면 모달이 닫히도록 설정
+                    window.onclick = function (event) {
+                        var modal = document.getElementById('reviewModal');
+                        var close = document.getElementById('close_btn');
+
+                        if (event.target === modal || event.target === close) {
+                            closeModal();
+                        }
+                    }
+
+
+                    //모달 띄우기
+                    function openModal(uid, prodno, prodname, orderno) {
+                        document.getElementById('reviewModal').style.display = 'block';
+                        setModalContent(uid, prodno, prodname, orderno);
+                    }
+
+                    // 모달 닫기
+                    function closeModal() {
+                        document.getElementById('reviewModal').style.display = 'none';
+                    }
+
+                    // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
+                    function setModalContent(uid, prodno, prodname, orderno) {
+                        document.getElementById('uid').value = uid;
+                        document.getElementById('prodno').value = prodno;
+                        document.getElementById('prodname').value = prodname;
+                        document.getElementById('orderno').value = orderno;
+
+                    }
+
+                    async function fetchGet(url) {
+
+                        console.log("fetchData1...1");
+
+                        try {
+                            console.log("fetchData1...2");
+                            const response = await fetch(url);
+                            console.log("here1");
+
+                            if (!response.ok) {
+                                console.log("here2");
+                                throw new Error('response not ok');
                             }
 
-                            .modal-content {
-                                background-color: #fff;
-                                margin: 15% auto;
-                                padding: 30px;
-                                border-radius: 10px;
-                                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-                                width: 80%;
-                                max-width: 600px;
-                                position: relative;
-                            }
-
-                            h3 {
-                                font-size: 24px;
-                                font-weight: bold;
-                                color: #333;
-                                margin-bottom: 20px;
-                                text-align: center;
-                            }
-
-                            form {
-                                margin-top: 20px;
-                            }
-
-                            .form-group {
-                                margin-bottom: 20px;
-                            }
-
-                            label {
-                                font-size: 18px;
-                                color: #333;
-                                font-weight: bold;
-                                margin-bottom: 5px;
-                                display: block;
-                            }
-
-                            input[type="text"],
-                            input[type="number"],
-                            textarea {
-                                width: 100%;
-                                padding: 10px;
-                                font-size: 16px;
-                                border-radius: 5px;
-                                border: 1px solid #ccc;
-                            }
-
-                            textarea {
-                                resize: vertical;
-                            }
-
-                            button[type="submit"] {
-                                background-color: #007bff;
-                                color: #fff;
-                                border: none;
-                                padding: 10px 20px;
-                                font-size: 18px;
-                                border-radius: 5px;
-                                cursor: pointer;
-                            }
-
-                            button[type="submit"]:hover {
-                                background-color: #0056b3;
-                            }
-
-                            .close_btn {
-                                position: absolute;
-                                top: 10px;
-                                right: 10px;
-                                font-size: 24px;
-                                color: #aaa;
-                                cursor: pointer;
-                                transition: color 0.3s;
-                            }
-
-                            .close_btn:hover {
-                                color: #555;
-                            }
+                            const data = await response.json();
+                            console.log("data1 : " + data);
+                            return data;
+                        } catch (err) {
+                            console.log(err)
+                        }
+                    }
 
 
-                            .rating {
-                                display: inline-block;
-                                unicode-bidi: bidi-override;
-                                direction: ltr;/*좌->우로 별 채우기 (반대는 rtl)*/
-                            }
+                    //리뷰에 별 색상 스타일
+                    const stars = document.querySelectorAll('.star');
+                    const ratingInput = document.getElementById('rating');
 
-                            .star {
-                                font-size: 25px;
-                                cursor: pointer;
-                                color: #ccc;
-                            }
+                    stars.forEach(function (star) {
+                        star.addEventListener('click', function () {
+                            const ratingValue = parseInt(star.getAttribute('data-rating'));
+                            ratingInput.value = ratingValue;
+                            stars.forEach(function (s, index) {
+                                if (index < ratingValue) {
+                                    s.classList.add('active');
+                                } else {
+                                    s.classList.remove('active');
+                                }
+                            });
+                        });
+                    });
+                }
+            </script>
 
-                            .star.active {
-                                color: gold;
-                            }
-                            /*모달 끝!*/
-                        </style>
-                         <th:block th:if="${pageResponseDTO.dtoList.size()==0}">
-                             <h3 style="text-align: center">내역이 없습니다.</h3>
-                         </th:block>
-                         <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
-                             <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
-                             <p class="page">
+            <style>
+                .list-item {
+                    position: relative;
+                    top: 12px; /* 원하는 만큼 조절 */
+                }
 
-                                 <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="prev">이전</a>
-                                 <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                                     <th:block th:if="${num == pageResponseDTO.pg}">
-                                         <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="on">[[${num}]]</a>
-                                     </th:block>
+                /* 모달 시작! */
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                }
 
-                                     <th:block th:if="${num != pageResponseDTO.pg}">
-                                         <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" >[[${num}]]</a>
-                                     </th:block>
-                                 </th:block>
-                                 <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}" class="next">다음</a>
-                             </p>
-                         </th:block>
-                             <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
-                                 <p class="page">
+                .modal-content {
+                    background-color: #fff;
+                    margin: 15% auto;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                    width: 80%;
+                    max-width: 600px;
+                    position: relative;
+                }
 
-                                     <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek})}" class="prev">이전</a>
-                                     <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                                         <th:block th:if="${num == pageResponseDTO.pg}">
-                                             <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="on">[[${num}]]</a>
-                                         </th:block>
+                h3 {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #333;
+                    margin-bottom: 20px;
+                    text-align: center;
+                }
 
-                                         <th:block th:if="${num != pageResponseDTO.pg}">
-                                             <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" >[[${num}]]</a>
-                                         </th:block>
-                                     </th:block>
-                                     <a  th:if="${pageResponseDTO.next}" th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}" class="next">다음</a>
-                                 </p>
-                             </th:block>
-                         </th:block>
+                form {
+                    margin-top: 20px;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+                }
+
+                label {
+                    font-size: 18px;
+                    color: #333;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                    display: block;
+                }
+
+                input[type="text"],
+                input[type="number"],
+                textarea {
+                    width: 100%;
+                    padding: 10px;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    border: 1px solid #ccc;
+                }
+
+                textarea {
+                    resize: vertical;
+                }
+
+                button[type="submit"] {
+                    background-color: #007bff;
+                    color: #fff;
+                    border: none;
+                    padding: 10px 20px;
+                    font-size: 18px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+
+                button[type="submit"]:hover {
+                    background-color: #0056b3;
+                }
+
+                .close_btn {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    font-size: 24px;
+                    color: #aaa;
+                    cursor: pointer;
+                    transition: color 0.3s;
+                }
+
+                .close_btn:hover {
+                    color: #555;
+                }
 
 
+                .rating {
+                    display: inline-block;
+                    unicode-bidi: bidi-override;
+                    direction: ltr; /*좌->우로 별 채우기 (반대는 rtl)*/
+                }
 
-                     </article>
+                .star {
+                    font-size: 25px;
+                    cursor: pointer;
+                    color: #ccc;
+                }
+
+                .star.active {
+                    color: gold;
+                }
+
+                /*모달 끝!*/
+            </style>
+            <th:block th:if="${pageResponseDTO.dtoList.size()==0}">
+                <h3 style="text-align: center">내역이 없습니다.</h3>
+            </th:block>
+            <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
+                <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
+                    <p class="page">
+
+                        <a th:if="${pageResponseDTO.prev}"
+                           th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                           class="prev">이전</a>
+                        <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                            <th:block th:if="${num == pageResponseDTO.pg}">
+                                <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                                   class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != pageResponseDTO.pg}">
+                                <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}">[[${num}]]</a>
+                            </th:block>
+                        </th:block>
+                        <a th:if="${pageResponseDTO.next}"
+                           th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                           class="next">다음</a>
+                    </p>
+                </th:block>
+                <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
+                    <p class="page">
+
+                        <a th:if="${pageResponseDTO.prev}"
+                           th:href="@{/my/order(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                           class="prev">이전</a>
+                        <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                            <th:block th:if="${num == pageResponseDTO.pg}">
+                                <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                                   class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != pageResponseDTO.pg}">
+                                <a th:href="@{/my/order( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}">[[${num}]]</a>
+                            </th:block>
+                        </th:block>
+                        <a th:if="${pageResponseDTO.next}"
+                           th:href="@{/my/order( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                           class="next">다음</a>
+                    </p>
+                </th:block>
+            </th:block>
 
 
+        </article>
 
-                 </section>
 
-             </div>
-         </div>
+    </section>
 
- </html>
+</div>
+</div>
+
+</html>

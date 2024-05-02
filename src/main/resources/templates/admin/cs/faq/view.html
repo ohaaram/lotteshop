@@ -1,10 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
 
-</body>
+<section id="admin-cs-faq" layout:fragment="content">
+    <script>
+        // 폼 제출
+        window.onload =function (){
+
+        }
+        function submitForm(){
+            if(confirm('수정하시겠습니까?')){
+                document.getElementById("faqModifyForm").submit();
+            }
+        }
+    </script>
+    <nav>
+        <h3>FAQ 수정</h3>
+        <p>
+            HOME > 고객센터 > <strong>FAQ 관리</strong>
+        </p>
+    </nav>
+    <section class="faq-modify">
+        <article>
+            <form id="faqModifyForm" th:action="@{/admin/cs/faq}" method="post">
+                <input type="hidden" name="no" th:value="${csFaqDTO.no}">
+                <table class="">
+                    <tr>
+                        <td>유형1:</td>
+                        <td>[[${csFaqDTO.cate1}]]</td>
+                    </tr>
+                    <tr>
+                        <td>유형2:</td>
+                        <td>[[${csFaqDTO.catename}]]</td>
+                    </tr>
+                    <tr>
+                        <td>제목:</td>
+                        <td class="faq-title">
+                            <label>
+                                <textarea class="faq-title" name="title" th:text="${csFaqDTO.title}"></textarea>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>내용:</td>
+                        <td>
+                            <label>
+                                <textarea class="faq-content" name="content" th:text="${csFaqDTO.content}"></textarea>
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a th:href="@{/admin/cs/faq/list}" class="cs-write">목록보기</a>
+            <a th:href="@{/admin/cs/faq/{no}(no=${csFaqDTO.no})}">수정하기</a>
+            <form th:action="@{/admin/cs/faq/delete/{no}(no=${csFaqDTO.no})}" method="get">
+                <button type="submit" onclick="return confirm('정말 삭제하시겠습니까')">삭제하기</button>
+            </form>
+        </article>
+    </section>
+</section>
 </html>

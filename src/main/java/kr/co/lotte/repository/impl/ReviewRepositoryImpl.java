@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -83,22 +84,25 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         log.info("리뷰 score별 count 조회 : " + results);
         return results;
     }
-    
-    //상품명을 찾기위해 리뷰에서부터 여기까지 옴
-    public List<Tuple> findProdName(List<Review> reviews){
+    public Page<Review> findByUid(String uid, ReviewPageRequestDTO pageRequestDTO, Pageable pageable){
 
-        for (Review r : reviews) {
-            String prodname = jpaQueryFactory
-                    .select(qProducts.prodName)
-                    .from(qReview)
-                    .join(qProducts).on(qReview.prodno.eq(qProducts.prodNo))
-                    .where(qReview.prodno.eq(r.getProdno())) // prodno를 이용해서 prodname을 구하기
-                    .fetchOne();
 
-            //reviews.add(prodname);
-        }
-        return null;
-        
+        log.info("review_impl - uid : "+uid);
+        log.info("review_impl - pageRequestDTO : "+pageRequestDTO);
+        log.info("review_impl - pageable : "+pageable);
+
+        //리뷰테이블의 결과를 출력 후 페이지네이션
+        List<Review> results = jpaQueryFactory
+                .select(qReview)
+                .from(qReview)
+                .where(qReview.uid.eq(uid))
+                .fetch();
+
+        long total = results.size();
+
+        log.info("review_impl - total : "+total);
+
+        // 페이지 처리용 page 객체 리턴
+        return new PageImpl<>(results, pageable, total);
     }
-
 }

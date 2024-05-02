@@ -17,5 +17,6 @@ public interface ReviewRepositoryCustom {
 
     public List<Tuple> selectScoreCount(int prodno);
 
-    public List<Tuple> findProdName(List<Review> reviews);
+    public Page<Review> findByUid(String uid,ReviewPageRequestDTO pageRequestDTO, Pageable pageable);
+
 }

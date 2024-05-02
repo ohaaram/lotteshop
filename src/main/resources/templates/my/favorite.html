@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/my/layout/myLayout.html}">
+
+
+            <div class="ordered" layout:fragment="content">
+                <script>
+                    window.onload=function (){
+                            const all = document.getElementById('all');
+                            const eachs = document.querySelectorAll('#checkEach');
+                            const carts = document.querySelectorAll('#cart');
+                            const deletes = document.querySelectorAll('#delete');
+                            const  buttons = document.getElementById('buttons');
+
+                            buttons.onclick =async function (e) {
+                                var list = [];
+                                if (confirm('삭제하시겠습니까?')) {
+                                    eachs.forEach(function (item) {
+                                        if (item.checked) {
+                                            list.push(item.getAttribute('data-prodNo'));
+                                            item.closest('[name="bigDiv"]').remove();
+                                        }
+                                    })
+
+                                    if (list.length < 1) {
+                                        alert('선택된 상품이 없습니다.')
+                                    } else {
+                                        const jsonData = {prodNo : list };
+                                        const result = await fetchPost('/lotteshop/my/deleteLike', jsonData);
+                                        if(result != null){
+                                            alert('삭제되었습니다.');
+                                        }
+                                    }
+                                }
+                            }
+
+                            all.onclick=function (e){
+                                if(all.checked){
+                                    eachs.forEach(function (item){
+                                        if(!item.checked){
+                                            item.click();
+                                        }
+                                    })
+                                }else{
+                                    eachs.forEach(function (item){
+                                        if(item.checked){
+                                            item.click();
+                                        }
+                                    })
+                                }
+                            }
+
+                            carts.forEach(function (item){
+                                item.onclick=function (e){
+                                    if (confirm('상품 상세 페이지로 가시겠습니까?')) {
+                                        location.href='/lotteshop/product/view?prodno='+item.getAttribute('data-prodNo');
+                                    }
+                                }
+                            })
+
+                        deletes.forEach(function (item){
+                            item.onclick=async function (e) {
+                                if (confirm('관심 상품에서 삭제하시겠습니까?')) {
+                                    const result = await fetchGet('/lotteshop/my/deleteLike?prodNo=' + item.getAttribute('data-prodNo'));
+                                    if(result != null){
+                                    item.closest('[name="bigDiv"]').remove();}
+                                }
+
+                            }
+                        })
+
+                    }
+                </script>
+                <ul>
+                    <span class="menu_else"></span>
+                    <li><a th:href="@{/my/favorite}">전체주문내역</a></li>
+                    <li class="on"><a th:href="@{/my/favorite}">관심상품</a></li>
+                    <li><a th:href="@{/my/point}">포인트내역</a></li>
+                    <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+                    <li><a th:href="@{/my/review}">나의리뷰</a></li>
+                    <li><a th:href="@{/my/qna}">문의하기</a></li>
+                    <li><a th:href="@{/my/info}">나의설정</a></li>
+                </ul>
+
+                <section>
+                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+                    <article>
+                        <h3>나의 관심 상품</h3>
+                            <div style="margin-top: 15px">
+                                <input id="all" type="checkbox">
+                                <span id="buttons">선택삭제</span>
+                            </div>
+                        <hr>
+                        <br>
+                        <th:block th:each="product, index: ${productList}">
+                            <div name="bigDiv"  style="display: flex; align-items: center;">
+                                <!-- 선택 삭제 옆의 체크박스 -->
+                                <div style="margin-right: 10px; ">
+                                    <input id="checkEach" th:data-prodNo="${product.prodNo}" type="checkbox">
+                                </div>
+                                <!-- 상품 정보 -->
+                                <div style="width: 100%;  height: 150px; display: flex; align-items: center; justify-content: center;">
+                                    <div style="width: 90%; height: 90%; display: flex; align-items: center;">
+                                        <img style="width: 20%; height: 100%;" th:src="@{/uploads/__${product.image1}__}" alt="Product Image">
+                                        <div style="flex: 1; margin-left: 10px; height: 80%; position: relative;">
+                                            <span style="font-size: small">[ [[${product.sellerName}]] ]</span>
+                                            <span style="font-size: small">[[${product.prodName}]] </span>
+                                            <i th:data-prodNo="${product.prodNo}" id="cart" style="position: absolute; right: 25px; top:3px" class="fas fa-shopping-cart"></i>
+                                            <span th:data-prodNo="${product.prodNo}" id="delete" style="position: absolute; right: 5px;">X</span>
+                                            <br><br>
+                                            <p>
+                                                <span style="font-size: 17px; font-weight: bold; color: red" th:if="${product.prodDiscount > 0}">[[${product.prodDiscount}]]%</span>
+                                                <span style="font-size: 17px; font-weight: bold;" th:if="${product.prodDiscount > 0}">[[${#numbers.formatInteger(#numbers.formatDecimal( product.prodPrice * (100 - product.prodDiscount) * 0.01 , 1, 0) ,1, 'COMMA')}]]원</span>
+                                                <span style="font-size: 17px; text-decoration: line-through;" th:if="${product.prodDiscount > 0}">[[${product.prodPrice}]]</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+
+
+
+                         <th:block th:if="${pageResponseDTO.dtoListLikes.size()==0}">
+                             <h3 style="text-align: center">내역이 없습니다.</h3>
+                         </th:block>
+                                 <p class="page">
+
+                                     <a  th:if="${pageResponseDTO.prev}" th:href="@{/my/favorite(pg=${pageResponseDTO.start - 1})}" class="prev">이전</a>
+                                     <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                         <th:block th:if="${num == pageResponseDTO.pg}">
+                                             <a th:href="@{/my/favorite( pg=${num } )}" class="on">[[${num}]]</a>
+                                         </th:block>
+
+                                         <th:block th:if="${num != pageResponseDTO.pg}">
+                                             <a th:href="@{/my/favorite( pg=${num } )}" >[[${num}]]</a>
+                                         </th:block>
+                                     </th:block>
+                                     <a  th:if="${pageResponseDTO.next}" th:href="@{/my/favorite( pg=${pageResponseDTO.end+1})}" class="next">다음</a>
+                                 </p>
+
+                     </article>
+
+
+
+                 </section>
+
+             </div>
+         </div>
+
+ </html>

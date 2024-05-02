@@ -101,20 +101,20 @@ public class AdminServiceForSangdo {
         return modelMapper.map(user, UserDTO.class);
     }
 
-    public Object getGraphData() {
-        log.info("getGraphData Started");
-
-        // 현재 날짜로부터 1달 전 날짜 계산
-        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-
-        // 1달 이내 등록된 회원 목록 조회
-        List<User> oneMonthUsers = memberRepository.findByRegDateAfter(oneMonthAgo);
-
-        // 1달 이내 회원 처리 (예: 그래프 데이터 생성)
-
-        log.info("getGraphData Completed");
-        return oneMonthUsers;
-    }
+//    public Object getGraphData() {
+//        log.info("getGraphData Started");
+//
+//        // 현재 날짜로부터 1달 전 날짜 계산
+//        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+//
+//        // 1달 이내 등록된 회원 목록 조회
+//        List<User> oneMonthUsers = memberRepository.findByRegDateAfter(oneMonthAgo);
+//
+//        // 1달 이내 회원 처리 (예: 그래프 데이터 생성)
+//
+//        log.info("getGraphData Completed");
+//        return oneMonthUsers;
+//    }
 
 }
 

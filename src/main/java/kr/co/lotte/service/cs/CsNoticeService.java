@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -39,11 +40,22 @@ public class CsNoticeService {
         log.info("Insert CsNotice : {}", savedNotice.toString());
     }
 
+
+    // admin.cs.notice 번호로 글 조회
+    public CsNoticeDTO adminNoticeView(int no){
+
+        CsNotice csNotice = csNoticeRepository.findById(no).orElse(null);
+        return null;
+    }
+
+
     // admin.cs.notice 수정
     public void adminNoticeUpdate(CsNoticeDTO csNoticeDTO) {
 
         // 글 번호 불러오기
-        int csNoticeNo = csNoticeDTO.getNo();
+
+        int no = csNoticeDTO.getNo();
+
 
         CsNotice csNotice = modelMapper.map(csNoticeDTO, CsNotice.class);
         CsNotice savedNotice = csNoticeRepository.save(csNotice);

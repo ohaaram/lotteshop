@@ -39,6 +39,14 @@
     </script>
 
     <style>
+        #like{
+            background-color: white;
+            border: none;
+        }
+        #unlike{
+            background-color: white;
+            border: none;
+        }
 
         #color {
             width: 100%;
@@ -142,6 +150,7 @@
         .quantity-container button:hover {
             background-color: #606060;
         }
+
     </style>
 
     <main id="product">
@@ -263,9 +272,12 @@
                 </div>
                 <div class="summary">
                     <nav>
-                        <p>
+                        <p style="position: relative">
                             <span style="font-size: larger; font-weight: bold;">(주)</span>
                             <span th:text="${product.sellerName}" style="font-size: larger; font-weight: bold;"></span>
+                            <button id="unlike" style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none ">🤍</button>
+                            <button id="like" style="position: absolute; right: 5px; font-size: x-large; font-weight: bold; display: none">❤️</button>
+
                         </p>
                         <h2>상품번호&nbsp;:&nbsp;<span id="prodId" th:text="${product.prodNo}">10010118412</span></h2>
                     </nav>
@@ -319,48 +331,65 @@
                     </nav>
                     <!-- 만약에 옵션이 있는 경우-->
                     <script>
-                        window.onload=function () {
+                        window.onload=async function () {
                             const color = document.getElementById('color');
                             const size = document.getElementById('size');
                             const totalPrice = document.getElementById('total_price');
                             const prodNo = [[${product.prodNo}]];
                             const prodDiscount = [[${product.prodDiscount}]];
                             var price = [[${product.prodPrice}]];
-                        try{
-                            color.onchange = async function () {
-                                sCor = this.value;
+                            const like = document.getElementById('like');
+                            const unlike = document.getElementById('unlike');
+                            try {
+                                const userID = document.getElementById('userId').value;
+                                const result = await fetchGet('/lotteshop/product/likeSearch?userId=' + userID + '&prodNo=' + [[${product.prodNo}]]);
+                                if (result.data == 1) {
+                                    like.style.display = '';
+                                    unlike.style.display = 'none';
+                                } else {
+                                    like.style.display = 'none';
+                                    unlike.style.display = '';
+                                }
+                            } catch (e) {
+                                like.style.display = 'none';
+                                unlike.style.display = '';
+                            }
 
-                                // 옵션 사이즈를 추가
-                                const result = await fetchGet('/lotteshop/product/optionSelect?color=' + this.value + '&prodNo=' + prodNo);
-                                console.log(result.sub);
-                                // 기존의 옵션을 제거
-                                size.innerHTML = '';
-                                // 새로운 옵션을 추가
-                                const defaultOption = document.createElement('option');
-                                defaultOption.style.fontSize = 'x-large';
-                                defaultOption.value = "";
-                                defaultOption.disabled = true;
-                                defaultOption.selected = true;
-                                defaultOption.textContent = "::(필수)옵션 사이즈 선택";
-                                size.appendChild(defaultOption);
+                            try {
+                                color.onchange = async function () {
+                                    sCor = this.value;
 
-                                result.sub.forEach(item => {
-                                    console.log(item.size);
-                                    const optionSize = document.createElement('option');
-                                    optionSize.value = item.size;
-                                    optionSize.text = item.size + ' (' + item.prodPrice + ')';
-                                    optionSize.dataset.subNo = item.subProdNo;
-                                    optionSize.dataset.color = item.color;
-                                    optionSize.dataset.size = item.size;
-                                    optionSize.dataset.price = item.prodPrice;
-                                    size.appendChild(optionSize);
+                                    // 옵션 사이즈를 추가
+                                    const result = await fetchGet('/lotteshop/product/optionSelect?color=' + this.value + '&prodNo=' + prodNo);
+                                    console.log(result.sub);
+                                    // 기존의 옵션을 제거
+                                    size.innerHTML = '';
+                                    // 새로운 옵션을 추가
+                                    const defaultOption = document.createElement('option');
+                                    defaultOption.style.fontSize = 'x-large';
+                                    defaultOption.value = "";
+                                    defaultOption.disabled = true;
+                                    defaultOption.selected = true;
+                                    defaultOption.textContent = "::(필수)옵션 사이즈 선택";
+                                    size.appendChild(defaultOption);
+
+                                    result.sub.forEach(item => {
+                                        console.log(item.size);
+                                        const optionSize = document.createElement('option');
+                                        optionSize.value = item.size;
+                                        optionSize.text = item.size + ' (' + item.prodPrice + ')';
+                                        optionSize.dataset.subNo = item.subProdNo;
+                                        optionSize.dataset.color = item.color;
+                                        optionSize.dataset.size = item.size;
+                                        optionSize.dataset.price = item.prodPrice;
+                                        size.appendChild(optionSize);
 
 
-                                });
-                            };
-                        }catch (e){
+                                    });
+                                };
+                            } catch (e) {
 
-                        }
+                            }
 
 
                             document.addEventListener('change', function (e) {
@@ -379,6 +408,46 @@
 
                                 }
                             });
+
+                            unlike.onclick = async function (e) {
+                                e.preventDefault();
+                                try {
+                                    const userID = document.getElementById('userId').value;
+                                    const result = await fetchGet('/lotteshop/product/like?prodNo=' + [[${product.prodNo}]] + '&userId=' + userID);
+                                    console.log(result.data +"!");
+                                    if (result.data == 1) {
+                                        like.style.display = '';
+                                        unlike.style.display = 'none';
+                                    } else {
+                                        like.style.display = 'none';
+                                        unlike.style.display = '';
+                                    }
+
+                                } catch (e) {
+                                    console.log(e.message);
+                                    alert('로그인 후 이용해주세요')
+                                }
+
+                            }
+
+                            like.onclick = async function (e) {
+                                e.preventDefault();
+                                    const userID = document.getElementById('userId').value;
+                                    const result = await fetchGet('/lotteshop/product/like?prodNo=' + [[${product.prodNo}]] + '&userId=' + userID);
+                                    console.log(result.data +"!");
+                                    if (result.data == 1) {
+                                        like.style.display = '';
+                                        unlike.style.display = 'none';
+                                    } else {
+                                        like.style.display = 'none';
+                                        unlike.style.display = '';
+                                    }
+
+
+
+                            }
+
+
                             const productPriceForNo = [[${product.prodPrice}]];
                             const productDiscountForNo = [[${product.prodDiscount}]];
                             var priceForMe = parseInt(parseInt(productPriceForNo) * (100 - productDiscountForNo) * 0.01);
@@ -386,8 +455,9 @@
                                 if (event.target.matches('.plus')) {
                                     const element = event.target.parentNode.querySelector('input[type="number"]');
                                     const optionPrice = event.target.parentNode.querySelector('#optionPrice');
-                                  try{ totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);}
-                                  catch(e){
+                                    try {
+                                        totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);
+                                    } catch (e) {
                                         totalPrice.innerText = parseInt(totalPrice.innerText) + parseInt(priceForMe);
                                     }
                                     element.stepUp();
@@ -396,10 +466,11 @@
                                     const element = event.target.parentNode.querySelector('input[type="number"]');
                                     const optionPrice = event.target.parentNode.querySelector('#optionPrice');
                                     if (element.value > 1) {
-                                       try{totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);}
-                                       catch (e){
-                                           totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(priceForMe);
-                                       }
+                                        try {
+                                            totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01);
+                                        } catch (e) {
+                                            totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(priceForMe);
+                                        }
                                     }
 
                                     element.stepDown();
@@ -409,7 +480,7 @@
                                     const element = event.target.parentNode;
                                     const optionPrice = event.target.parentNode.querySelector('#optionPrice');
                                     const optionCount = event.target.parentNode.querySelector('#optionCount');
-                                   totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01 * optionCount.value);
+                                    totalPrice.innerText = parseInt(totalPrice.innerText) - parseInt(optionPrice.value * (100 - prodDiscount) * 0.01 * optionCount.value);
 
                                     element.remove();
                                 }
@@ -420,8 +491,8 @@
                                         const quantityContainers = document.querySelectorAll('.quantity-container');
                                         const itemsCounts = [];
                                         const itemsNos = [];
-                                        const itemsPrice =[]
-                                        const itemsDiscount =[];
+                                        const itemsPrice = []
+                                        const itemsDiscount = [];
 
                                         quantityContainers.forEach(container => {
                                             if (container.querySelector('#optionNo').value == "") {
@@ -439,7 +510,7 @@
                                             const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
                                             console.log(json);
                                             const result = await fetchPost('/lotteshop/product/view', json);
-                                            if(result.result === 'success'){
+                                            if (result.result === 'success') {
                                                 alert('장바구니로 상품이 담겼습니다.')
                                                 //추후에 장바구니 이동 추가
                                             }
@@ -473,7 +544,7 @@
                                             const json = {itemsCounts: itemsCounts, itemsNos: itemsNos, userId: userID};
                                             console.log(json);
                                             const result = await fetchPost('/lotteshop/product/order', json);
-                                            window.location.href ='/lotteshop/product/order';
+                                            window.location.href = '/lotteshop/product/order';
                                         }
                                     } catch (e) {
                                         console.log(e.toString())
@@ -481,7 +552,7 @@
                                     }
                                 }
 
-                                if(event.target.matches('#cartSub2')){
+                                if (event.target.matches('#cartSub2')) {
                                     try {
                                         const userID = document.getElementById('userId').value;
                                         const quantityContainers = document.querySelectorAll('.quantity-container');
@@ -508,14 +579,14 @@
                                                 //추후에 장바구니 이동 추가
                                             }
                                         }
-                                    }catch (e) {
-                                            console.log(e.toString())
-                                            alert('로그인 후 이용해주세요');
-                                        }
+                                    } catch (e) {
+                                        console.log(e.toString())
+                                        alert('로그인 후 이용해주세요');
+                                    }
                                 }
 
-                                if(event.target.matches('#cartBuy2')){
-                                    try{
+                                if (event.target.matches('#cartBuy2')) {
+                                    try {
                                         const userID = document.getElementById('userId').value;
                                         const quantityContainers = document.querySelectorAll('.quantity-container');
                                         const itemsCounts = [];

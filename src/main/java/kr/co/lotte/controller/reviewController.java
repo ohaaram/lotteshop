@@ -1,22 +1,25 @@
 package kr.co.lotte.controller;
 
+import com.querydsl.core.Tuple;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.lotte.dto.ReviewDTO;
+import kr.co.lotte.dto.ReviewPageRequestDTO;
+import kr.co.lotte.dto.ReviewPageResponseDTO;
 import kr.co.lotte.entity.Review;
 import kr.co.lotte.service.MemberService;
 import kr.co.lotte.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -57,17 +60,34 @@ public class reviewController {
 
     //내가 작성했던 리뷰들 다 보여주기
     @GetMapping("/my/review")
-    public String myReview(@RequestParam("uid")String uid, Model model) {
+    public String myReview(@RequestParam("uid")String uid, Model model, ReviewPageRequestDTO ReviewPageRequestDTO) {
 
         log.info("myController - myReview - uid={}", uid);
 
-        List<Review> reviews = reviewService.findReview(uid);
+        ReviewPageResponseDTO responseDTO = reviewService.findReview(uid, ReviewPageRequestDTO);
 
-        log.info("mycontroller - myreview - reviews={}", reviews);
+        log.info("mycontroller - myreview - reviews={}", responseDTO.getDtoList2());
 
-        model.addAttribute("reviews", reviews);
+        log.info("mycontroller - myreview - responseDTO={}", responseDTO);
+
+        model.addAttribute("reviews", responseDTO);
 
         return "/my/review";
     }
 
+    //리뷰는 한번만 쓰게 하기!(내가 시킨 하나의 상품당 하나의 리뷰)
+    @GetMapping("/review/{orderno}/{prodno}")
+    public ResponseEntity<Map<String, Integer>> rCheck(@PathVariable("orderno") int orderno, @PathVariable("prodno")int prodno, Model model){
+
+        log.info("review- controller - orderno : "+orderno);
+        log.info("review- controller - prodno : "+prodno);
+
+        int count = reviewService.findByorderno(orderno,prodno);
+
+        log.info("review - controller - result : "+count);
+
+        Map<String , Integer> map1 = new HashMap<>();
+        map1.put("count",count);
+        return ResponseEntity.ok().body(map1);
+    }
 }

@@ -1,5 +1,6 @@
 package kr.co.lotte.dto;
 
+import kr.co.lotte.entity.Like;
 import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.SubProducts;
 import lombok.*;
@@ -15,6 +16,9 @@ public class ProductsPageResponseDTO {
 
     private List<Products> dtoList;
     private List<SubProducts> dtoLists;
+    private List<Like> dtoListLikes;
+
+
     private String cate;
     private int pg;
     private int size;
@@ -46,6 +50,23 @@ public class ProductsPageResponseDTO {
         this.size = pageRequestDTO.getSize();
         this.total = total;
         this.dtoLists = dtoList;
+
+        this.startNo = total - ((pg - 1) * size);
+        this.end = (int) (Math.ceil(this.pg / 10.0)) * 10;
+        this.start = this.end - 9;
+
+        int last = (int) (Math.ceil(total / (double) size));
+        this.end = end > last ? last : end;
+        this.prev = this.start > 1;
+        this.next = total > this.end * this.size;
+    }
+
+    @Builder
+    public ProductsPageResponseDTO(List<Like> dtoList, ProductsPageRequestDTO pageRequestDTO, int total){
+        this.pg = pageRequestDTO.getPg();
+        this.size = pageRequestDTO.getSize();
+        this.total = total;
+        this.dtoListLikes = dtoList;
 
         this.startNo = total - ((pg - 1) * size);
         this.end = (int) (Math.ceil(this.pg / 10.0)) * 10;

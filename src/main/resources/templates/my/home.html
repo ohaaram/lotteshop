@@ -3,8 +3,6 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/my/layout/myLayout.html}">
 
-
-
             <div class="home" layout:fragment="content">
 
                 <script>
@@ -43,15 +41,192 @@
                             .catch(err=>console.log(err))
                     }
 
+                    /*리뷰 창 띄우기 시작*/
+                    document.querySelectorAll('.review').forEach(function (link) {
+                        link.addEventListener('click', function (event) {
+                            const prodno = link.getAttribute("data-prodno");
+                            const uid = link.getAttribute("data-uid");
+                            const prodname = link.getAttribute("data-prodname");
+
+                            console.log(prodno); // prodno 값 확인
+                            console.log(uid);
+                            console.log(prodname);
+
+                            event.preventDefault();
+                            openModal(uid,prodno,prodname);
+
+                        });
+
+                    });
+
+                    // 사용자가 모달 바깥을 클릭하면 모달이 닫히도록 설정
+                    window.onclick = function(event) {
+                        var modal = document.getElementById('reviewModal');
+                        var close = document.getElementById('close_btn');
+
+                        if (event.target === modal || event.target===close) {
+                            closeModal();
+                        }
+                    }
+
+
+                    //모달 띄우기
+                    async function openModal(uid,prodno,prodname) {
+                        document.getElementById('reviewModal').style.display = 'block';
+                        setModalContent(uid,prodno,prodname);
+                    }
+
+                    // 모달 닫기
+                    function closeModal() {
+                        document.getElementById('reviewModal').style.display = 'none';
+                    }
+
+                    // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
+                    function setModalContent(uid,prodno,prodname) {
+                        document.getElementById('uid').value = uid;
+                        document.getElementById('prodno').value = prodno;
+                        document.getElementById('prodname').value = prodname;
+
+                    }
+
+                    //리뷰에 별 색상 스타일
+                    const stars = document.querySelectorAll('.star');
+                    const ratingInput = document.getElementById('rating');
+
+                    stars.forEach(function(star) {
+                        star.addEventListener('click', function() {
+                            const ratingValue = parseInt(star.getAttribute('data-rating'));
+                            ratingInput.value = ratingValue;
+                            stars.forEach(function(s, index) {
+                                if (index < ratingValue) {
+                                    s.classList.add('active');
+                                } else {
+                                    s.classList.remove('active');
+                                }
+                            });
+                        });
+                    });
+
                 </script>
+
+                <style>
+
+                    /* 모달 시작! */
+                    .modal {
+                        display: none;
+                        position: fixed;
+                        z-index: 1000;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow: auto;
+                        background-color: rgba(0, 0, 0, 0.5);
+                    }
+
+                    .modal-content {
+                        background-color: #fff;
+                        margin: 15% auto;
+                        padding: 30px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                        width: 80%;
+                        max-width: 600px;
+                        position: relative;
+                    }
+
+                    h3 {
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 20px;
+                        text-align: center;
+                    }
+
+                    form {
+                        margin-top: 20px;
+                    }
+
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+
+                    label {
+                        font-size: 18px;
+                        color: #333;
+                        font-weight: bold;
+                        margin-bottom: 5px;
+                        display: block;
+                    }
+
+                    input[type="text"],
+                    input[type="number"],
+                    textarea {
+                        width: 100%;
+                        padding: 10px;
+                        font-size: 16px;
+                        border-radius: 5px;
+                        border: 1px solid #ccc;
+                    }
+
+                    textarea {
+                        resize: vertical;
+                    }
+
+                    button[type="submit"] {
+                        background-color: #007bff;
+                        color: #fff;
+                        border: none;
+                        padding: 10px 20px;
+                        font-size: 18px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                    }
+
+                    button[type="submit"]:hover {
+                        background-color: #0056b3;
+                    }
+
+                    .close_btn {
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        font-size: 24px;
+                        color: #aaa;
+                        cursor: pointer;
+                        transition: color 0.3s;
+                    }
+
+                    .close_btn:hover {
+                        color: #555;
+                    }
+
+
+                    .rating {
+                        display: inline-block;
+                        unicode-bidi: bidi-override;
+                        direction: ltr;/*좌->우로 별 채우기 (반대는 rtl)*/
+                    }
+
+                    .star {
+                        font-size: 25px;
+                        cursor: pointer;
+                        color: #ccc;
+                    }
+
+                    .star.active {
+                        color: gold;
+                    }
+                    /*모달 끝!*/
+                </style>
 
 				<ul>
                     <span class="menu_else"></span>
                     <li><a th:href="@{/my/order}">전체주문내역</a></li>
-                    <!--<li><a href="./favorite.html">관심상품</a></li>-->
+                    <li><a th:href="@{/my/favorite}">관심상품</a></li>
                     <li><a th:href="@{/my/point}">포인트내역</a></li>
                     <li><a th:href="@{/my/coupon}">쿠폰</a></li>
-                    <li><a th:href="@{/my/review}">나의리뷰</a></li>
+                    <li ><a th:href="@{/my/review(uid=${#authentication.principal.username})}">나의리뷰</a></li>
                     <li><a th:href="@{/my/qna}">문의하기</a></li>
                     <li><a th:href="@{/my/info}">나의설정</a></li>
                 </ul>
@@ -96,7 +271,7 @@
 
                     <article class="point">
                         <h3>포인트내역</h3>
-                        <a th:href="@{/my/point}"   class="more">더보기</a>
+                        <a th:href="@{/my/point}" class="more">더보기</a>
                         <table border="0">
                             <tr>
                             <tr>
@@ -122,7 +297,7 @@
                     </article>
                     <article class="review">
                         <h3>상품평</h3>
-                        <a th:href="@{#}" class="more">더보기</a>
+                        <a th:href="@{/my/review(uid=${#authentication.principal.username})}" class="more">더보기</a>
                         <table border="0">
                             <tr>
                                 <th>번호</th>
@@ -131,40 +306,32 @@
                                 <th>평점</th>
                                 <th>작성일</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>상품명</td>
-                                <td>배송이 빠릅니다. 잘 사용하겠습니다.</td>
-                                <td><span class="rating star1">상품평</span></td>
-                                <td>2022-12-10</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>상품명</td>
-                                <td>배송이 빠릅니다. 잘 사용하겠습니다.</td>
-                                <td><span class="rating star2">상품평</span></td>
-                                <td>2022-12-10</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>상품명</td>
-                                <td>배송이 빠릅니다. 잘 사용하겠습니다.</td>
-                                <td><span class="rating star3">상품평</span></td>
-                                <td>2022-12-10</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>상품명</td>
-                                <td>배송이 빠릅니다. 잘 사용하겠습니다.</td>
-                                <td><span class="rating star4">상품평</span></td>
-                                <td>2022-12-10</td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>상품명</td>
-                                <td>배송이 빠릅니다. 잘 사용하겠습니다.</td>
-                                <td><span class="rating star5">상품평</span></td>
-                                <td>2022-12-10</td>
+                            <tr th:each="review, iterStat : ${reviews}">
+                                <td th:text="${iterStat.count}">1</td><!--인덱스 가져와서 인덱스 번호찍기-->
+                                <td th:text="${review.getProdname()}">상품명</td>
+                                <td class="content"
+                                    th:text="${#strings.length(review.getComment()) > 10 ? #strings.substring(review.getComment(), 0, 10) + '...' : review.getComment()} ">
+                                    배송이 빠릅니다. 잘 사용하겠습니다.
+                                </td>
+                                <td class="score">
+                                    <h5>
+                                        <img th:if="${review.getScore()} == 1 " th:src="@{/review/review_star1.png}"
+                                             alt="oneStar"
+                                             style="max-width: 80px; height: auto;">
+                                        <img th:if="${review.getScore()} == 2 " th:src="@{/review/review_star2.png}"
+                                             alt="oneStar"
+                                             style="max-width: 80px; height: auto;">
+                                        <img th:if="${review.getScore()} == 3 " th:src="@{/review/review_star3.png}"
+                                             alt="oneStar"
+                                             style="max-width: 80px; height: auto;">
+                                        <img th:if="${review.getScore()} == 4 " th:src="@{/review/review_star4.png}"
+                                             alt="oneStar"
+                                             style="max-width: 80px; height: auto;">
+                                        <img th:if="${review.getScore()} == 5 " th:src="@{/review/review_star5.png}"
+                                             alt="oneStar"
+                                             style="max-width: 80px; height: auto;"></h5>
+                                </td>
+                                <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
                             </tr>
                         </table>
                     </article>
@@ -233,9 +400,46 @@
                                 </p>
                             </div>
                         </div>
-
-
                     </article>
+
+                    <!-- 리뷰 작성을 위한 모달 -->
+                    <div id="reviewModal" class="modal">
+                        <div class="modal-content">
+                            <span id="close_btn" class="close_btn">&times;</span>
+                            <h3>리뷰 작성</h3>
+                            <form th:action="@{/my/order/write_review}" id="reviewForm" method="post" enctype="multipart/form-data">
+                                <input type="hidden" id="prodno" name="prodno"/>
+                                <input type="hidden" id="prodname" name="prodname"/>
+                                <input type="hidden" id="uid" name="uid"/>
+                                <div class="form-group">
+                                    <label for="reviewTitle">제목:</label>
+                                    <input type="text" id="reviewTitle" name="title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewContent">내용:</label>
+                                    <textarea id="reviewContent" name="comment" rows="5" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewRating">평점:</label>
+                                    <div class="rating" id="reviewRating">
+                                        <span class="star" data-rating="1">&#9733;</span>
+                                        <span class="star" data-rating="2">&#9733;</span>
+                                        <span class="star" data-rating="3">&#9733;</span>
+                                        <span class="star" data-rating="4">&#9733;</span>
+                                        <span class="star" data-rating="5">&#9733;</span>
+                                    </div>
+                                    <input type="hidden" name="score" id="rating">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewImage">이미지 업로드:</label>
+                                    <input type="file" id="reviewImage" name="multImage1">
+                                </div>
+                                <button class="btn_review" type="submit">리뷰 작성</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- 리뷰 작성 모달 끝 -->
+
 
                 </section>
 

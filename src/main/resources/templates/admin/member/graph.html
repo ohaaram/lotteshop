@@ -1,36 +1,35 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{/admin/layout/adminLayout.html}">
-
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{/admin/layout/adminLayout.html}">
 <section id="userGraph" layout:fragment="content">
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript" th:inline="javascript">
-    google.charts.load('current', {'packages':['corechart', 'line']});
-    google.charts.setOnLoadCallback(drawChart);
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
 
-    function drawChart() {
-    var data = google.visualization.DataTable();
-    data.addColumn('string', /*[[${col0}]]*/ 'col0')
-    data.addColumn('number', /*[[${col1}]]*/ 'col1')
-    data.addColumn('number', /*[[${col2}]]*/ 'col2')
+    <script>
+        var ctx = document.getElementById('myChart');
 
-    data.addRows([
-        /*[# th:each="row : ${chartData}"]*/
-        [[${row}]],
-        /*[/]*/
-    ]);
-
-    var options = {
-    title: /*[[${graphTitle}]]*/"",
-    legend: { position: 'bottom' }
-    };
-
-    var chart = new google.visualization.LineChart(document.getElementById('chartLine'));
-
-    chart.draw(data, options);
-    }
+        var Chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
-    <div id="chartLine" style="width: 900px; height: 500px"></div>
+
+
 </section>
 </html>

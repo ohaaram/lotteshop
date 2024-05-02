@@ -2,11 +2,13 @@ package kr.co.lotte.controller;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.BannerDTO;
+import kr.co.lotte.dto.ProductsPageRequestDTO;
 import kr.co.lotte.entity.Banner;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.compiler.ast.Keyword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,7 +36,6 @@ public class MainController {
     @GetMapping(value = {"/", "/index"})
     public String index(Model model){
 
-
           mainService.upDateVisitor();
 
 
@@ -46,8 +47,7 @@ public class MainController {
         model.addAttribute("prodRecent", mainService.selectRecentProducts());
         model.addAttribute("prodDiscount", mainService.selectDiscountProducts());
 
-
-        log.info("AdminController - banner : "+banner1.toString());
+       log.info("AdminController - banner : "+banner1.toString());
 
         model.addAttribute("banner1", banner1);
         model.addAttribute("banner2", banner2);
@@ -71,4 +71,5 @@ public class MainController {
         result.put("data","1");
         return ResponseEntity.ok().body(result);
     }
+
 }

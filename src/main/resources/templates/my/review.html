@@ -4,51 +4,81 @@
       layout:decorate="~{/my/layout/myLayout.html}">
 
 
-            <div class="review" layout:fragment="content">
+
+<div class="review" layout:fragment="content">
+    <ul>
+        <span class="menu_else"></span>
+        <li><a th:href="@{/my/order}">전체주문내역</a></li>
+        <li><a th:href="@{/my/favorite}">관심상품</a></li>
+        <li><a th:href="@{/my/point}">포인트내역</a></li>
+        <li><a th:href="@{/my/coupon}">쿠폰</a></li>
+        <li class="on"><a th:href="@{/my/review(uid=${#authentication.principal.username})}">나의리뷰</a></li>
+        <li><a th:href="@{/my/qna}">문의하기</a></li>
+        <li><a th:href="@{/my/info}">나의설정</a></li>
+    </ul>
+
+
+    <section>
+        <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+        <article>
+            <h3>나의리뷰</h3>
+
+            <table border="0">
+                <tr>
+                    <th>번호</th>
+                    <th>상품명</th>
+                    <th>내용</th>
+                    <th>평점</th>
+                    <th>작성일</th>
+                </tr>
+                <tr th:each="review:${reviews.dtoList2}">
+                    <td class="no" th:text="${review.getProdno()}">5</td>
+                    <td class="prodName"><a th:href="@{/product/view(prodno=${review.getProdno()})}"
+                                            th:text="${review.getProdname()}">상품명</a></td>
+                    <td class="content"
+                        th:text="${#strings.length(review.getComment()) > 10 ? #strings.substring(review.getComment(), 0, 10) + '...' : review.getComment()} ">
+                        배송이 빠릅니다. 잘 사용하겠습니다.
+                    </td>
+                    <td class="score">
+                        <h5>
+                            <img th:if="${review.getScore()} == 1 " th:src="@{/review/review_star1.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${review.getScore()} == 2 " th:src="@{/review/review_star2.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${review.getScore()} == 3 " th:src="@{/review/review_star3.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${review.getScore()} == 4 " th:src="@{/review/review_star4.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;">
+                            <img th:if="${review.getScore()} == 5 " th:src="@{/review/review_star5.png}"
+                                 alt="oneStar"
+                                 style="max-width: 80px; height: auto;"></h5>
+                    </td>
+                    <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
+                </tr>
+            </table>
+
+            <div class="page">
                 <ul>
-                    <span class="menu_else"></span>
-                    <li ><a th:href="@{/my/order}">전체주문내역</a></li>
-                    <!--<li><a href="./favorite.html">관심상품</a></li>-->
-                    <li ><a th:href="@{/my/point}">포인트내역</a></li>
-                    <li><a th:href="@{/my/coupon}">쿠폰</a></li>
-                    <li  class="on"><a th:href="@{/my/review}">나의리뷰</a></li>
-                    <li><a th:href="@{/my/qna}">문의하기</a></li>
-                    <li ><a th:href="@{/my/info}">나의설정</a></li>
+                    <li th:if="${reviews.prev}">
+                        <a th:href="@{/my/review(uid=${#authentication.principal.username}, pg=${reviews.start - 1})}">이전</a>
+                    </li>
+                    <li th:each="n : ${#numbers.sequence(reviews.start, reviews.end)}">
+                        <a th:href="@{/my/review(uid=${#authentication.principal.username}, pg=${n})}"
+                           th:text="${n}"></a>
+                    </li>
+                    <li th:if="${reviews.next}">
+                        <a th:href="@{/my/review(uid=${#authentication.principal.username}, pg=${reviews.end + 1})}">다음</a>
+                    </li>
                 </ul>
-
-                <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
-                    <article>
-                        <h3>나의리뷰</h3>
-
-                        <table border="0">
-                            <tr>
-                                <th>번호</th>
-                                <th>상품명</th>
-                                <th>내용</th>                                
-                                <th>평점</th>
-                                <th>작성일</th>
-                            </tr>
-                            <tr th:each="review:${reviews}">
-                                <td class="no">5</td>
-                                <td class="prodName"><a th:href="@{#}">상품명</a></td>
-                                <td class="content">배송이 빠릅니다. 잘 사용하겠습니다.</td>                                
-                                <td class="score"><span class="rating star1">평점</span></td>
-                                <td class="date">2024-12-12</td>
-                            </tr>
-                        </table>
-
-                        <p class="page">
-                            <a th:href="@{#}" class="prev">이전</a>
-                            <a th:href="@{#}" class="num on">1</a>
-                            <a th:href="@{#}" class="num">2</a>
-                            <a th:href="@{#}" class="num">3</a>
-                            <a th:href="@{#}" class="next">다음</a>
-                        </p>
-                    </article>
-                </section>
-
             </div>
-        </div>        
+        </article>
+    </section>
+
+</div>
+</div>
 
 </html>
