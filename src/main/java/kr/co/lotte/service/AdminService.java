@@ -420,6 +420,9 @@ public class AdminService {
                     products = tuple.get(0, Products.class);
                     SubProducts ss = tuple.get(1, SubProducts.class);
                     ss.setProducts(products);
+
+                    log.info("여기는 판매자 전용 adminService - searchProductsForManager : "+ ss.getProducts());
+
                     return ss;
                 }).toList();
         int total = (int) page.getTotalElements();
@@ -1062,7 +1065,14 @@ public class AdminService {
             map.put("price", yearPrice);
         }
         return map;
+    }
+    
+    //seller이면 true를 반환
+    public Boolean findBySeller(String uid){
 
+        // 판매자 검색
+        Optional<Seller> seller = sellerRepository.findById(uid);
 
+        return seller.isPresent();
     }
 }

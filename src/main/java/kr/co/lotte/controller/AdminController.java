@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -143,21 +144,50 @@ public class AdminController {
     //product
     @GetMapping("/admin/product/list")
     public String list(Model model, ProductsPageRequestDTO pageRequestDTO, Authentication authentication){
-        try{
-            MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-            ProductsPageResponseDTO pageResponseDTO = adminService.searchProducts(pageRequestDTO);
-            model.addAttribute("page", pageResponseDTO);
-        }catch (Exception e){
 
-            //여기는 매니저
-            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+        String uid = null;
+        Boolean isSeller = false;
+
+        if(pageRequestDTO.getCate()!=null){
+            log.info(pageRequestDTO.getCate());
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof MyUserDetails) {
+            MyUserDetails userDetails = (MyUserDetails) principal;
+            uid = userDetails.getUsername();
+        } else if (principal instanceof MyManagerDetails) {
+            MyManagerDetails myManagerDetails = (MyManagerDetails) principal;
             Seller seller = myManagerDetails.getUser();
-            String uid= seller.getSellerUid();
+            uid = seller.getSellerUid();
+        }
 
-            ProductsPageResponseDTO pageResponseDTO = adminService.searchProductsForManager(pageRequestDTO, uid);
-            model.addAttribute("page", pageResponseDTO);
+        if (uid != null) {
+            isSeller = adminService.findBySeller(uid);
+        }
+
+        if(pageRequestDTO.getCate()==null) {
+            pageRequestDTO.setCate(""); // 여기서 cate 필드를 빈 문자열로 초기화
+        }
+
+        ProductsPageResponseDTO pageResponseDTO;
+
+        if (isSeller) {
+
+            log.info("여기는 매니저일 떄 들어오는 곳");
+
+            pageResponseDTO = adminService.searchProductsForManager(pageRequestDTO, uid);
+        } else {
+
+            log.info("여기는 관리자일 때 들어오는 곳");
+
+            pageResponseDTO = adminService.searchProducts(pageRequestDTO);
 
         }
+
+        model.addAttribute("page", pageResponseDTO);
+        model.addAttribute("isSeller", isSeller);
 
         return "/admin/product/list";
     }

@@ -17,7 +17,7 @@ public class ReviewDTO {
     private int rno;
     private String uid;
     private String comment;
-    private int prodno;
+    private int prodNo;
     private int score;
 
     private MultipartFile multImage1;
@@ -33,6 +33,6 @@ public class ReviewDTO {
 
     private int orderno;
     private int itemno;
-
+    private String prodoption;//옵션(color+size)
 
 }

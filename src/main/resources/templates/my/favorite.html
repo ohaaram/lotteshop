@@ -111,7 +111,7 @@
                                             <br><br>
                                             <p>
                                                 <span style="font-size: 17px; font-weight: bold; color: red" th:if="${product.prodDiscount > 0}">[[${product.prodDiscount}]]%</span>
-                                                <span style="font-size: 17px; font-weight: bold;" th:if="${product.prodDiscount > 0}">[[${#numbers.formatInteger(#numbers.formatDecimal( product.prodPrice * (100 - product.prodDiscount) * 0.01 , 1, 0) ,1, 'COMMA')}]]원</span>
+                                                <span style="font-size: 17px; font-weight: bold;">[[${#numbers.formatInteger(#numbers.formatDecimal( product.prodPrice * (100 - product.prodDiscount) * 0.01 , 1, 0) ,1, 'COMMA')}]]원</span>
                                                 <span style="font-size: 17px; text-decoration: line-through;" th:if="${product.prodDiscount > 0}">[[${product.prodPrice}]]</span>
                                             </p>
                                         </div>

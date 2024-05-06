@@ -4,6 +4,7 @@ import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.OrderItems;
 import kr.co.lotte.entity.Orders;
 import kr.co.lotte.entity.Review;
+import kr.co.lotte.entity.User;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MyServiceForGahee;
@@ -109,7 +110,7 @@ public class MyControllerForGahee {
     public ResponseEntity deleteLikes(@RequestBody Map<String, List<Integer> > map , Authentication authentication ){
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         String uid = userDetails.getUser().getUid();
-         List<Integer> prodNos = map.get("prodNo");
+        List<Integer> prodNos = map.get("prodNo");
         return  myServiceForGahee.deleteLikes(uid, prodNos);
     }
 
@@ -119,6 +120,21 @@ public class MyControllerForGahee {
     }
 
 
+    @GetMapping("/product/coupon")
+    public String coupon(){
+        return "/product/coupon";
+    }
+
+    //쿠폰(admin)
+    @GetMapping("/admin/coupon/register")
+    public String couponRegister(Authentication authentication , Model model){
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+        if(!user.getRole().equals("ADMIN")){
+            return "/";
+        }
+        return "/admin/coupon";
+    }
 
 
 

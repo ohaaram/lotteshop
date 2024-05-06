@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +35,14 @@ public class MarketService {
 
         return modelMapper.map( productRepository.findById(prodno).get() , ProductsDTO.class);
 
+    }
+
+    //리뷰 수를 찍자!
+    public Products findProduct(int prodno){
+
+       Optional<Products> optProduct =  productRepository.findById(prodno);
+
+        return modelMapper.map(optProduct,Products.class);
     }
 
 

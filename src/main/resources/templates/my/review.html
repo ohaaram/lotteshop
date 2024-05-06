@@ -3,9 +3,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/my/layout/myLayout.html}">
 
-
-
 <div class="review" layout:fragment="content">
+    <script src="https://kit.fontawesome.com/f98645e8a0.js" crossorigin="anonymous"></script><!--오아람 추가-->
+
     <ul>
         <span class="menu_else"></span>
         <li><a th:href="@{/my/order}">전체주문내역</a></li>
@@ -31,33 +31,24 @@
                     <th>평점</th>
                     <th>작성일</th>
                 </tr>
-                <tr th:each="review:${reviews.dtoList2}">
-                    <td class="no" th:text="${review.getProdno()}">5</td>
-                    <td class="prodName"><a th:href="@{/product/view(prodno=${review.getProdno()})}"
-                                            th:text="${review.getProdname()}">상품명</a></td>
+                <tr th:each="review, index :${reviews.dtoList2}" th:if="${reviews.dtoList2.size()}>0">
+                    <td class="no" th:text="${index.count}">5</td>
+                    <td class="prodName">
+                        <a th:href="@{/product/view(prodno=${review.nproduct.getProdNo()})}"
+                           th:text="${review.getProdoption()}">상품명</a></td>
                     <td class="content"
                         th:text="${#strings.length(review.getComment()) > 10 ? #strings.substring(review.getComment(), 0, 10) + '...' : review.getComment()} ">
                         배송이 빠릅니다. 잘 사용하겠습니다.
                     </td>
                     <td class="score">
-                        <h5>
-                            <img th:if="${review.getScore()} == 1 " th:src="@{/review/review_star1.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${review.getScore()} == 2 " th:src="@{/review/review_star2.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${review.getScore()} == 3 " th:src="@{/review/review_star3.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${review.getScore()} == 4 " th:src="@{/review/review_star4.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${review.getScore()} == 5 " th:src="@{/review/review_star5.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;"></h5>
+                        <span th:each="starIndex : ${#numbers.sequence(1, review.getScore())}" style="padding-bottom: 10px">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
                     </td>
                     <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
+                </tr>
+                <tr th:if="${reviews.dtoList2.size()}==0">
+                    <td colspan="5" style="text-align: center">작성한 리뷰가 없습니다.</td>
                 </tr>
             </table>
 
@@ -77,8 +68,5 @@
             </div>
         </article>
     </section>
-
 </div>
-</div>
-
 </html>

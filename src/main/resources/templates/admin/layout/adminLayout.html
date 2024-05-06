@@ -89,6 +89,7 @@
                     <ol>
                         <li><a th:href="@{/admin/product/list}">상품현황</a></li> <!--manager, admin 다르게 -->
                         <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/product/register}">상품등록</a></li>
+                        <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/coupon/register}">쿠폰관리</a></li>
                     </ol>
                 </li>
                 <li>

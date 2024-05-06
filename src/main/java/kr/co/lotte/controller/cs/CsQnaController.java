@@ -23,4 +23,12 @@ public class CsQnaController {
     }
     
      */
+    
+    // cs.qna 목록
+    @GetMapping("/cs/qna/list")
+    public String csQna(){
+
+        return "/cs/qna/list";
+    }
+    
 }

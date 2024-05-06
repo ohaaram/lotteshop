@@ -41,15 +41,15 @@ public class MarketController {
 
 
     @GetMapping("/product/list")
-    public String list(Model model, MainProductsPageRequestDTO requestDTO ,@AuthenticationPrincipal MyUserDetails userDetails){
+    public String list(Model model, MainProductsPageRequestDTO requestDTO, @AuthenticationPrincipal MyUserDetails userDetails) {
         MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
         List<Products> products = pageResponseDTO.getDtoList();
-        try{
+        try {
             User user = userDetails.getUser();
             List<Products> newProducts = mainService.hahaha(products, user.getUid());
             pageResponseDTO.setDtoList(newProducts);
-        }catch (Exception e){
-            for(Products p : products){
+        } catch (Exception e) {
+            for (Products p : products) {
                 p.setLikeState(0);
             }
             pageResponseDTO.setDtoList(products);
@@ -59,9 +59,11 @@ public class MarketController {
     }
 
     @GetMapping("/product/view")
-    public String view(Model model, @RequestParam(name = "prodno") int prodno, ReviewPageRequestDTO reviewPageRequestDTO){
+    public String view(Model model, ReviewPageRequestDTO reviewPageRequestDTO) {
 
-        log.info("prodno 값 : "+prodno);
+        int prodno = reviewPageRequestDTO.getProdno();
+
+        log.info("prodno 값 : " + reviewPageRequestDTO.getProdno());
 
         //상품 조회
         ProductsDTO productsDTO = marketService.selectProduct(prodno);
@@ -69,11 +71,16 @@ public class MarketController {
         //subProducts에서 prodno로 조회, color과 size의 리스트를 들고 온다
         List<SubProducts> Options = marketService.findAllByProdNo(prodno);
 
-        log.info("Options : "+Options.size());
+        //리뷰수를 조회
+        Products products =  marketService.findProduct(prodno);
 
-        log.info("options : "+Options);
+        model.addAttribute("reviewNum",products);
 
-        log.info("view - getMapping - productsDTO : "+productsDTO);
+        log.info("Options : " + Options.size());
+
+        log.info("options : " + Options);
+
+        log.info("view - getMapping - productsDTO : " + productsDTO);
 
         log.info("/product/view : 여기까지 들어오는건가?");
 
@@ -81,9 +88,9 @@ public class MarketController {
 
 
         //리뷰 조회
-        ReviewPageResponseDTO reviewPageResponseDTO = reviewService.selectReviews(prodno,reviewPageRequestDTO);
+        ReviewPageResponseDTO reviewPageResponseDTO = reviewService.selectReviews(prodno, reviewPageRequestDTO);
 
-        log.info("페이지 네이션 할 prodview - reviewPageResponseDTO : "+reviewPageResponseDTO);
+        log.info("페이지 네이션 할 prodview - reviewPageResponseDTO : " + reviewPageResponseDTO);
 
 
         //리뷰 별점 - 평균, 비율 구하기
@@ -98,38 +105,40 @@ public class MarketController {
 
     //장바구니 넣기
     @PostMapping("/product/view")
-    public ResponseEntity<Map<String, String>> view(@RequestBody Map<String , Object> map){
-            log.info(map.get("itemsCounts").toString());
-            log.info(map.get("itemsNos").toString());
-            List<Integer> nos = (List<Integer>) map.get("itemsNos");
-            List<Integer> counts = (List<Integer>) map.get("itemsCounts");
-            String uid = map.get("userId").toString();
-            return marketService.inserCart(uid, counts , nos);
-    };
+    public ResponseEntity<Map<String, String>> view(@RequestBody Map<String, Object> map) {
+        log.info(map.get("itemsCounts").toString());
+        log.info(map.get("itemsNos").toString());
+        List<Integer> nos = (List<Integer>) map.get("itemsNos");
+        List<Integer> counts = (List<Integer>) map.get("itemsCounts");
+        String uid = map.get("userId").toString();
+        return marketService.inserCart(uid, counts, nos);
+    }
+
+    ;
 
     @ResponseBody
     @PostMapping("/product/order")
-    public ResponseEntity order(@RequestBody Map<String , Object> map, HttpSession session){
+    public ResponseEntity order(@RequestBody Map<String, Object> map, HttpSession session) {
         List<Integer> nos = (List<Integer>) map.get("itemsNos");
         List<Integer> counts = (List<Integer>) map.get("itemsCounts");
         session.setAttribute("nos", nos);
         session.setAttribute("counts", counts);
 
-        Map<String , String> map1 = new HashMap<>();
-        map1.put("result","success");
+        Map<String, String> map1 = new HashMap<>();
+        map1.put("result", "success");
         return ResponseEntity.ok().body(map1);
     }
 
     //바로구매(장바구니 안 거치고)
     @GetMapping("/product/order")//
-    public String order( Model model, HttpSession session, Authentication authentication){
+    public String order(Model model, HttpSession session, Authentication authentication) {
         int status = 0;
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         model.addAttribute("user", user);
         List<Integer> nos = (List<Integer>) session.getAttribute("nos");
         List<Integer> counts = (List<Integer>) session.getAttribute("counts");
-        log.info("nos nonono~ : "+nos);
+        log.info("nos nonono~ : " + nos);
         model.addAttribute("subProducts", marketService.selectProducts(nos));
         model.addAttribute("counts", counts);
         model.addAttribute("status", status);
@@ -138,16 +147,16 @@ public class MarketController {
 
     //바로구매(장바구니 거치고)
     @GetMapping("/product/order2")//
-    public String order2( Model model, Authentication authentication, @RequestParam(name = "list") List<Integer> list){
-        log.info("list : "+list);
+    public String order2(Model model, Authentication authentication, @RequestParam(name = "list") List<Integer> list) {
+        log.info("list : " + list);
         int status = 1;
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         model.addAttribute("user", user);
         List<Carts> cartsList = marketService.selectCarts(list);
 
-        List<Integer> counts = cartsList.stream().map(item ->   item.getCartProdCount()).toList();
-        List<Integer> nos = cartsList.stream().map(item ->   item.getProdNo()).toList();
+        List<Integer> counts = cartsList.stream().map(item -> item.getCartProdCount()).toList();
+        List<Integer> nos = cartsList.stream().map(item -> item.getProdNo()).toList();
         model.addAttribute("cartlist", cartsList);
         model.addAttribute("subProducts", marketService.selectProducts(nos));
         model.addAttribute("counts", counts);
@@ -158,34 +167,34 @@ public class MarketController {
     //구매하기 (orderTable  포인트 사용 감소)
     @ResponseBody
     @PostMapping("/product/orderBuy")
-    public ResponseEntity orderBuy(@RequestBody OrdersDTO ordersDTO){
-        log.info("이거확인 "+ordersDTO.toString());
+    public ResponseEntity orderBuy(@RequestBody OrdersDTO ordersDTO) {
+        log.info("이거확인 " + ordersDTO.toString());
         return marketService.insertOrderAndPoint(ordersDTO);
     }
 
     //구매하기2( 카트제거 , orderItems 넣기)
     @ResponseBody
     @PostMapping("/product/deleteCartForOrder")
-    public ResponseEntity deleteCartForOrder(@RequestBody Map<String, List<Integer>> map){
+    public ResponseEntity deleteCartForOrder(@RequestBody Map<String, List<Integer>> map) {
         List<Integer> list = map.get("lists");
         return marketService.deleteCartForBuy(list);
     }
-    
+
     //구매하기2-1 (세션제거, orderItems 넣기)
     @ResponseBody
     @GetMapping("/product/insertItems")
     public ResponseEntity insertItems(Model model, HttpSession session,
-                                      @RequestParam(name = "orderNo")int orderNo,Authentication authentication){
+                                      @RequestParam(name = "orderNo") int orderNo, Authentication authentication) {
         List<Integer> nos = (List<Integer>) session.getAttribute("nos");
         List<Integer> counts = (List<Integer>) session.getAttribute("counts");
         session.removeAttribute("nos");
         session.removeAttribute("counts");
 
-        return marketService.insertItemsForBuy(nos ,counts , orderNo);
+        return marketService.insertItemsForBuy(nos, counts, orderNo);
     }
 
     @GetMapping("/product/orderSuccess")
-    public String successOrder(@RequestParam(name = "orderNo") int orderNo){
+    public String successOrder(@RequestParam(name = "orderNo") int orderNo) {
 
         return "/product/complete";
     }
@@ -197,13 +206,13 @@ public class MarketController {
     @ResponseBody
     @GetMapping("/product/optionSelect")
     public ResponseEntity optionSelect(@RequestParam(name = "color") String color,
-                                       @RequestParam(name = "prodNo") int prodNo){
+                                       @RequestParam(name = "prodNo") int prodNo) {
 
-        return  marketService.selectOption(color, prodNo);
+        return marketService.selectOption(color, prodNo);
     }
 
     @GetMapping("/product/cart")
-    public String cart(Authentication authentication , Model model){
+    public String cart(Authentication authentication, Model model) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         List<Carts> carts = marketService.selectCart(user.getUid());
@@ -217,23 +226,54 @@ public class MarketController {
     //장바구니 삭제
     @ResponseBody
     @PutMapping("/product/cart/delete")
-    public ResponseEntity deleteCart(@RequestBody  Map<String,List<Integer>> map){
+    public ResponseEntity deleteCart(@RequestBody Map<String, List<Integer>> map) {
         log.info(map.toString());
         return marketService.deleteCart(map.get("list"));
 
     }
 
-    //상품 검색기능
     @GetMapping("/product/search")
-    public String search(String keyword,ProductsPageRequestDTO requestDTO){
+    public String search(String cate, String keyword, ProductsPageRequestDTO requestDTO, Model model, HttpSession session) {
 
-        mainService.searchForProduct(requestDTO, keyword);
+        log.info("cate : " + cate);
+
+
+        if (cate != null && !cate.isEmpty()) {
+
+            requestDTO.setCate(cate);
+
+            requestDTO.setKeyword(keyword);
+
+            log.info("카테 값 넣었어? : "+requestDTO.getCate());
+            log.info("keyword 값 넣었어? : "+requestDTO.getKeyword());
+
+
+        } else {
+
+            if (requestDTO == null) {
+
+                requestDTO = new ProductsPageRequestDTO();
+            }
+
+            if (keyword != null && !keyword.isEmpty()) {
+                requestDTO.setKeyword(keyword);
+            }
+         }
+
+        session.setAttribute("keyword", keyword);
+
+        ProductsPageResponseDTO searchResult = mainService.searchForProduct(requestDTO);
+
+        log.info("지금 내가 작성한 쿼리문이 잘 돌고 있나 체크 search : " + searchResult);
+
+        model.addAttribute("searchResult", searchResult);
 
         return "/product/search";
     }
 
+
     @GetMapping("/product/complete")
-    public String complete(){
+    public String complete() {
 
         return "/product/complete";
     }
@@ -246,7 +286,7 @@ public class MarketController {
 
 
     @GetMapping("/product/orderDelete")
-    public ResponseEntity orderDelete(Model model, @RequestParam(name = "itemNo") int itemNo, Authentication authentication){
+    public ResponseEntity orderDelete(Model model, @RequestParam(name = "itemNo") int itemNo, Authentication authentication) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
@@ -257,16 +297,16 @@ public class MarketController {
 
     //like
     @GetMapping("/product/like")
-    public ResponseEntity like(@RequestParam(name = "userId") String uid , @RequestParam(name = "prodNo") int prodNo){
-        return marketService.likeButton(uid,prodNo);
+    public ResponseEntity like(@RequestParam(name = "userId") String uid, @RequestParam(name = "prodNo") int prodNo) {
+        return marketService.likeButton(uid, prodNo);
     }
 
 
     //like
 
     @GetMapping("/product/likeSearch")
-    public ResponseEntity likeSearch(@RequestParam(name = "userId") String uid , @RequestParam(name = "prodNo") int prodNo){
-        return marketService.search(uid,prodNo);
+    public ResponseEntity likeSearch(@RequestParam(name = "userId") String uid, @RequestParam(name = "prodNo") int prodNo) {
+        return marketService.search(uid, prodNo);
     }
 
 }

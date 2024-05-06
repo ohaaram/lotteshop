@@ -31,8 +31,10 @@ public class WebMVCConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/admin/**").addResourceLocations("classpath:/admin/");
         registry.addResourceHandler("/static/cs/**").addResourceLocations("classpath:/cs/");
         registry.addResourceHandler("/static/my/**").addResourceLocations("classpath:/my/");
+        registry.addResourceHandler("/static/review/**").addResourceLocations("classpath:/review/");
         registry.addResourceHandler("/static/member/**").addResourceLocations("classpath:/member/");
         registry.addResourceHandler("/static/product/**").addResourceLocations("classpath:/product/");
+        registry.addResourceHandler("/static/policy/**").addResourceLocations("classpath:/policy/");
         registry.addResourceHandler("/uploads/**").addResourceLocations("file:" + resourcePath);
 
 

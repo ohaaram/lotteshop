@@ -41,7 +41,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QueryResults<Tuple> results = jpaQueryFactory
                 .select(qReview, qUser.nick)
                 .from(qReview)
-                .where(qReview.prodno.eq(prodno))
+                .where(qReview.nproduct.prodNo.eq(prodno))
                 .join(qUser)
                 .on(qReview.uid.eq(qUser.uid))
                 .orderBy(qReview.rno.desc())
@@ -66,7 +66,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                         qReview.score.avg(),
                         qReview.score.sum())
                 .from(qReview)
-                .where(qReview.prodno.eq(prodno))
+                .where(qReview.nproduct.prodNo.eq(prodno))
                 .fetchOne();
         return result;
     }
@@ -77,7 +77,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         List<Tuple> results = jpaQueryFactory
                 .select(qReview.score ,qReview.count())
                 .from(qReview)
-                .where(qReview.prodno.eq(prodno))
+                .where(qReview.nproduct.prodNo.eq(prodno))
                 .groupBy(qReview.score)
                 .orderBy(qReview.score.asc())
                 .fetch();

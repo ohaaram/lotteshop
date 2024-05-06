@@ -25,5 +25,6 @@ public class SellerDTO {
         private String sellerAddr2;
         private String sellerDname;
         private String sellerDHp;
+        private String grade;
 
 }

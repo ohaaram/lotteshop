@@ -28,6 +28,6 @@ public interface ProductsRepositoryCustom  {
 
     public Page<Like> searchAllLike(ProductsPageRequestDTO pageRequestDTO, Pageable pageable, String uid);
 
-    public Page<Products> searchForProduct(ProductsPageRequestDTO productsPageRequestDTO, Pageable pageable,String keyword);
+    public Page<Tuple> searchForProduct(ProductsPageRequestDTO productsPageRequestDTO, Pageable pageable);
 
 }

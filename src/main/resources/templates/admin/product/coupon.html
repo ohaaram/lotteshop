@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+            <section id="admin-product-list" layout:fragment="content">
+                <script>
+                    window.onload=function (){
+                        var list = [];
+                        const next = document.getElementById('next');
+                       const all = document.getElementById('all');
+                       const checkAll = document.querySelectorAll('#check');
+                       all.onclick = function (){
+                           if (all.checked){
+                               checkAll.forEach(function (item) {
+                                   if (!item.checked) {
+                                       item.click();
+                                   }
+                               });
+                           }else{
+                               checkAll.forEach(function (item) {
+                                   if (item.checked) {
+                                       item.click();
+                                   }
+                               });
+                           }
+                       }
+
+                       const  selectDelete = document.getElementById('selectDelete');
+                       selectDelete.onclick=async function (e) {
+                           e.preventDefault();
+                           if (confirm('정말로 삭제하시겠습니까?')) {
+                               checkAll.forEach(function (item) {
+                                   if (item.checked) {
+                                       list.push(item.value);
+                                   }
+                               });
+                               if (list.length == 0) {
+                                   alert('선택된 상품이 없습니다.')
+                               } else {
+                                   const jsonData = {list: list}
+                                   const result = await fetchPut('/lotteshop/admin/product/delete', jsonData);
+                                   console.log(result.result);
+
+                               }
+                               location.reload();
+                           }
+                       }
+
+                       const deleteOnes = document.querySelectorAll('#deleteOne');
+                       deleteOnes.forEach(function (item){
+                          item.onclick=async function (e) {
+                              e.preventDefault();
+                              if (confirm('정말로 삭제하시겠습니까?')) {
+                                  const subNo = item.getAttribute('data-fno');
+                                  console.log(subNo)
+                                  const json = {number : subNo}
+                                  const result = await fetchPost('/lotteshop/admin/product/deleteOne', json);
+
+                                  location.reload();
+
+                              }
+                          }
+                       });
+                    }
+                </script>
+                <nav>
+                    <h3>상품목록</h3>
+                    <p>
+                        HOME > 상품관리 > <strong>상품목록</strong>
+                    </p>
+                </nav>
+
+                <section>
+                    <div>
+                        <select name="search">
+                            <option value="search1">상품명</option>
+                            <option value="search1">상품코드</option>
+                            <option value="search1">제조사</option>
+                            <option value="search1">판매자</option>                                    
+                        </select>
+                        <input type="text" name="search">
+
+                        <span > 재고량이 30개 이하일 경우 빨강색으로 표시됩니다</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <th><input type="checkbox" name="all" id="all"/></th>
+                            <th>이미지</th>
+                            <th>상품번호</th>
+                            <th>상품명</th>
+                            <th>옵션(컬러)</th>
+                            <th>옵션(사이즈)</th>
+                            <th>판매가격</th>
+                            <th>할인율</th>
+                            <th>포인트</th>
+                            <th>재고</th>
+                            <th>판매자</th>
+                            <th>조회</th>
+                            <th>관리</th>
+                        </tr>
+
+                        <tr th:each="subProduct, index:${page.dtoLists}" >
+                            <td th:class="${subProduct.prodStock<=500? 'alert' : 'good'}"><input type="checkbox" name="상품번호" id="check" th:value="${subProduct.subProdNo}"/></td>
+                            <td><img th:src="@{/uploads/__${subProduct.products.image1}__}" class="thumb"></td>
+                            <td>[[${subProduct.subProdNo}]]</td>
+                            <td style="text-align: center">[[${subProduct.products.prodName}]]</td>
+                            <td>[[${subProduct.color}]]</td>
+                            <td>[[${subProduct.size}]]</td>
+                               <td>[[${subProduct.products.prodPrice}]]</td>
+                            <td>[[${subProduct.products.prodDiscount}]]</td>
+                            <td>[[${subProduct.products.point}]]</td>
+                            <th:block th:if="${subProduct.prodStock<= 30}">
+                                <td style="color: red">[[${subProduct.prodStock}]]</td>
+                            </th:block>
+                            <th:block th:if="${subProduct.prodStock> 30}">
+                                <td >[[${subProduct.prodStock}]]</td>
+                            </th:block>
+                            <td>[[${subProduct.products.sellerName}]]</td>
+                            <td>[[${subProduct.products.searchCount}]]</td>
+                            <td>
+                                <a id="deleteOne" th:data-fno="${subProduct.subProdNo}" >[삭제]</a>
+                                <a th:href="@{/admin/product/modify(prodNo=${subProduct.getProdNo()})}">[수정]</a>
+                            </td>
+                        </tr>
+                        
+                    </table>
+
+                    
+                    <input type="button" value="선택삭제" id="selectDelete"/>
+
+
+                    <div class="paging">
+                        <span class="prev" th:if="${page.prev}">
+                            <a th:href="@{/admin/product/list(pg=${page.start -1})}"><&nbsp;이전</a>
+                        </span>
+                        <span class="num" th:each="num:${#numbers.sequence(page.start, page.end)}">
+                            <th:block th:if="${num == page.pg}">
+                                 <a th:href="@{/admin/product/list( pg=${num})}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != page.pg}">
+
+                                 <a th:href="@{/admin/product/list( pg=${num})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                        <span class="next" th:if="${page.next}">
+                            <a th:href="@{/admin/product/list( pg=${page.end+1})}">다음&nbsp;></a>
+                        </span>
+                        </div>
+
+                </section>                
+            </section>
+</html>

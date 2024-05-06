@@ -286,7 +286,8 @@
                             <tr style="text-align: center">
                                 <td >[[${#temporals.format(point.pointDate , 'yyyy-MM-dd')}]]</td>
                                 <td>[[${point.state}]]</td>
-                                <td>[[${point.orderNo}]]</td>
+                                <td th:if="${point.orderNo>=0}">[[${point.orderNo}]]</td>
+                                <td th:if="${point.orderNo<0}"></td>
                                 <td>[[${point.point}]]</td>
                                 <td>[[${point.pointDesc}]]</td>
                                 <td >[[${point.endDateTime}]]</td>
@@ -306,7 +307,7 @@
                                 <th>평점</th>
                                 <th>작성일</th>
                             </tr>
-                            <tr th:each="review, iterStat : ${reviews}">
+                            <tr th:each="review, iterStat : ${reviews}" th:if="${reviews.size()}>0">
                                 <td th:text="${iterStat.count}">1</td><!--인덱스 가져와서 인덱스 번호찍기-->
                                 <td th:text="${review.getProdname()}">상품명</td>
                                 <td class="content"
@@ -332,6 +333,9 @@
                                              style="max-width: 80px; height: auto;"></h5>
                                 </td>
                                 <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
+                            </tr>
+                            <tr th:if="${reviews.size()==0}">
+                                <td colspan="5" style="text-align: center">작성한 리뷰가 없습니다.</td>
                             </tr>
                         </table>
                     </article>

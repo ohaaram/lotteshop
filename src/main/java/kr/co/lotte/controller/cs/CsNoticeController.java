@@ -1,6 +1,7 @@
 package kr.co.lotte.controller.cs;
 
 import groovy.util.logging.Slf4j;
+import kr.co.lotte.dto.CsFaqDTO;
 import kr.co.lotte.dto.CsFaqPageRequestDTO;
 import kr.co.lotte.dto.CsFaqPageResponseDTO;
 import kr.co.lotte.dto.CsNoticeDTO;
@@ -12,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -27,29 +26,30 @@ public class CsNoticeController {
     @Autowired
     private final CsNoticeService csNoticeService;
 
-    // cs.notice.list
+    // cs.notice 전체 출력
     @GetMapping("/cs/notice/list")
-    public String noticeList(Model model, @RequestParam(name="cate1", required = false)String cate1) {
-        if(cate1 != null) {
-            cate1="customer";
-        }
-        Map<String, List<CsNoticeDTO>> dtoLists = csNoticeService.getCsNoticeList(cate1);
-        log.info("dtoLists.size() : " + dtoLists.size());
-        model.addAttribute("dtoLists", dtoLists);
+    public String noticeList(Model model, CsFaqPageRequestDTO requestDTO){
+        CsFaqPageResponseDTO pageResponseDTO = csNoticeService.getNoticeCate1andCate2(requestDTO);
+        model.addAttribute("csNotice", pageResponseDTO);
+
         return "/cs/notice/list";
+    }
+
+    // cs.notice 제목 누르면 그 글로 이동
+    @GetMapping("/cs/notice/view")
+    public String noticeViewNo(Model model, int no){
+        model.addAttribute("view", csNoticeService.adminNoticeView(no));
+        return "/cs/notice/view";
     }
 
     // admin.cs.notice.list
     @GetMapping("/admin/cs/notice/list")
     public String adminNoticeList(Model model, CsFaqPageRequestDTO requestDTO) {
-        CsFaqPageResponseDTO pageResponseDTO = csNoticeService.getNoticeCate1and2(requestDTO);
+        CsFaqPageResponseDTO pageResponseDTO = csNoticeService.getNoticeCate1andCate2(requestDTO);
         model.addAttribute("csNotice", pageResponseDTO);
 
         return "/admin/cs/notice/list";
     }
-
-
- 
 
     //admin.cs.notice.reg 폼 불러오기
     @GetMapping("/admin/cs/notice/register")
@@ -69,6 +69,8 @@ public class CsNoticeController {
     // admin.cs.notice 글 번호로 보기
     @GetMapping("/admin/cs/notice/view")
     public String adminNoticeViewNo(Model model, int no){
+        log.info("no : " + no);
+        log.info("야야야야야오오오오오 : " + csNoticeService.adminNoticeView(no));
         model.addAttribute("view", csNoticeService.adminNoticeView(no));
         return "/admin/cs/notice/view";
     }

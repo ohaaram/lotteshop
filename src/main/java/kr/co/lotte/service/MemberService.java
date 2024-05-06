@@ -97,6 +97,7 @@ public class MemberService {
 
         userDTO.setRole("USER");
         userDTO.setTotalPoint(5000);
+        userDTO.setGrade("1");
         User user = modelMapper.map(userDTO, User.class);
         memberRepository.save(user);
         Points points = new Points();

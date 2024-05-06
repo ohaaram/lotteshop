@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,17 +18,21 @@ public class QReview extends EntityPathBase<Review> {
 
     private static final long serialVersionUID = 567417948L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QReview review = new QReview("review");
 
     public final StringPath comment = createString("comment");
 
     public final NumberPath<Integer> itemno = createNumber("itemno", Integer.class);
 
+    public final QProducts nproduct;
+
     public final NumberPath<Integer> orderno = createNumber("orderno", Integer.class);
 
     public final StringPath prodname = createString("prodname");
 
-    public final NumberPath<Integer> prodno = createNumber("prodno", Integer.class);
+    public final StringPath prodoption = createString("prodoption");
 
     public final DateTimePath<java.time.LocalDateTime> rdate = createDateTime("rdate", java.time.LocalDateTime.class);
 
@@ -40,15 +45,24 @@ public class QReview extends EntityPathBase<Review> {
     public final StringPath uid = createString("uid");
 
     public QReview(String variable) {
-        super(Review.class, forVariable(variable));
+        this(Review.class, forVariable(variable), INITS);
     }
 
     public QReview(Path<? extends Review> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QReview(PathMetadata metadata) {
-        super(Review.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QReview(PathMetadata metadata, PathInits inits) {
+        this(Review.class, metadata, inits);
+    }
+
+    public QReview(Class<? extends Review> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.nproduct = inits.isInitialized("nproduct") ? new QProducts(forProperty("nproduct")) : null;
     }
 
 }

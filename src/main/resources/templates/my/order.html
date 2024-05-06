@@ -115,15 +115,15 @@
                     <h3>리뷰 작성</h3>
                     <form th:action="@{/my/order/write_review}" id="reviewForm" method="post"
                           enctype="multipart/form-data">
-                        <input type="hidden" id="prodno" name="prodno"/>
+                        <input type="hidden" id="prodno" name="prodNo"/>
                         <input type="hidden" id="prodname" name="prodname"/>
                         <input type="hidden" id="uid" name="uid"/>
                         <input type="hidden" id="orderno" name="orderno"/>
                         <input type="hidden" id="itemno" name="itemno"/>
 
                         <div class="form-group">
-                            <label for="reviewTitle">제목:</label>
-                            <input type="text" id="reviewTitle" name="title" required>
+                            <label for="reviewTitle">내가 주문한 상품 : </label>
+                            <input type="text" id="reviewTitle" name="prodoption" readonly required>
                         </div>
                         <div class="form-group">
                             <label for="reviewContent">내용:</label>
@@ -356,6 +356,15 @@
                             console.log(prodname);
                             console.log(itemno);
 
+                            //옵션내용을 불러오기
+                            const prod = await fetchGet(`/lotteshop/review/${itemno}`);
+
+                            const option = prod.option;
+
+                            console.log("option값 찍어보기 : "+option);
+
+
+
                             //똑같은 주문번호가 있는지 확인 후, 없으면 리뷰쓰기
                             const data = await fetchGet(`/lotteshop/review/${orderno}/${prodno}/${itemno}`);
 
@@ -372,7 +381,7 @@
                                 });
 
                                 event.preventDefault();
-                                openModal(uid, prodno, prodname, orderno,itemno);
+                                openModal(uid, prodno, prodname, orderno,itemno,option);
                             }
 
                         });
@@ -392,9 +401,9 @@
 
 
                     //모달 띄우기
-                    function openModal(uid, prodno, prodname, orderno,itemno) {
+                    function openModal(uid, prodno, prodname, orderno,itemno,option) {
                         document.getElementById('reviewModal').style.display = 'block';
-                        setModalContent(uid, prodno, prodname, orderno,itemno);
+                        setModalContent(uid, prodno, prodname, orderno,itemno,option);
                     }
 
                     // 모달 닫기
@@ -403,13 +412,13 @@
                     }
 
                     // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
-                    function setModalContent(uid, prodno, prodname, orderno,itemno) {
+                    function setModalContent(uid, prodno, prodname, orderno,itemno,option) {
                         document.getElementById('uid').value = uid;
                         document.getElementById('prodno').value = prodno;
                         document.getElementById('prodname').value = prodname;
                         document.getElementById('orderno').value = orderno;
                         document.getElementById('itemno').value = itemno;
-
+                        document.getElementById('reviewTitle').value = prodname+"_"+option;
                     }
 
                     async function fetchGet(url) {

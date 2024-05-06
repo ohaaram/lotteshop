@@ -1,9 +1,11 @@
 package kr.co.lotte.service.cs;
 
 import groovy.util.logging.Slf4j;
+import kr.co.lotte.dto.CsFaqDTO;
 import kr.co.lotte.dto.CsFaqPageRequestDTO;
 import kr.co.lotte.dto.CsFaqPageResponseDTO;
 import kr.co.lotte.dto.CsNoticeDTO;
+import kr.co.lotte.entity.CsFaq;
 import kr.co.lotte.entity.CsNotice;
 import kr.co.lotte.repository.cs.CsFaqRepository;
 import kr.co.lotte.repository.cs.CsNoticeRepository;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Map;
@@ -40,23 +44,18 @@ public class CsNoticeService {
         log.info("Insert CsNotice : {}", savedNotice.toString());
     }
 
-
     // admin.cs.notice 번호로 글 조회
     public CsNoticeDTO adminNoticeView(int no){
 
-        CsNotice csNotice = csNoticeRepository.findById(no).orElse(null);
-        return null;
+        CsNotice csNotice = csNoticeRepository.findById(no).get();
+        return modelMapper.map(csNotice, CsNoticeDTO.class);
     }
-
 
     // admin.cs.notice 수정
     public void adminNoticeUpdate(CsNoticeDTO csNoticeDTO) {
 
         // 글 번호 불러오기
-
         int no = csNoticeDTO.getNo();
-
-
         CsNotice csNotice = modelMapper.map(csNoticeDTO, CsNotice.class);
         CsNotice savedNotice = csNoticeRepository.save(csNotice);
 
@@ -67,30 +66,14 @@ public class CsNoticeService {
         csNoticeRepository.deleteById(csNoticeNo);
     }
 
-    // cs.notice 출력
-    public Map<String, List<CsNoticeDTO>> getCsNoticeList(String cate1) {
-        List<CsNotice> list = csNoticeRepository.findByCate1(cate1);
-        List<CsNoticeDTO> dtoList = list.stream().sorted()
-                .map(entity -> modelMapper.map(entity, CsNoticeDTO.class))
-                .collect(Collectors.toList());
-
-        Map<String, List<CsNoticeDTO>> groupedByCate2 = dtoList.stream()
-                .collect(Collectors.groupingBy(CsNoticeDTO::getCate2));
-
-        return groupedByCate2;
-    }
-
-    // admin.cs.notice.list 글 조회
-    public CsFaqPageResponseDTO getNoticeCate1and2(CsFaqPageRequestDTO requestDTO){
+    // admin.cs.list 특정 글 조회
+    public CsFaqPageResponseDTO getNoticeCate1andCate2(CsFaqPageRequestDTO requestDTO){
         Pageable pageable = requestDTO.getPageable("no");
         Page<CsNotice> lists = csFaqRepository.searchAllCsNotice(requestDTO, pageable);
-        List<CsNotice> dtoLists2 = lists.getContent();
+        List<CsNotice> dtoLists = lists.getContent();
         int total = (int) lists.getTotalElements();
-
-        return new CsFaqPageResponseDTO(requestDTO, total, dtoLists2);
+        return new CsFaqPageResponseDTO(requestDTO , total, dtoLists);
     }
-
-
 
 
 }

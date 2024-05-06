@@ -1,13 +1,10 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
+import jakarta.transaction.Transactional;
 import kr.co.lotte.dto.*;
-import kr.co.lotte.entity.Products;
-import kr.co.lotte.entity.Review;
-import kr.co.lotte.entity.ReviewImg;
-import kr.co.lotte.repository.ProductsRepository;
-import kr.co.lotte.repository.ReviewImgRepository;
-import kr.co.lotte.repository.ReviewRepository;
+import kr.co.lotte.entity.*;
+import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -23,11 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import java.util.*;
 
 
 @Slf4j
@@ -38,21 +31,23 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewImgRepository reviewImgRepository;
     private final ProductsRepository productRepository;
+    private final SubProductsRepository subProductsRepository;
     private final ModelMapper modelMapper;
+    private final OrderItemsRepository orderItemsRepository;
 
     @Value("${file.upload.path}")
     private String fileUploadPath;
 
     // 리뷰 목록 조회
-    public ReviewPageResponseDTO selectReviews(int prodno, ReviewPageRequestDTO reviewPageRequestDTO){
+    public ReviewPageResponseDTO selectReviews(int prodno, ReviewPageRequestDTO reviewPageRequestDTO) {
 
         Pageable pageable = reviewPageRequestDTO.getPageable("no");
         log.info("selectReviews Serv ...1 ");
         // 리뷰 목록  Page 조회
         Page<Tuple> results = reviewRepository.selectReviewsAndNick(prodno, reviewPageRequestDTO, pageable);
 
-        log.info("selectReviews Serv ...2 "+results.getTotalElements());
-        log.info("selectReviews Serv ...3 "+results.getTotalPages());
+        log.info("selectReviews Serv ...2 " + results.getTotalElements());
+        log.info("selectReviews Serv ...3 " + results.getTotalPages());
 
         // Page<Tuple>을 List<ReviewDTO>로 변환
         List<ReviewDTO> reviewList = results.getContent().stream()
@@ -80,11 +75,11 @@ public class ReviewService {
 
     // 리뷰 avg, sum, count(*) 조회 + score별 count 조회
     @Transient
-    public ReviewRatioDTO selectForRatio(int prodno){
+    public ReviewRatioDTO selectForRatio(int prodno) {
 
         // 리뷰 avg, sum, count(*) 조회 : 전체 데이터 기준으로 집계해야해서 group by 사용 불가 (score별 count 조회 따로 해야함)
         Tuple result = reviewRepository.selectForRatio(prodno);
-        log.info("리뷰 집계 조회 ...1 : "+result);
+        log.info("리뷰 집계 조회 ...1 : " + result);
 
         // JPA는 count는 long, sum은 int or long, avg는 double로 반환된다.
         long count = result.get(0, Long.class);
@@ -92,7 +87,7 @@ public class ReviewService {
         Integer sum = 0;
 
         // 리뷰가 하나도 없으면 에러가 발생하기 때문에 null 체크
-        if(count > 0) {
+        if (count > 0) {
             avg = result.get(1, Double.class);
             sum = result.get(2, Integer.class);
         }
@@ -146,10 +141,9 @@ public class ReviewService {
     }
 
 
-
     // 리뷰 작성 + 상품 테이블 recount up + file -> Thumbnails
     @Transient
-    public String insertReview(ReviewDTO reviewDTO, MultipartFile thumb){
+    public String insertReview(ReviewDTO reviewDTO, MultipartFile thumb) {
 
         log.info("리뷰 업로드 insertReview1 reviewDTO : " + reviewDTO.toString());
         log.info("리뷰 업로드 insertReview2 이미지 : " + thumb);
@@ -157,7 +151,7 @@ public class ReviewService {
         String path = new File(fileUploadPath).getAbsolutePath();
         String sName = null;
         // 이미지 리사이즈 120 * 120
-        if(thumb != null && !thumb.isEmpty()) {
+        if (thumb != null && !thumb.isEmpty()) {
             try {
                 // oName, sName 구하기
                 String oName = thumb.getOriginalFilename();
@@ -170,7 +164,7 @@ public class ReviewService {
                 String orgPath = path + "/orgImage";
                 // 원본 파일 폴더 자동 생성
                 File orgFile = new File(orgPath);
-                if(!orgFile.exists()){
+                if (!orgFile.exists()) {
                     orgFile.mkdir();
                 }
 
@@ -178,7 +172,7 @@ public class ReviewService {
                 thumb.transferTo(new File(orgPath, sName));
                 // 썸네일 생성 후 저장
                 Thumbnails.of(new File(orgPath, sName)) // 원본 파일 (경로, 이름)
-                        .size(120,120) // 원하는 사이즈
+                        .size(120, 120) // 원하는 사이즈
                         .toFile(new File(path, sName)); // 생성한 이미지 저장
 
             } catch (IOException e) {
@@ -194,7 +188,7 @@ public class ReviewService {
         reviewRepository.save(review);
 
         // product recount ++
-        Products product = productRepository.findById(review.getProdno()).get();
+        Products product = productRepository.findById(review.getNproduct().getProdNo()).get();
         product.setRecount(product.getRecount() + 1);
 
         // product update
@@ -206,7 +200,15 @@ public class ReviewService {
     public ResponseEntity<?> rRegister(ReviewDTO reviewDTO) {
         try {
 
+            int prodno = reviewDTO.getProdNo();
+
+            log.info("review_service - prodNO : " + prodno);
+            log.info("review_service - ReviewDTO : " + reviewDTO);
+
+
             Review review = modelMapper.map(reviewDTO, Review.class);
+
+            log.info("DTO에서 엔티티로 변환후 : " + review);
 
             MultipartFile image1 = reviewDTO.getMultImage1();
 
@@ -220,12 +222,47 @@ public class ReviewService {
                 review.setThumbnail(uploadedImage.getSName());
             }
 
+            Products product111 = new Products(); // 적절한 방법으로 상품 엔티티 객체를 생성
 
+            // 해당 상품의 prodNo 값을 설정
+            product111.setProdNo(prodno);
+
+            // Review 엔티티의 nproduct 필드에 상품 엔티티 객체를 설정
+            review.setNproduct(product111);
             log.info("service - rRegister : " + review);
 
-            Review saveReview = reviewRepository.save(review);
+            Review saveReview = reviewRepository.save(review);//새로운 리뷰 세이브
 
-            log.info("service - saveReview 저장성공?! : " + saveReview);
+            log.info("새로운 리뷰 세이브 포인트1");
+
+            Optional<Products> optProd = productRepository.findById(prodno);//상품번호를 이용해서 상품정보 가져오기
+
+            log.info("새로운 리뷰 세이브 포인트2");
+
+            Products product = modelMapper.map(optProd, Products.class);
+
+
+            log.info("새로운 리뷰 세이브 포인트3");
+
+            List<Review> Oreview = product.getReviews();//기존에 있었던 리뷰
+
+            log.info("새로운 리뷰 세이브 포인트3- Oreview" + Oreview);
+
+            Oreview.add(saveReview);//기존에 있었던 리뷰뒤에 새로운 리뷰 저장
+
+            log.info("새로운 리뷰 세이브 포인트4(기존+새로움) - Oreview" + Oreview);
+
+            product.setReviews(Oreview);//기존+새로운 리뷰 덮어씌워버리기
+
+            product.calculateAvgRating();//평균 구하기
+
+            log.info("구한 평균 불러보기 : "+product.getAvg());
+
+            log.info("새로운 리뷰 세이브 포인트5 - product:" + product);
+
+            productRepository.save(product);
+
+            log.info("service - saveReview 저장성공?! : " + product);
 
             int saveReviewNo = saveReview.getRno();//리뷰저장하면 리뷰번호가 자동으로 생성됨. -> 그거 불러옴
 
@@ -260,13 +297,13 @@ public class ReviewService {
                 String originalFileName = file.getOriginalFilename();//원본 파일 네임
                 String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-                log.info("uploadReviewImage - originalFileName :  잘 들어오나요? : "+originalFileName);
+                log.info("uploadReviewImage - originalFileName :  잘 들어오나요? : " + originalFileName);
 
                 // 저장될 파일 이름 생성
                 String sName = UUID.randomUUID().toString() + extension;//변환된 파일 이름
 
 
-                log.info("파일 변환 후 이름 - sName : "+sName);
+                log.info("파일 변환 후 이름 - sName : " + sName);
 
                 // 파일 저장 경로 설정
                 java.io.File dest = new File(path, sName);
@@ -276,7 +313,7 @@ public class ReviewService {
                         .toFile(dest);
 
 
-                log.info("service - dest : "+ dest);
+                log.info("service - dest : " + dest);
 
                 // 리뷰이미지 정보를 담은 DTO 생성 및 반환
                 return ReviewImgDTO.builder()
@@ -294,36 +331,79 @@ public class ReviewService {
 
 
     //내가 작성한 리뷰를 싹 다 불러오기(페이지네이션 추가)
-    public ReviewPageResponseDTO findReview(String uid,ReviewPageRequestDTO reviewPageRequestDTO){
+    public ReviewPageResponseDTO findReview(String uid, ReviewPageRequestDTO reviewPageRequestDTO) {
 
         Pageable pageable = reviewPageRequestDTO.getPageable("no");
 
         log.info("여기는 reviewService입니다.");
 
-        Page<Review> reviews = reviewRepository.findByUid(uid,reviewPageRequestDTO,pageable);
+        Page<Review> reviews = reviewRepository.findByUid(uid, reviewPageRequestDTO, pageable);
 
-        log.info("review_service - findReview - reviews : "+reviews);
-        List<Review> reviews1= reviews.getContent();
+        log.info("review_service - findReview - reviews : " + reviews);
+        List<Review> reviews1 = reviews.getContent();
 
         int total = (int) reviews.getTotalElements();
-        return new ReviewPageResponseDTO(reviewPageRequestDTO , reviews.getSize() , reviews1);
+        return new ReviewPageResponseDTO(reviewPageRequestDTO, reviews.getSize(), reviews1);
     }
 
     //최근에 작성한 리뷰 5개만 뽑아오기
-    public List<Review> find_five(String uid){
+    public List<Review> find_five(String uid) {
 
-       List<Review> reviews= reviewRepository.findTop5ByUidOrderByRdateDesc(uid);
+        List<Review> reviews = reviewRepository.findTop5ByUidOrderByRdateDesc(uid);
 
         return reviews;
     }
 
+    public String findOption(int itemno) {
+
+         Optional<OrderItems> optOderItem = orderItemsRepository.findById(itemno);
+
+         OrderItems orderItems = modelMapper.map(optOderItem,OrderItems.class);
+
+         log.info("reviewService - findOption - orderItems(아이템번호로 조회한 orderItem 데이터들)"+orderItems);
+
+         int subProductsId = orderItems.getProdNo();//subProducts의 id
+
+        log.info("reviewService - findOption - subProductsId : "+subProductsId);
+
+       Optional<SubProducts> optSubProducts =  subProductsRepository.findById(subProductsId);//subProdNo으로 데이터 불러오기
+
+        SubProducts subProducts = modelMapper.map(optSubProducts,SubProducts.class);
+
+        String option=null;
+        String color=null;
+        String size=null;
+
+        if(subProducts.getColor()!=null && subProducts.getSize()!=null) {
+
+            color = subProducts.getColor();
+
+            size = subProducts.getSize();
+
+            option = "컬러 : " + color + "/ 사이즈 : " + size;
+        }else if(subProducts.getSize()!=null){
+
+            size = subProducts.getSize();
+
+            option = "사이즈 : "+size;
+
+        }else  if(subProducts.getColor()!=null){
+            color = subProducts.getColor();
+
+            option = "컬러 : "+color;
+        }else{
+            option = "옵션 없음";
+        }
+        return option;
+    }
+
 
     //리뷰 유효성 검사
-    public int findByorderno(int orderno,int prodno,int itemno){
+    public int findByorderno(int orderno, int prodno, int itemno) {
 
-        int count = reviewRepository.countByOrdernoAndProdnoAndItemno(orderno,prodno,itemno);
+        int count = reviewRepository.countByOrdernoAndNproductProdNoAndItemno(orderno, prodno, itemno);
 
-        log.info("service - findByorderno - count : "+count);
+        log.info("service - findByorderno - count : " + count);
 
         return count;
     }

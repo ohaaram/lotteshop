@@ -4,6 +4,28 @@
       layout:decorate="~{/cs/layouts/csLayout.html}">
 
 <main layout:fragment="content">
+  <script>
+    const loadMoreAll = document.getElementsByClassName('loadMore');
+    Array.from(loadMoreAll).forEach(function (loadMore) {
+      loadMore.addEventListener('click', function (e){
+        e.preventDefault();
+        const button = e.target;
+        const ul = button.parentNode.parentNode; // ul태그
+        const faqListAll = ul.querySelectorAll('.faq-list'); // ul태그 안에 있는 모든 faqList
+        if (button.innerText === "더보기") {
+          for (let i = 3; i < 10; i++) {
+            faqListAll[i].style.display = "block";
+            button.innerText = "간략히 보기";
+          }
+        }else {
+          for (let i = 3; i < 10; i++) {
+            faqListAll[i].style.display = "none";
+            button.innerText = "더보기";
+          }
+        }
+      })
+    })
+  </script>
       <section id="cs">
         <div class="notice">
           <nav>
@@ -29,47 +51,18 @@
               </nav>
 
               <table>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 해외결제 사칭 문자 주의</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[발표]『G.Live X SK스토아(하남쭈꾸미)』 이벤트 당첨자</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 로젠택배 반품/교환 수거지시 지연 안내</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 해외직구셀러 특별약관 개정</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 위치정보이용 약관 개정 공지</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[발표]『써모스 상품 구매』 이벤트 당첨자</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">한국소비자원, '22년 OECD 글로벌 제품안전 캠페인</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[점검] G마켓 사이트 이용 일시 중단</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 구매회원 이용약관 개정</a></td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[안내] 씨티은행 시스템 점검에 따른 계좌, 체크카드결제 서비스 일시 중단</a></td>
-                  <td>2022.11.21</td>
-                </tr>
+                <tr th:each="csNotice, index : ${csNotice.dtoList2}">
+                  <td>[[${csNotice.no}]]</td>
+                  <td th:if="${csNotice.cate1 == 'event'}">이벤트</td>
+                  <td th:if="${csNotice.cate1 == 'customer'}">고객서비스</td>
+                  <td th:if="${csNotice.cate1 == 'safe'}">안전거래</td>
+                  <td th:if="${csNotice.cate1 == 'danger'}">위해상품</td>
+                  <td th:value="${csNotice.cate2}">([[${csNotice.catename}]])</td>
+                  <td><a th:href="@{/cs/notice/view(no=${csNotice.no})}">[[${csNotice.title}]]</a></td>
+                  <td th:text="${#temporals.format(csNotice.rdate, 'yyyy-MM-dd')}"></td>
 
+                  <td></td>
+                </tr>
               </table>
 
             </article>

@@ -4,10 +4,7 @@
 
 <div class="container" layout:fragment="content">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-    <script>
-
-
-    </script>
+    <script src="https://kit.fontawesome.com/f98645e8a0.js" crossorigin="anonymous"></script>
 
     <style>
         #like {
@@ -63,21 +60,22 @@
             margin-bottom: 10px;
         }
 
-        /* 평점 비율 막대 그래프 스타일링 */
-        .rating-bar {
+
+        /*리뷰 내용과 이미지 스타일링*/
+
+        .reviewContent {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
         }
 
-        .bar-label {
-            width: 60px; /* 막대 그래프 레이블의 너비 지정 */
+        .reviewContent p {
+            margin-right: 10px; /* 각 요소 사이의 간격을 조절할 수 있습니다. */
         }
 
-        .bar {
-            background-color: #007bff; /* 막대 그래프 색상 지정 */
-            height: 20px; /* 막대 그래프 높이 지정 */
-            margin-right: 10px; /* 막대 그래프 간격 지정 */
+        .reviewContent img {
+            width: 120px;
+            height: 120px;
         }
 
         /* 별점 이미지 스타일링 */
@@ -180,6 +178,17 @@
         .quantity-container button:hover {
             background-color: #606060;
         }
+
+
+        /*네비게이션*/
+        .detail nav div:hover {
+            background-color: #333; /* 진한 배경색 */
+        }
+        .detail nav a:hover {
+            color: white; /* 텍스트 색상 변경 */
+        }
+
+
 
     </style>
 
@@ -352,21 +361,12 @@
                         <h3 th:text="${product.prodName}">상품명</h3>
                         <p th:text="${product.etc}">상품설명 출력</p>
                         <h5>
-                            <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;"><a href="#">상품평보기</a></h5>
+                        <span th:each="starIndex : ${#numbers.sequence(1, reviewRatioDTO.avg)}"
+                              th:if="${reviewRatioDTO.getCount()}>0" style="padding-bottom: 10px">
+                            <i class="fa-solid fa-star" style="font-size: large"></i>
+                        </span>
+                            <a href="#" class="prodSide">상품평보기</a>
+                        </h5>
                     </nav>
                     <nav>
                         <div class="org_price">
@@ -398,16 +398,16 @@
                         <span class="origin">원산지-상세설명 참조</span>
                     </nav>
                     <!-- 만약에 옵션이 있는 경우-->
+
+
                     <script>
                         window.onload = async function () {
-
 
                             const score1 = [[${reviewRatioDTO.percent1}]];
                             const score2 = [[${reviewRatioDTO.percent2}]];
                             const score3 = [[${reviewRatioDTO.percent3}]];
                             const score4 = [[${reviewRatioDTO.percent4}]];
                             const score5 = [[${reviewRatioDTO.percent5}]];
-
 
                             const color = document.getElementById('color');
                             const size = document.getElementById('size');
@@ -426,6 +426,33 @@
                                 e.preventDefault();
                                 prodReviewBox.scrollIntoView();
                             }
+
+                            //상세페이지로 스크롤 이동//
+                            const detail = document.getElementsByClassName('detail')[0];
+                            const prodInfo = document.getElementsByClassName('prodInfo')[0];
+                            prodInfo.onclick = function (e) {
+                                e.preventDefault();
+                                detail.scrollIntoView();
+                            }
+
+
+                            //Q&A 스크롤 이동//
+                            const QA_view = document.getElementsByClassName('QA_view')[0];
+                            const info_QA = document.getElementsByClassName('info_QA')[0];
+                            info_QA.onclick = function (e) {
+                                e.preventDefault();
+                                QA_view.scrollIntoView();
+                            }
+
+
+                            //제품옆에 있는 상품평보기 클릭
+                            const prodReviewBox2 = document.getElementsByClassName('prodReviewBox')[0];
+                            const prodSide = document.getElementsByClassName('prodSide')[0];
+                            prodSide.onclick = function (e) {
+                                e.preventDefault();
+                                prodReviewBox2.scrollIntoView();
+                            }
+
 
                             try {
                                 const userID = document.getElementById('userId').value;
@@ -780,9 +807,17 @@
 
             <!-- 상품 정보 내용 -->
             <article class="detail">
-                <nav>
-                    <a href="#" style="font-size: xx-large">상세정보</a>&nbsp;&nbsp;
-                    <a class="moveReview" href="#" style="font-size: xx-large">리뷰</a>&nbsp;&nbsp;
+                <nav style="display: flex;background-color: #f2f2f2;text-align: center">
+                    <div style="width: 220px;height: 40px;display: inline-block">
+                        <a class="prodInfo" href="#" style="font-size: xx-large">상세정보</a>&nbsp;&nbsp;
+                    </div>
+                    <div style="width: 220px;height: 40px;display: inline-block">
+                        <a class="moveReview" href="#" style="font-size: xx-large">리뷰(<span
+                                th:text="${reviewNum.reviews.size()}" style="font-size: xx-large"></span>)</a>&nbsp;&nbsp<!--reviewPage.dtoList.size()-->
+                    </div>
+                    <div style="width: 220px;height: 40px;display: inline-block">
+                        <a class="info_QA" href="#" style="font-size: xx-large">Q&A</a>&nbsp;&nbsp;
+                    </div>
                 </nav>
                 <!-- 상품상세페이지 이미지 -->
                 <img th:src="@{/uploads/__${product.image4}__}" th:alt="${product.prodName}" alt="상세페이지1">
@@ -880,88 +915,94 @@
             </article>
 
             <!-- 상품 리뷰 내용 -->
-            <div class="prodReviewBox">
+            <div class="prodReviewBox" id="prodReviewBox">
                 <div class="prodReviewHeader">
                     <div>
-                        <p class="head" style="font-size: xx-large">상품 리뷰
+                        <p class="head" style="font-size: x-large;border-bottom: 1px solid;padding-bottom: 10px">상품 리뷰
                         </p>
                         <br>
 
-                        <th:block th:if="${reviewPage.dtoList.size()}>0">
-                            <h3>평균</h3>
-                            <img th:if="${reviewRatioDTO.r_avg} == 1 " th:src="@{/review/review_star1.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 2 " th:src="@{/review/review_star2.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 3 " th:src="@{/review/review_star3.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 4 " th:src="@{/review/review_star4.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <img th:if="${reviewRatioDTO.r_avg} == 5 " th:src="@{/review/review_star5.png}"
-                                 alt="oneStar"
-                                 style="max-width: 80px; height: auto;">
-                            <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 1, 'POINT')}+'/5'">
-                                점</h1>
-                        </th:block>
-                        <div>
-                            <p>
-                                전체 리뷰수<br>
-                                <span th:text="${reviewPage.dtoList.size()}"></span>
-                            </p>
+                        <div class="review_head" style="background-color: #f2f2f2;display: flex"
+                             th:if="${reviewPage.dtoList.size()}>0">
+                            <div style="display: inline-block;padding: 50px 100px; text-align: center">
+                                <h3 style="font-size: small;font-weight: bold;padding-bottom: 10px">사용자 총 평점</h3>
+                                <span th:each="starIndex : ${#numbers.sequence(1, reviewRatioDTO.r_avg)}"
+                                      style="padding-bottom: 10px">
+                                     <i class="fa-solid fa-star" style="font-size: large"></i>
+                                </span>
+                                <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 1, 'POINT')}+'/5'"
+                                    style="font-size: xx-large">
+                                    점</h1>
+                            </div>
+                            <div style="display: inline-block;padding: 50px 100px;text-align: center">
+                                <p style="font-size: small;font-weight: bold">
+                                    전체 리뷰수<br>
+                                    <i class="fa-regular fa-comment" style="font-size: xx-large"></i><br>
+                                    <span th:text="${reviewNum.reviews.size()}" style="font-size: xx-large"></span>
+                                </p>
+                            </div>
+                            <div style="display: inline-block;padding: 50px 100px;text-align: center">
+                                <p style="font-size: small;font-weight: bold">평점 비율</p>
+                                <div style="width: 100px; height: 100px;">
+                                    <!--차트가 그려질 부분-->
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                            </div>
                         </div>
 
-                        <th:block th:if="${reviewPage.dtoList.size()}==0">
+                        <div th:if="${reviewPage.dtoList.size()}==0">
                             <span style="font-size: 15px">리뷰가 없습니다.</span>
-                        </th:block>
+                        </div>
                     </div>
                 </div>
 
                 <ul>
                     <li th:each="review, loop:${reviewPage.dtoList}">
                         <div class="prodReview">
-                            <p><b>[[${review.uid}]]</b>
-                                <img th:if="${review.score} == 1 " th:src="@{/review/review_star1.png}" alt="oneStar"
-                                     style="max-width: 80px; height: auto;">
-                                <img th:if="${review.score} == 2 " th:src="@{/review/review_star2.png}" alt="oneStar"
-                                     style="max-width: 80px; height: auto;">
-                                <img th:if="${review.score} == 3 " th:src="@{/review/review_star3.png}" alt="oneStar"
-                                     style="max-width: 80px; height: auto;">
-                                <img th:if="${review.score} == 4 " th:src="@{/review/review_star4.png}" alt="oneStar"
-                                     style="max-width: 80px; height: auto;">
-                                <img th:if="${review.score} == 5 " th:src="@{/review/review_star5.png}" alt="oneStar"
-                                     style="max-width: 80px; height: auto;">
-                                <span th:text="${#temporals.format(review.rdate,'yyyy-MM-dd')}">24.03.22</span></p>
-                            <div>
+                            <p>
+                            <span th:each="starIndex : ${#numbers.sequence(1, review.score)}">
+                                <i class="fa-solid fa-star" style="font-size: medium"></i>
+                            </span>
+                                <span th:text="${review.getScore()}" style="font-weight: bold;font-size: medium"></span><br>
+                                <b th:text="${#strings.substring(review.uid, 0, 3) + #strings.repeat('*', #strings.length(review.uid) - 3)}"
+                                   style="color: gray"></b>&nbsp;
+                                <span th:text="${#temporals.format(review.rdate,'yyyy.MM.dd')}"
+                                      style="color: gray">24.03.22</span><br>
+                                <span th:text="${review.getProdoption()}" style="color: gray"></span>
+
+                            </p>
+                            <div class="reviewContent">
+                                <p>[[${review.comment}]]</p>
                                 <img th:if="${review.thumbnail} != null" th:src="@{/uploads/__${review.thumbnail}__}"
                                      th:alt="${review.rno}" style="width: 120px; height: 120px ">
                                 <img th:if="${review.thumbnail} == null" th:src="@{/newimage/noReview.png}"
                                      th:alt="${review.rno}" style="width: 120px; height: 120px ">
-                                <p>[[${review.comment}]]</p>
                             </div>
                         </div>
                     </li>
                 </ul>
 
-                <!--페이지 네이션-->
-                <div class="page" style="text-align: center">
-                    <ul>
-                        <li th:if="${reviewPage.prev}">
+                <!-- 상품목록 페이지번호 -->
+                <div class="paging" style="text-align: center">
+                        <span class="prev" th:if="${reviewPage.prev}">
                             <a class="pagination-link"
-                               th:href="@{/product/view(prodno=${product.prodNo}, pg=${reviewPage.start - 1})}">이전</a>
-                        </li>
-                        <li th:each="n : ${#numbers.sequence(reviewPage.start, reviewPage.end)}">
-                            <a class="pagination-link" th:href="@{/product/view(prodno=${product.prodNo}, pg=${n})}"
-                               th:text="${n}"></a>
-                        </li>
-                        <li th:if="${reviewPage.next}">
+                               th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1})}"><&nbsp;이전</a>
+                        </span>
+                    <span class="num" th:each="num:${#numbers.sequence(reviewPage.start, reviewPage.end)}">
+                            <th:block th:if="${num == reviewPage.rpg}">
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view( prodno =${reviewPage.getProdno()},rpg=${num})}">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != reviewPage.rpg}">
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${num})}">[[${num}]]</a>
+                            </th:block>
+                        </span>
+                    <span class="next" th:if="${reviewPage.next}">
                             <a class="pagination-link"
-                               th:href="@{/product/view(prodno=${product.prodNo}, pg=${reviewPage.end + 1})}">다음</a>
-                        </li>
-                    </ul>
+                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${reviewPage.end+1} )}">다음&nbsp;></a>
+                        </span>
                 </div>
             </div>
 
@@ -995,7 +1036,7 @@
                     </tbody>
                 </table>
             </div>
-            <div>
+            <div class="QA_view">
                 <div>
                     <div>
                         <strong>Q&A</strong>

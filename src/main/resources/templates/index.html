@@ -62,6 +62,17 @@
             }
         }
 
+        //검색
+        function submitForm() {
+            var keyword = document.getElementById("searchInput").value;
+            if (keyword.trim() === "") {
+                alert("검색어를 입력하세요!");
+                return false; // 폼 전송 중단
+            }
+            document.getElementById("searchForm").submit();
+            return true;
+        }
+
 
     </script>
     <style>
@@ -110,7 +121,8 @@
              th:style="${banner.status == 0 ? 'background-color: #0000;' : 'background-color: ' + banner.color + ';'}">
             <article>
                 <!--<input type="hidden" th:value="${banner.bannerNo}">-->
-                <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}">
+                <a th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                   th:data-link="${banner.link}">
                     <img class="bannerImg" th:src="@{/uploads/__${banner.img_1200}__}"/>
                 </a>
                 <a th:if="${banner.status} == 0" th:href="@{/index}">
@@ -152,6 +164,8 @@
                                 <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
                             </th:block>
                         </th:block>
+                    </th:block>
+                </th:block>
             </div>
         </div>
         <div class="logo">
@@ -160,83 +174,96 @@
                 <a th:href="@{/}"><img src="./images/header_logo.png" alt="로고"/></a>
 
 
-        <form th:action="@{/market/search}">
-          <input type="text" name="keyword" id="search"/>
-          <button><i class="fa fa-search"></i></button>
-        </form>
-      </div>
-    </div>
-    <div class="menu">
-      <div>
-        <ul>
-          <li><a th:href="@{#}">히트상품</a></li>
-          <li><a th:href="@{#}">추천상품</a></li>
-          <li><a th:href="@{#}">최신상품</a></li>
-          <li><a th:href="@{#}">인기상품</a></li>
-          <li><a th:href="@{#}">할인상품</a></li>
-        </ul>
-        <ul>
-          <li><a th:href="@{/cs/notice/list}">공지사항</a></li>
-          <li><a th:href="@{/cs/faq}">자주묻는질문</a></li>
-          <li><a th:href="@{/cs/qna}">문의하기</a></li>
-          <li><a th:href="@{/cs}">고객센터</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
-  <main>
-    <!-- 카테고리/베스트 상품 영역 -->
-    <aside>
-      <!-- 카테고리 -->
-      <ul class="category">
-        <li><i class="fa fa-bars" aria-hidden="true"></i>카테고리</li>
-        <li>
-          <a th:href="@{/product/list(cateName1='의류/패션')}"><i class="fas fa-tshirt"></i>의류/패션<i
-                  class="fas fa-angle-right"></i></a>
-          <ol>
-            <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류')}" >남성의류</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='상의')}">상의</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='하의')}">하의</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='신발')}">신발</a>
-              </ol>
-            </li>
-            <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류')}">여성의류</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '상의')}">상의</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '하의')}">하의</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
-                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '신발')}">신발</a>
-              </ol>
-            </li>
-          </ol>
-        </li>
-        <li>
-          <a th:href="@{/product/list(cateName1='가전')}"><i class="fas fa-laptop"></i>가전<i
-                  class="fas fa-angle-right"></i></a>
-          <ol>
-            <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전')}">생활가전</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='세탁기/세탁기용품')}">세탁기/세탁기용품</a>
-                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='청소기')}">청소기</a>
-                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='에어컨')}">에어컨</a>
-                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='냉장고')}">냉장고</a>
-              </ol>
-            </li>
-            <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전')}">TV/영상가전</a>
-              <ol>
-                <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전', cateName3='TV')}">TV</a>
-                <li><a th:href="@{/product/list(cateName1='가전',cateName2='TV/영상가전', cateName3='영상플레이어')}">영상플레이어</a>
-              </ol>
-            </li>
-          </ol>
-        </li>
-        <li>
-          <a th:href="@{/product/list(cateName1='식품')}"><i class="fas fa-utensils"></i>식품<i
-                  class="fas fa-angle-right"></i></a>
-        <ol>
-            <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물')}">농/축산물</a>
+                <form id=searchForm th:action="@{/product/search}" onsubmit="return submitForm()">
+                    <input type="text" name="keyword" id="searchInput"/>
+                    <button><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="menu">
+            <div>
+                <ul>
+                    <li><a th:href="@{#}">히트상품</a></li>
+                    <li><a th:href="@{#}">추천상품</a></li>
+                    <li><a th:href="@{#}">최신상품</a></li>
+                    <li><a th:href="@{#}">인기상품</a></li>
+                    <li><a th:href="@{#}">할인상품</a></li>
+                </ul>
+                <ul>
+                    <li><a th:href="@{/cs/notice/list}">공지사항</a></li>
+                    <li><a th:href="@{/cs/faq}">자주묻는질문</a></li>
+                    <li><a th:href="@{/cs/qna}">문의하기</a></li>
+                    <li><a th:href="@{/cs}">고객센터</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <main>
+        <!-- 카테고리/베스트 상품 영역 -->
+        <aside>
+            <!-- 카테고리 -->
+            <ul class="category">
+                <li><i class="fa fa-bars" aria-hidden="true"></i>카테고리</li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='의류/패션')}"><i class="fas fa-tshirt"></i>의류/패션<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류')}">남성의류</a>
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='상의')}">상의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='하의')}">하의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='신발')}">신발</a>
+                            </ol>
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류')}">여성의류</a>
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '상의')}">상의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '하의')}">하의</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '신발')}">신발</a>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='가전')}"><i class="fas fa-laptop"></i>가전<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전')}">생활가전</a>
+                            <ol>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='세탁기/세탁기용품')}">세탁기/세탁기용품</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='청소기')}">청소기</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='에어컨')}">에어컨</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='냉장고')}">냉장고</a>
+                            </ol>
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전')}">TV/영상가전</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전', cateName3='TV')}">TV</a>
+                                <li>
+                                    <a th:href="@{/product/list(cateName1='가전',cateName2='TV/영상가전', cateName3='영상플레이어')}">영상플레이어</a>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='식품')}"><i class="fas fa-utensils"></i>식품<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물')}">농/축산물</a>
 
 
                             <ol>
@@ -492,7 +519,7 @@
     </main>
     <footer>
         <ul>
-            <li><a th:href="@{#}">회사소개</a></li>
+            <li><a th:href="@{/company/index}">회사소개</a></li>
             <li><a th:href="@{#}">서비스이용약관</a></li>
             <li><a th:href="@{#}">개인정보처리방침</a></li>
             <li><a th:href="@{#}">전자금융거래약관</a></li>

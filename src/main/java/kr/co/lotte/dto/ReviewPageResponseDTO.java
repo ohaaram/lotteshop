@@ -14,6 +14,7 @@ public class ReviewPageResponseDTO {
 
     private List<ReviewDTO> dtoList;
     private List<Review> dtoList2;
+    private int prodno;
     private int rpg;
     private int size;
     private int total;
@@ -28,6 +29,7 @@ public class ReviewPageResponseDTO {
         this.size = pageRequestDTO.getSize();
         this.total = total;
         this.dtoList = dtoList;
+        this.prodno = pageRequestDTO.getProdno();
 
         this.startNo = total - ((rpg - 1) * size);
         this.end = (int) (Math.ceil(this.rpg / 10.0)) * 10;

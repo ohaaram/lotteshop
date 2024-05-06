@@ -17,7 +17,15 @@ public class ProductsPageResponseDTO {
     private List<Products> dtoList;
     private List<SubProducts> dtoLists;
     private List<Like> dtoListLikes;
+    private  String keyword;
+    private String detail;
+    private String minPrice;
+    private String maxPrice;
+    private String detailCheckbox;//상세 상품명 체크박스 클릭되었나?
 
+    private String etcCheckbox;//상품 설명 체크박스 클릭되었나?
+
+    private String priceCheckbox;//가격 체크박스 클릭되었나?
 
     private String cate;
     private int pg;
@@ -33,6 +41,14 @@ public class ProductsPageResponseDTO {
         this.size = pageRequestDTO.getSize();
         this.total = total;
         this.dtoList = dtoList;
+        this.keyword=pageRequestDTO.getKeyword();
+        this.detail=pageRequestDTO.getDetail();
+        this.minPrice= pageRequestDTO.getMinPrice();
+        this.maxPrice= pageRequestDTO.getMaxPrice();
+        this.detailCheckbox = pageRequestDTO.getDetailCheckbox();
+        this.etcCheckbox = pageRequestDTO.getEtcCheckbox();
+        this.priceCheckbox = pageRequestDTO.getPriceCheckbox();
+        this.cate = pageRequestDTO.getCate();
 
         this.startNo = total - ((pg - 1) * size);
         this.end = (int) (Math.ceil(this.pg / 10.0)) * 10;
@@ -50,6 +66,8 @@ public class ProductsPageResponseDTO {
         this.size = pageRequestDTO.getSize();
         this.total = total;
         this.dtoLists = dtoList;
+        this.cate = pageRequestDTO.getCate();
+        this.keyword = pageRequestDTO.getKeyword();
 
         this.startNo = total - ((pg - 1) * size);
         this.end = (int) (Math.ceil(this.pg / 10.0)) * 10;

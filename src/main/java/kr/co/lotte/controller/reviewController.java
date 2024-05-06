@@ -75,6 +75,17 @@ public class reviewController {
         return "/my/review";
     }
 
+    //옵션값들을 가지고 오기
+    @GetMapping("/review/{itemno}")
+    public ResponseEntity<?> optionName(@PathVariable("itemno")int itemno){
+
+       String option = reviewService.findOption(itemno);
+
+        Map<String , String> map1 = new HashMap<>();
+        map1.put("option",option);
+        return ResponseEntity.ok().body(map1);
+    }
+
     //리뷰는 한번만 쓰게 하기!(내가 시킨 하나의 상품당 하나의 리뷰)
     @GetMapping("/review/{orderno}/{prodno}/{itemno}")
     public ResponseEntity<Map<String, Integer>> rCheck(@PathVariable("orderno") int orderno, @PathVariable("prodno")int prodno, @PathVariable("itemno")int itemno, Model model){

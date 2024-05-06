@@ -20,7 +20,9 @@ public class ReviewPageRequestDTO {
     private int rpg = 1;
 
     @Builder.Default
-    private int size = 10;
+    private int size = 3;
+
+    private int prodno;
 
     public Pageable getPageable(String sort){
         return PageRequest.of(this.rpg - 1, this.size, Sort.by(sort).descending());

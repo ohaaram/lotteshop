@@ -28,13 +28,24 @@
                 <input type="hidden" name="no" th:value="${csnotice.no}">
                 <table class="noticeModify">
                     <tr>
-                        <td>유형</td>
+                        <td>유형1</td>
                         <td>
                             <select name="noticeCate">
                                 <option value="customer">[고객서비스]</option>
                                 <option value="event">[이벤트당첨]</option>
                                 <option value="safe">[안전거래]</option>
                                 <option value="danger">[위해상품]</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>유형2</td>
+                        <td>
+                            <select name="noticeCate">
+                                <option value="info">[안내]</option>
+                                <option value="check">[점검]</option>
+                                <option value="news">[뉴스]</option>
+                                <option value="report">[발표]</option>
                             </select>
                         </td>
                     </tr>

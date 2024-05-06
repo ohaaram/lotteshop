@@ -13,6 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>, Review
 
     public List<Review> findTop5ByUidOrderByRdateDesc(String uid);
 
-    int countByOrdernoAndProdnoAndItemno(int orderno, int prodno,int itemno);
+    int countByOrdernoAndNproductProdNoAndItemno(int orderno, int nproductProdNo, int itemno);
 
 }

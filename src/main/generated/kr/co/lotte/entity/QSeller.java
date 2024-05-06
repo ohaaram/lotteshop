@@ -19,6 +19,8 @@ public class QSeller extends EntityPathBase<Seller> {
 
     public static final QSeller seller = new QSeller("seller");
 
+    public final StringPath grade = createString("grade");
+
     public final StringPath role = createString("role");
 
     public final StringPath sellerAddr1 = createString("sellerAddr1");
