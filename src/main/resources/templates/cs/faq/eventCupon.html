@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/cs/layouts/csLayout.html}">
+
+<main layout:fragment="content">
+    <section id="cs">
+        <div class="faq">
+            <nav>
+                <div>
+                    <p>홈<span>></span>자주묻는 질문</p>
+                </div>
+            </nav>
+            <section class="list">
+                <aside>
+                    <h2>자주묻는 질문</h2>
+                    <ul>
+                        <li><a th:href="@{/cs/faq/user}">회원</a></li>
+                        <li class="on"><a th:href="@{/cs/faq/eventCupon}">이벤트/쿠폰</a></li>
+                        <li><a th:href="@{/cs/faq/order}">주문/결제</a></li>
+                        <li><a th:href="@{/cs/faq/delivery}">배송</a></li>
+                        <li><a th:href="@{/cs/faq/cancel}">취소/반품/교환</a></li>
+                        <li><a th:href="@{/cs/faq/trade}">거래증빙서류</a></li>
+                    </ul>
+                </aside>
+                <article>
+                    <h2>이벤트/쿠폰</h2>
+                    <nav id="navbar-example2" class="navbar bg-body-tertiary px-3 mb-3">
+                        <a class="navbar-brand" href="#">가장 자주 묻는 질문 입니다</a>
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading1">L.POINT</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading2">L.stamp</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading3">리뷰/체험단</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading4">온마일리지</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#scrollspyHeading5">이벤트/쿠폰</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="accordion" id="accordionLpoint">
+                        <h3 id="scrollspyHeading1" data-bs-smooth-scroll="true">L.POINT</h3>
+                        <div th:each="lpoint, iterStat : ${lpoint}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseLpoint' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseLpoint' + ${iterStat.index}">
+                                    [[${lpoint.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseLpoint' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionLpoint'">
+                                <div class="accordion-body">
+                                    [[${lpoint.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionLstamp">
+                        <h3 id="scrollspyHeading2" data-bs-smooth-scroll="true">L.stamp</h3>
+                        <div th:each="lstamp, iterStat : ${lstamp}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseLstamp' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseLstamp' + ${iterStat.index}">
+                                    [[${lstamp.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseLstamp' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionLstamp'">
+                                <div class="accordion-body">
+                                    [[${lstamp.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionReview">
+                        <h3 id="scrollspyHeading3" data-bs-smooth-scroll="true">리뷰/체험단</h3>
+                        <div th:each="review, iterStat : ${review}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseReview' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseReview' + ${iterStat.index}">
+                                    [[${review.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseReview' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionReview'">
+                                <div class="accordion-body">
+                                    [[${review.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionOnmile">
+                        <h3 id="scrollspyHeading4" data-bs-smooth-scroll="true">온마일리지</h3>
+                        <div th:each="onmile, iterStat : ${onmile}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseOnmile' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseOnmile' + ${iterStat.index}">
+                                    [[${onmile.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseOnmile' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 th:data-bs-parent="'#accordionOnmile'">
+                                <div class="accordion-body">
+                                    [[${onmile.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion" id="accordionEvent">
+                        <h3 id="scrollspyHeading5" data-bs-smooth-scroll="true">이벤트/쿠폰</h3>
+                        <div th:each="event, iterStat : ${event}"  class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="'#collapseEvent' + ${iterStat.index}"
+                                        aria-expanded="true"
+                                        th:aria-controls="'collapseEvent' + ${iterStat.index}">
+                                    [[${event.title}]]
+                                </button>
+                            </h2>
+                            <div th:id="'collapseEvent' + ${iterStat.index}" class="accordion-collapse collapse"
+                                 data-bs-parent="#accordionEvent">
+                                <div class="accordion-body">
+                                    [[${event.content}]]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside>
+                        <a th:href="@{/cs}" id="btnHome">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-house-check" viewBox="0 0 16 16">
+                                <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514"/>
+                            </svg>
+                        </a>
+                        <a href="#" id="btnTop">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-box-arrow-up" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"/>
+                                <path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 1.707V10.5a.5.5 0 0 1-1 0V1.707L5.354 3.854a.5.5 0 1 1-.708-.708z"/>
+                            </svg>
+                        </a>
+                    </aside>
+                </article>
+            </section>
+        </div>
+    </section>
+
+</main>
+</html>

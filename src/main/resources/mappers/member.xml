@@ -25,6 +25,14 @@
         update user set pass = #{pass} where uid =#{uid};
     </update>
 
+    <update id="updateSellerPassword">
+        update seller set sellerPass = #{sellerPass} where sellerUid =#{sellerUid};
+    </update>
+
+
+
+
+
     <update id="userLeave">
         update user set
         pass= null ,
@@ -66,9 +74,22 @@
         SELECT uid FROM user WHERE name=#{name} AND hp=#{hp}
     </select>
 
-    <select id="findPass" resultType="String">
-        select pass from user where uid=#{uid}
+    <select id="findId2" resultType="String">
+        SELECT sellerUid FROM seller WHERE sellerName=#{name} AND sellerHp=#{hp}
     </select>
 
+    <select id="findPass1" resultType="int">
+        select count(*) from user where uid=#{uid}
+    </select>
+    <select id="findPass2" resultType="int">
+        select count(*) from seller where sellerUid=#{uid}
+    </select>
 
+    <select id="findMember1" resultType="int">
+        select count(*) from user where email=#{email} and name=#{name} and hp=#{hp}
+    </select>
+
+    <select id="findMember2" resultType="int">
+        select count(*) from seller where sellerEmail=#{email} and sellerName=#{name} and sellerHp=#{hp}
+    </select>
 </mapper>

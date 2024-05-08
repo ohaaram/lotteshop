@@ -169,29 +169,118 @@ public class MemberService {
 
 
     //일반 사용자의 아이디 찾기
-    public String findId(UserDTO userDTO){
+    public String findId(UserDTO userDTO, int userType) {
 
-        String uid = memberMapper.findId(userDTO);
+        String uid = null;
 
-        log.info("결과 값으로 찾은 uid : "+uid);
+        if (userType == 0) {//판매자
+
+            uid = memberMapper.findId2(userDTO);
+
+
+        } else {//일반 사용자
+
+            uid = memberMapper.findId(userDTO);
+        }
+
+        log.info("결과 값으로 찾은 uid : " + uid);
 
         return uid;
     }
-    
-    
+
+
     //일반사용자의 정보 찾기(사용자가 있으면 true, 아니면 false)
-    public boolean findPass(String uid,String email){
+    public boolean findPass(String uid, String email) {
 
-       String pass =  memberMapper.findPass(uid,email);
+        int count1 = memberMapper.findPass1(uid, email);//일반사용자 조회
+        int count2 = memberMapper.findPass2(uid, email);//판매자 조회
 
-       log.info("findPass에서 찾은 pass값 : "+pass);
 
-       boolean isPass = false;
+        log.info("findPass에서 사용자 조회결과 : " + (count1 + count2));
 
-       if(pass != null && !pass.isEmpty()){
+        boolean isPass = false;
+
+        if ((count1 + count2) > 0) {
             isPass = true;
-       }
-       return isPass;
+        }
+        return isPass;
+    }
+
+    // 랜덤한 비밀번호 생성
+    private static String generateRandomPassword(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int randomIndex = ThreadLocalRandom.current().nextInt(characters.length());
+            sb.append(characters.charAt(randomIndex));
+        }
+        return sb.toString();
+    }
+
+
+    //사용자에게 임시 비밀번호를 이메일로 전송
+    public void tempPass(String receiver, String uid, boolean isSeller) {
+
+        int length = 8; // 비밀번호 길이
+
+        //MimeMessage 생성
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        String password = generateRandomPassword(length);
+        log.info("임시 비밀번호(랜덤값으로 만든것): " + password);
+
+        //랜덤값을 인코더하여 해당 아이디의 비밀번호로 저장
+        String encodePass = passwordEncoder.encode(password);
+
+        if (isSeller) {//판매자
+
+            SellerDTO sellerDTO = new SellerDTO();
+
+            sellerDTO.setSellerUid(uid);
+
+            sellerDTO.setSellerPass(encodePass);
+
+            memberMapper.updateSellerPassword(sellerDTO);
+
+        } else {//일반 사용자
+
+            UserDTO userDTO = new UserDTO();
+
+            userDTO.setPass(encodePass);
+
+            userDTO.setUid(uid);
+
+            //임시 비밀번호로 저장
+            memberMapper.updateUserPassword(userDTO);
+        }
+
+        String title = "lotteShop 임시비밀번호 입니다.";
+        String content = "<h1>임시비밀번호는 " + password + "입니다.<h1>";
+
+        try {
+            message.setSubject(title);
+            message.setFrom(new InternetAddress(sender, "보내는 사람", "UTF-8"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+            message.setSubject(title);
+            message.setContent(content, "text/html;charset=UTF-8");
+
+            javaMailSender.send(message);
+
+        } catch (Exception e) {
+            log.error("error={}", e.getMessage());
+        }
+    }
+
+
+    //세개의 값을 이용해서 사용자 탐색
+    public int findMember(String email, String name, String hp) {
+
+        int count1 = memberMapper.findMember1(email, name, hp);//일반유저에서 검색
+        int count2 = memberMapper.findMember2(email, name, hp);//판매자에서 검색
+
+        int count = count1 + count2;//검색 결과가 하나라도 있으면 가입이 되어있는 것
+
+        return count;
     }
 }
 

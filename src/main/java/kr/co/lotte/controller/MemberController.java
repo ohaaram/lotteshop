@@ -12,11 +12,8 @@ import kr.co.lotte.service.MemberService;
 import kr.co.lotte.service.PolicyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.Session;
-import org.apache.catalina.authenticator.SavedRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +36,7 @@ public class MemberController {
     }
 
     @GetMapping("/member/login")
-    public String login(Model model , HttpServletRequest request) {
+    public String login(Model model, HttpServletRequest request) {
         String previousUrl = request.getHeader("Referer");
         HttpSession session = request.getSession();
         session.setAttribute("previousUrl", previousUrl);
@@ -91,20 +88,23 @@ public class MemberController {
 
     //findId
     @ResponseBody
-    @GetMapping("/member/send/{value}")
+    @GetMapping("/member/send/{email}/{name}/{hp}")
     public ResponseEntity<?> findId(HttpSession session,
-                                       @PathVariable("value") String value) {
+                                    @PathVariable("email") String email
+            , @PathVariable("name") String name, @PathVariable("hp") String hp) {
 
         log.info("memberController.......");
-        log.info("value={}", value);
-        int count = memberService.selectCountMember("email", value);
+        log.info("email={}", email);
+        log.info("name={}", name);
+        log.info("hp={}", hp);
+
+        int count = memberService.findMember(email, name, hp);//판매자, 일반사용자 모두 조회
 
         log.info("count={}", count);
 
-        if (count>0) {
-
-            log.info("email={}", value);
-            memberService.sendEmailCode(session, value);
+        if (count > 0) {
+            log.info("email={}", email);
+            memberService.sendEmailCode(session, email);
         }
 
         //Json 생성
@@ -115,16 +115,15 @@ public class MemberController {
     }
 
 
-
-    //이메일 인증코드 검사
+    //findId - 이메일 인증코드 검사
     @ResponseBody
     @GetMapping("/member/email/{code}")
     public ResponseEntity<?> checkEmailCode(HttpSession session, @PathVariable("code") String code) {
         String sessionCode = (String) session.getAttribute("code");
 
-        log.info("시스템에서 보낸 code : "+sessionCode);
+        log.info("시스템에서 보낸 code : " + sessionCode);
 
-        log.info("내가 입력한 code : "+code);
+        log.info("내가 입력한 code : " + code);
 
         Map<String, Object> resultMap = new HashMap<>();
 
@@ -159,7 +158,7 @@ public class MemberController {
 
     //약관 동의 페이지 매핑
     @GetMapping("/member/signup")
-    public String signup(Model model){
+    public String signup(Model model) {
         TermsDTO terms = memberService.findTerms(1);
         model.addAttribute("terms", terms);
         return "/member/signup";
@@ -180,16 +179,17 @@ public class MemberController {
 
     //약관 동의 페이지 매핑
     @GetMapping("/member/signupseller")
-    public String signupSeller(Model model){
+    public String signupSeller(Model model) {
         Policy policy = policyService.buyerPolicy(2L);
         model.addAttribute("policy", policy);
         return "/member/signupSeller";
     }
 
     @PostMapping("/member/signupseller")
-    public String signupSeller(){
+    public String signupSeller() {
         return "redirect:/member/registerSeller";
     }
+
     //판매자 회원가입 페이지 매핑
     @GetMapping("/member/registerseller")
     public String registerSeller() {
@@ -208,28 +208,29 @@ public class MemberController {
 
     //아이디 찾기 페이지
     @GetMapping("/member/findId")
-    public String findId(){
+    public String findId() {
 
         return "/member/findId";
     }
 
     //아이디 찾기 결과가 보이는 페이지
-    @GetMapping("/member/findResult")
-    public String findResult(UserDTO userDTO,Model model){
+    @GetMapping("/member/findIdResult")
+    public String findResult(UserDTO userDTO, Model model, @RequestParam("userType") int userType) {
 
         log.info("아이디 찾기 결과 페이지입니다.");
         log.info("userDTO={}", userDTO);
+        log.info("userType :" + userType);
 
-        String uid = memberService.findId(userDTO);
+        String uid = memberService.findId(userDTO, userType);
 
-        model.addAttribute("uid",uid);
+        model.addAttribute("uid", uid);
 
-        return "/member/findResult";
+        return "/member/findIdResult";
     }
 
     //비밀번호 찾기 페이지
     @GetMapping("/member/findPass")
-    public String findPass(){
+    public String findPass() {
 
 
         return "/member/findPass";
@@ -237,19 +238,25 @@ public class MemberController {
 
 
     //비밀번호설정을 위해 아이디가 존재하는지 확인
-    @GetMapping("/member/passResult/{uid}/{email}")
-    public ResponseEntity<?> passResult(@PathVariable("uid")String uid,@PathVariable("email")String email){
+    @GetMapping("/member/passResult/{uid}/{email}/{isSeller}")
+    public ResponseEntity<?> passResult(@PathVariable("uid") String uid
+            , @PathVariable("email") String email, @PathVariable("isSeller") boolean isSeller) {
 
-        boolean pass = memberService.findPass(uid,email);
+        boolean pass = memberService.findPass(uid, email);
+
+        log.info("isSeller값 : " + isSeller);
 
         Map<String, Object> resultMap = new HashMap<>();
 
-        if(pass) {
+        if (pass) {
 
             log.info("사용자가 존재합니다.!");
 
+            memberService.tempPass(email, uid,isSeller);
+
+
             resultMap.put("result", "true");
-        }else{
+        } else {
 
             log.info("사용자가 없습니다.");
 
@@ -259,12 +266,5 @@ public class MemberController {
         return ResponseEntity.ok().body(resultMap);
     }
 
-    //새로운 비밀번호 설정 페이지로 이동
-    @GetMapping("/member/newPass")
-    public String newPass(){
 
-
-
-        return "/member/newPass";
-    }
 }

@@ -30,7 +30,7 @@
         }
 
         .form-input {
-            width: 100%; /* 폼 입력 요소의 너비를 조정합니다. */
+            width: 100%;
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ddd;
@@ -52,49 +52,40 @@
         .btn-submit:hover {
             background-color: #0056b3;
         }
+
+        .checkbox-label {
+            display: inline-block;
+            margin-left: 5px;
+        }
     </style>
 
     <script>
-
         window.onload = function () {
-
             const btn_pass = document.getElementById('btn-find-password');
-
             btn_pass.onclick = async function (e) {
                 e.preventDefault();
                 const uid = document.getElementById('username').value;
                 const email = document.getElementById('email').value;
+                const isSeller = document.getElementById('isSeller').checked;
 
 
-                const data = await fetchGet(`/lotteshop/member/passResult/${uid}/${email}`);
-
-                console.log("왜 자꾸 아이디또는 이메일을 확인하래!!!" + data.result);
-
-
+                const data = await fetchGet(`/lotteshop/member/passResult/${uid}/${email}/${isSeller}`);
+                console.log("data의 결과값 확인 : " + data.result);
                 if (!data.result) {
-                    alert("아이디또는 이메일을 확인해주세요!");
-
-                } else {//아이디와 이메일이 매치하고 존재하면 새로운 비밀번호 설정
-                    window.location.href = `/lotteshop/member/newPass`;
+                    alert("아이디 또는 이메일을 확인해주세요!");
+                } else {
+                    alert("해당 이메일로 임시 비밀번호를 전송합니다!");
+                    window.location.href=`/lotteshop/member/login`;
                 }
-
             }
         }
 
         async function fetchGet(url) {
-
-            console.log("fetchData1...1");
-
             try {
-                console.log("fetchData1...2");
                 const response = await fetch(url);
-                console.log("here1");
-
                 if (!response.ok) {
-                    console.log("here2");
                     throw new Error('response not ok');
                 }
-
                 const data = await response.json();
                 console.log("data1 : " + data);
                 return data;
@@ -102,8 +93,6 @@
                 console.log(err)
             }
         }
-
-
     </script>
 
     <h2>비밀번호 찾기</h2>
@@ -115,6 +104,10 @@
         <div class="form-group">
             <label for="email">이메일</label>
             <input type="email" id="email" name="email" class="form-input" placeholder="가입 시 등록한 이메일을 입력하세요" required>
+        </div>
+        <div class="form-group">
+            <input type="checkbox" id="isSeller" name="isSeller">
+            <label for="isSeller" class="checkbox-label" style="font-size: 14px">판매자 체크</label>
         </div>
         <button type="submit" id="btn-find-password" class="btn-submit">비밀번호 찾기</button>
     </form>
