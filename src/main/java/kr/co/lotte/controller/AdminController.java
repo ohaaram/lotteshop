@@ -10,6 +10,8 @@ import kr.co.lotte.repository.BannerRepository;
 import kr.co.lotte.security.MyManagerDetails;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
+import kr.co.lotte.service.cs.CsNoticeService;
+import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,14 @@ import static java.lang.System.out;
 public class AdminController {
     @Autowired
     private AdminService adminService;
+    private final CsNoticeService csNoticeService;
+    private final CsQnaService csQnaService;
 
-    @GetMapping("/admin/index")
+    @GetMapping(value = {"/admin/index", "/admin"})
     public String adminIndex(Authentication authentication , Model model){
+
+        model.addAttribute("csNotice", csNoticeService.noticeList());
+        model.addAttribute("csQna", csQnaService.qnaList());
 
         try{
             //여기는 관리자
@@ -96,7 +103,6 @@ public class AdminController {
             return "/admin/index2";
         }
 
-
     }
 
     //config
@@ -127,7 +133,6 @@ public class AdminController {
             code ="0";
         }
         model.addAttribute("code",code);
-        log.info("adnin!!"+adminService.findTerms(1).getSms());
         model.addAttribute("terms", adminService.findTerms(1));
         return "/admin/config/info";
     }

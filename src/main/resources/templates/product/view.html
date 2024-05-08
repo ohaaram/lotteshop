@@ -5,6 +5,7 @@
 <div class="container" layout:fragment="content">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script src="https://kit.fontawesome.com/f98645e8a0.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <style>
         #like {
@@ -184,10 +185,13 @@
         .detail nav div:hover {
             background-color: #333; /* 진한 배경색 */
         }
+
         .detail nav a:hover {
             color: white; /* 텍스트 색상 변경 */
         }
-
+        #prodReviewBox .viewR-num{
+            float: right;
+        }
 
 
     </style>
@@ -363,8 +367,12 @@
                         <h5>
                         <span th:each="starIndex : ${#numbers.sequence(1, reviewRatioDTO.avg)}"
                               th:if="${reviewRatioDTO.getCount()}>0" style="padding-bottom: 10px">
-                            <i class="fa-solid fa-star" style="font-size: large"></i>
-                        </span>
+                                   <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+</svg>
+                                </span>
+                            </span>
                             <a href="#" class="prodSide">상품평보기</a>
                         </h5>
                     </nav>
@@ -398,16 +406,10 @@
                         <span class="origin">원산지-상세설명 참조</span>
                     </nav>
                     <!-- 만약에 옵션이 있는 경우-->
+                    <script th:inline="javascript">
 
 
-                    <script>
                         window.onload = async function () {
-
-                            const score1 = [[${reviewRatioDTO.percent1}]];
-                            const score2 = [[${reviewRatioDTO.percent2}]];
-                            const score3 = [[${reviewRatioDTO.percent3}]];
-                            const score4 = [[${reviewRatioDTO.percent4}]];
-                            const score5 = [[${reviewRatioDTO.percent5}]];
 
                             const color = document.getElementById('color');
                             const size = document.getElementById('size');
@@ -731,6 +733,26 @@
 
                         }
                     </script>
+                    <script>
+                        ////////////////////////////////////////////////////////
+                        //////btnTop, Home 버튼 설정////////////////////////////
+                        ////////////////////////////////////////////////////////
+                        window.onload = function (){
+                            $(document).ready(function () {
+                                $(window).scroll(function () {
+                                    if ($(this).scrollTop() > 400) {
+                                        $('#btnTop').fadeIn();
+                                    } else {
+                                        $('#btnTop').fadeOut();
+                                    }
+                                });
+                                $('#btnTop').click(function () {
+                                    $('html, body').animate({scrollTop: 0}, 400);
+                                    return false;
+                                });
+                            });
+                        }
+                    </script>
                     <th:block th:if="${#authentication.principal != 'anonymousUser'}">
                         <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
                     </th:block>
@@ -813,7 +835,8 @@
                     </div>
                     <div style="width: 220px;height: 40px;display: inline-block">
                         <a class="moveReview" href="#" style="font-size: xx-large">리뷰(<span
-                                th:text="${reviewNum.reviews.size()}" style="font-size: xx-large"></span>)</a>&nbsp;&nbsp<!--reviewPage.dtoList.size()-->
+                                th:text="${reviewNum.reviews.size()}" style="font-size: xx-large"></span>)</a>&nbsp;&nbsp
+                        <!--reviewPage.dtoList.size()-->
                     </div>
                     <div style="width: 220px;height: 40px;display: inline-block">
                         <a class="info_QA" href="#" style="font-size: xx-large">Q&A</a>&nbsp;&nbsp;
@@ -928,7 +951,11 @@
                                 <h3 style="font-size: small;font-weight: bold;padding-bottom: 10px">사용자 총 평점</h3>
                                 <span th:each="starIndex : ${#numbers.sequence(1, reviewRatioDTO.r_avg)}"
                                       style="padding-bottom: 10px">
-                                     <i class="fa-solid fa-star" style="font-size: large"></i>
+                                     <!--<i class="fa-solid fa-star" style="font-size: large"></i>-->
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="20"
+                                         height="20" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+</svg>
                                 </span>
                                 <h1 th:text="${#numbers.formatDecimal(reviewRatioDTO.avg, 0, 'POINT', 1, 'POINT')}+'/5'"
                                     style="font-size: xx-large">
@@ -941,11 +968,59 @@
                                     <span th:text="${reviewNum.reviews.size()}" style="font-size: xx-large"></span>
                                 </p>
                             </div>
-                            <div style="display: inline-block;padding: 50px 100px;text-align: center">
-                                <p style="font-size: small;font-weight: bold">평점 비율</p>
-                                <div style="width: 100px; height: 100px;">
-                                    <!--차트가 그려질 부분-->
-                                    <canvas id="myChart"></canvas>
+                            <div style="display: inline-block;padding: 50px 100px;">
+                                <p style="font-size: small;font-weight: bold;text-align: center">평점 비율</p>
+                                <div class="start-container" style="width: 120px; height: 100px;">
+                                    <!-- 5점 -->
+                                    <div class="viewR">
+                                    <span th:each="starIndex : ${#numbers.sequence(1, 5)}" style="padding-bottom: 10px">
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                    </span><span class="viewR-num" th:if="${scoreCountMap != null}" th:text="${scoreCountMap.get(5) != null ? scoreCountMap.get(5) + '명' : '0명'}"></span>
+                                    </div>
+                                    <!--4점-->
+                                    <div class="viewR">
+                                    <span th:each="starIndex : ${#numbers.sequence(1, 4)}" style="padding-bottom: 10px">
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                    </span><span class="viewR-num" th:if="${scoreCountMap != null}" th:text="${scoreCountMap.get(4) != null ? scoreCountMap.get(4) + '명' : '0명'}"></span>
+                                    </div>
+
+                                    <!--3점-->
+                                    <div class="viewR">
+                                    <span th:each="starIndex : ${#numbers.sequence(1, 3)}" style="padding-bottom: 10px">
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                    </span><span class="viewR-num" th:if="${scoreCountMap != null}" th:text="${scoreCountMap.get(3) != null ? scoreCountMap.get(3) + '명' : '0명'}"></span>
+                                    </div>
+
+                                    <!--2점-->
+                                    <div class="viewR">
+                                    <span th:each="starIndex : ${#numbers.sequence(1, 2)}" style="padding-bottom: 10px">
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                    </span><span class="viewR-num" th:if="${scoreCountMap != null}" th:text="${scoreCountMap.get(2) != null ? scoreCountMap.get(2) + '명' : '0명'}"></span>
+                                    </div>
+
+                                    <!--1점 --->
+                                    <div class="viewR">
+                                    <span th:each="starIndex : ${#numbers.sequence(1, 1)}" style="padding-bottom: 10px">
+                                    <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                    </span>
+                                        <span class="viewR-num" th:if="${scoreCountMap != null}" th:text="${scoreCountMap.get(1) != null ? scoreCountMap.get(1) + '명' : '0명'}"></span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

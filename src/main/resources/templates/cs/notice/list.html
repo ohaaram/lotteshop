@@ -26,49 +26,65 @@
       })
     })
   </script>
-      <section id="cs">
-        <div class="notice">
-          <nav>
-            <div>
-              <p>홈<span>></span>공지사항</p>
-            </div>
-          </nav>
-          <section class="list">
-            <aside>
-              <h2>공지사항</h2>
-              <ul>
-                <li class="on"><a th:href="@{#}">전체</a></li>
-                <li><a th:href="@{#}">고객서비스</a></li>
-                <li><a th:href="@{#}">안전거래</a></li>
-                <li><a th:href="@{#}">위해상품</a></li>
-                <li><a th:href="@{#}">이벤트당첨</a></li>
-              </ul>
-            </aside>
-            <article>
-              <nav>
-                <h1>전체</h1>
-                <h2>공지사항 전체 내용입니다.</h2>
-              </nav>
-
-              <table>
-                <tr th:each="csNotice, index : ${csNotice.dtoList2}">
-                  <td>[[${csNotice.no}]]</td>
-                  <td th:if="${csNotice.cate1 == 'event'}">이벤트</td>
-                  <td th:if="${csNotice.cate1 == 'customer'}">고객서비스</td>
-                  <td th:if="${csNotice.cate1 == 'safe'}">안전거래</td>
-                  <td th:if="${csNotice.cate1 == 'danger'}">위해상품</td>
-                  <td th:value="${csNotice.cate2}">([[${csNotice.catename}]])</td>
-                  <td><a th:href="@{/cs/notice/view(no=${csNotice.no})}">[[${csNotice.title}]]</a></td>
-                  <td th:text="${#temporals.format(csNotice.rdate, 'yyyy-MM-dd')}"></td>
-
-                  <td></td>
-                </tr>
-              </table>
-
-            </article>
-          </section>
+  <section id="cs">
+    <div class="notice">
+      <nav>
+        <div>
+          <p>홈<span>></span>공지사항</p>
         </div>
+      </nav>
+      <section class="list">
+        <aside>
+          <h2>공지사항</h2>
+          <ul>
+            <li class="on"><a th:href="@{#}">전체</a></li>
+            <li><a th:href="@{#}">고객서비스</a></li>
+            <li><a th:href="@{#}">안전거래</a></li>
+            <li><a th:href="@{#}">위해상품</a></li>
+            <li><a th:href="@{#}">이벤트당첨</a></li>
+          </ul>
+        </aside>
+        <article>
+          <nav>
+            <h1>전체</h1>
+            <h2>공지사항 전체 내용입니다.</h2>
+          </nav>
+
+          <table>
+            <tr th:each="csNotice, index : ${csNotice.dtoList2}">
+              <td>[[${csNotice.no}]]</td>
+              <td th:if="${csNotice.cate1 == 'event'}">이벤트</td>
+              <td th:if="${csNotice.cate1 == 'customer'}">고객서비스</td>
+              <td th:if="${csNotice.cate1 == 'safe'}">안전거래</td>
+              <td th:if="${csNotice.cate1 == 'danger'}">위해상품</td>
+              <td th:value="${csNotice.cate2}">([[${csNotice.catename}]])</td>
+              <td><a th:href="@{/cs/notice/view(no=${csNotice.no})}">[[${csNotice.title}]]</a></td>
+              <td th:text="${#temporals.format(csNotice.rdate, 'yyyy-MM-dd')}"></td>
+
+              <td></td>
+            </tr>
+          </table>
+          <div class="paging">
+                        <span class="prev" th:if="${csNotice.prev}">
+                            <a th:href="@{/cs/notice/list(pg=${csNotice.start -1}, cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}"><&nbsp;이전</a>
+                        </span>
+            <span class="num" th:each="num:${#numbers.sequence(csNotice.start, csNotice.end)}">
+                            <th:block th:if="${num == csNotice.pg}">
+                                 <a th:href="@{/cs/notice/list( pg=${num} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}" class="on">[[${num}]]</a>
+                            </th:block>
+                            <th:block th:if="${num != csNotice.pg}">
+
+                                 <a th:href="@{/cs/notice/list( pg=${num} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}" >[[${num}]]</a>
+                            </th:block>
+                </span>
+            <span class="next" th:if="${csNotice.next}">
+                            <a th:href="@{/cs/notice/list( pg=${csNotice.end+1} , cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}">다음&nbsp;></a>
+                </span>
+          </div>
+        </article>
       </section>
+    </div>
+  </section>
 
 </main>
 </html>

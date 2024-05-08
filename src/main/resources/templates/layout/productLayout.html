@@ -18,9 +18,22 @@
     <link rel="stylesheet" th:href="@{/css/common.css}"/>
     <link rel="stylesheet" th:href="@{/product/css/product.css}"/>
     <script   type="text/javascript" th:src="@{/js/util.js}" ></script>
+<script>
+    //검색
+    function submitForm() {
+        var keyword = document.getElementById("searchInput").value;
+        if (keyword.trim() === "") {
+            alert("검색어를 입력하세요!");
+            return false; // 폼 전송 중단
+        }
+        document.getElementById("searchForm").submit();
+        return true;
+    }
 
+</script>
 </head>
 <body>
+
 <div id="wrapper">
     <header>
         <div class="top">
@@ -49,14 +62,16 @@
                 <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
                     </th:block>
                 </th:block>
+                </th:block>
+                </th:block>
             </div>
         </div>
         <div class="logo">
             <div>
 
                 <a th:href="@{/}"><img src="../images/header_logo.png" alt="로고"/></a>
-                <form action="#">
-                    <input type="text" name="keyword"/>
+                <form id="searchForm" th:action="@{/product/search}" onsubmit="return submitForm()">
+                    <input type="text" name="keyword" id="searchInput"/>
                     <button><i class="fa fa-search"></i></button>
                 </form>
             </div>
@@ -65,11 +80,10 @@
         <div class="menu">
             <div>
                 <ul>
-                    <li><a href="#">히트상품</a></li>
-                    <li><a href="#">추천상품</a></li>
-                    <li><a href="#">최신상품</a></li>
-                    <li><a href="#">인기상품</a></li>
-                    <li><a href="#">할인상품</a></li>
+                    <li><a th:href="@{/product/list(cate = 'a')}">히트상품</a></li>
+                    <li><a th:href="@{/product/list(cate = 'b')}">추천상품</a></li>
+                    <li><a th:href="@{/product/list(cate = 'c')}">최신상품</a></li>
+                    <li><a th:href="@{/product/list(cate = 'd')}">할인상품</a></li>
                 </ul>
                 <ul>
                     <li><a th:href="@{/product/coupon}">쿠폰존</a></li>
@@ -85,6 +99,24 @@
 
 
 <div layout:fragment="content">
+    <script>
+        window.onload = function (){
+            $(document).ready(function () {
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 250) {
+                        $('#btnTop').fadeIn();
+                    } else {
+                        $('#btnTop').fadeOut();
+                    }
+                });
+                $('#btnTop').click(function () {
+                    $('html, body').animate({scrollTop: 0}, 400);
+                    return false;
+                });
+            });
+        }
+    </script>
+
 
 </div>
 
@@ -112,6 +144,17 @@
         </p>
     </div>
 </footer>
-<button type="button" id="top">상단이동</button>
+<aside>
+    <a href="javascript:history.go(-1)" id="btnHome">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+            <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+        </svg>
+    </a>
+    <a href="#" id="btnTop">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
+            <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0"/>
+        </svg>
+    </a>
+</aside>
 </body>
 </html>

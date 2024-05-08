@@ -50,8 +50,9 @@ public class AdminService {
     @Autowired
     private ProductsRepository productsRepository;
 
+    @Autowired
     private final BannerRepository bannerRepository;
-
+    @Autowired
     private final BannerImgRepository bannerImgRepository;
 
     @Autowired
@@ -68,8 +69,12 @@ public class AdminService {
     private MemberRepository memberRepository;
     @Autowired
     private VisitorRepository visitorRepository;
-
+    @Autowired
     private final Seller_statusRepository seller_statusRepository;
+    @Autowired
+    private TermsRepository termsRepository;
+    @Autowired
+    private TermsMapper termsMapper;
 
     //mainPage 띄우자
     public  Map<String , Integer> Formain(){
@@ -485,11 +490,6 @@ public class AdminService {
         }
     }
 
-    @Autowired
-    private TermsRepository termsRepository;
-
-    @Autowired
-    private TermsMapper termsMapper;
 
     //terms
     public TermsDTO findTerms(int intPk) {

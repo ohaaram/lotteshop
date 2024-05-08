@@ -145,20 +145,20 @@
 
         <div class="paging">
                         <span class="prev" th:if="${page.prev}">
-                            <a th:href="@{/admin/product/list(pg=${page.start -1})}"><&nbsp;이전</a>
+                            <a th:href="@{/admin/product/list(pg=${page.start -1}, keyword=${page.keyword},cate=${page.cate})}"><&nbsp;이전</a>
                         </span>
             <span class="num" th:each="num:${#numbers.sequence(page.start, page.end)}">
                             <th:block th:if="${num == page.pg}">
-                                 <a th:href="@{/admin/product/list( pg=${num})}" class="on">[[${num}]]</a>
+                                 <a th:href="@{/admin/product/list( pg=${num}, keyword=${page.keyword},cate=${page.cate})}" class="on">[[${num}]]</a>
                             </th:block>
 
                             <th:block th:if="${num != page.pg}">
-                                 <a th:href="@{/admin/product/list( pg=${num})}">[[${num}]]</a>
+                                 <a th:href="@{/admin/product/list( pg=${num}, keyword=${page.keyword},cate=${page.cate})}">[[${num}]]</a>
                             </th:block>
 
                         </span>
             <span class="next" th:if="${page.next}">
-                            <a th:href="@{/admin/product/list( pg=${page.end+1})}">다음&nbsp;></a>
+                            <a th:href="@{/admin/product/list( pg=${page.end+1}, keyword=${page.keyword},cate=${page.cate})}">다음&nbsp;></a>
                         </span>
         </div>
 

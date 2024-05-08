@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/member/layout/memberLayout.html}">
+<div class="join" layout:fragment="content">
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            .join {
+                max-width: 400px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+
+            .result-message {
+                margin-bottom: 20px;
+            }
+
+            .btn-container {
+                display: flex;
+                justify-content: center;
+            }
+
+            .btn-container a {
+                margin: 0 10px;
+            }
+        </style>
+
+    <script>
+        window.onload = function (){
+
+
+
+
+
+
+
+        }
+
+
+        async function fetchGet(url) {
+
+            console.log("fetchData1...1");
+
+            try {
+                console.log("fetchData1...2");
+                const response = await fetch(url);
+                console.log("here1");
+
+                if (!response.ok) {
+                    console.log("here2");
+                    throw new Error('response not ok');
+                }
+
+                const data = await response.json();
+                console.log("data1 : " + data);
+                return data;
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    </script>
+
+        <!-- 결과 값 표시 -->
+        <div class="result-message" th:if="${uid}">
+            <p>찾은 아이디: <span th:text="${uid}"></span></p>
+        </div>
+        <div class="result-message" th:unless="${uid}">
+            <p>아이디를 찾을 수 없습니다.</p>
+        </div>
+
+        <!-- 로그인하러가기 및 비밀번호 찾기 버튼 -->
+        <div class="btn-container">
+            <a th:href="@{/member/login}" class="btn btn-primary">로그인하러 가기</a>
+            <a th:href="@{/member/findPass}" class="btn btn-secondary">비밀번호 찾기</a>
+        </div>
+
+    </div>
+</html>

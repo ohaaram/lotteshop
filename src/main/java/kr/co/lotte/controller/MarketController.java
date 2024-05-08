@@ -42,22 +42,44 @@ public class MarketController {
 
     @GetMapping("/product/list")
     public String list(Model model, MainProductsPageRequestDTO requestDTO, @AuthenticationPrincipal MyUserDetails userDetails) {
-        MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
-        List<Products> products = pageResponseDTO.getDtoList();
-        try {
-            User user = userDetails.getUser();
-            List<Products> newProducts = mainService.hahaha(products, user.getUid());
-            pageResponseDTO.setDtoList(newProducts);
-        } catch (Exception e) {
-            for (Products p : products) {
-                p.setLikeState(0);
+        int view = 0;
+        if(requestDTO.getCate() == "" || requestDTO.getCate() == null){
+            MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
+            List<Products> products = pageResponseDTO.getDtoList();
+            try {
+                User user = userDetails.getUser();
+                List<Products> newProducts = mainService.hahaha(products, user.getUid());
+                pageResponseDTO.setDtoList(newProducts);
+            } catch (Exception e) {
+                for (Products p : products) {
+                    p.setLikeState(0);
+                }
+                pageResponseDTO.setDtoList(products);
             }
-            pageResponseDTO.setDtoList(products);
+            model.addAttribute("view", view);
+            model.addAttribute("pageResponseDTO", pageResponseDTO);
+        }else{
+            view = 1;
+            List<Products> products = mainService.searchListForCate(requestDTO.getCate());
+            try {
+                User user = userDetails.getUser();
+                products  = mainService.hahaha(products, user.getUid());
+            } catch (Exception e) {
+                for (Products p : products) {
+                    p.setLikeState(0);
+                }
+            }
+            model.addAttribute("state", requestDTO.getCate());
+            model.addAttribute("products", products);
+            model.addAttribute("view", view);
+
         }
-        model.addAttribute("pageResponseDTO", pageResponseDTO);
+
+
         return "/product/list";
     }
 
+    //상품 상세페이지 조회
     @GetMapping("/product/view")
     public String view(Model model, ReviewPageRequestDTO reviewPageRequestDTO) {
 
@@ -74,6 +96,14 @@ public class MarketController {
         //리뷰수를 조회
         Products products =  marketService.findProduct(prodno);
 
+        //리뷰 각 점수를 합계
+        Map<Integer,Integer> scoreCountMap= reviewService.sumScore(prodno);
+
+        //각 리뷰 점수를 map으로 생성했음
+        model.addAttribute("scoreCountMap",scoreCountMap);
+
+        log.info("리뷰 점수를 출력해보자 : "+scoreCountMap.get(5));
+
         model.addAttribute("reviewNum",products);
 
         log.info("Options : " + Options.size());
@@ -86,7 +116,6 @@ public class MarketController {
 
         model.addAttribute("options", Options);
 
-
         //리뷰 조회
         ReviewPageResponseDTO reviewPageResponseDTO = reviewService.selectReviews(prodno, reviewPageRequestDTO);
 
@@ -98,7 +127,7 @@ public class MarketController {
 
         model.addAttribute("product", productsDTO);//제품정보와 이미지정보도 같이 담은 productsDTO
         model.addAttribute("reviewPage", reviewPageResponseDTO);
-        model.addAttribute(reviewRatioDTO);
+        model.addAttribute("reviewRatioDTO",reviewRatioDTO);
 
         return "/product/view";
     }
@@ -138,14 +167,29 @@ public class MarketController {
         model.addAttribute("user", user);
         List<Integer> nos = (List<Integer>) session.getAttribute("nos");
         List<Integer> counts = (List<Integer>) session.getAttribute("counts");
-        log.info("nos nonono~ : " + nos);
-        model.addAttribute("subProducts", marketService.selectProducts(nos));
-        model.addAttribute("counts", counts);
+
+        log.info("nos nonono~ : "+nos);
+
+        List<SubProducts> tempSubproduct = marketService.selectProducts(nos, counts);
+        Map<String, List<SubProducts>> sellerProductMap = new HashMap<>();
+        for (SubProducts subProduct : tempSubproduct) {
+            String sellerName = subProduct.getProducts().getSellerName();
+            List<SubProducts> productList = sellerProductMap.getOrDefault(sellerName, new ArrayList<>());
+            productList.add(subProduct);
+            sellerProductMap.put(sellerName, productList);
+        }
+        log.info(sellerProductMap.toString() + "here~");
+
+        //쿠폰 리스트도 걍 넘겨주자여기서
+        model.addAttribute( "coupons",marketService.searchCoupon(user.getUid()));
+        model.addAttribute("subProducts", sellerProductMap);
+       // model.addAttribute("counts", counts);
+        model.addAttribute("number", counts.size()); // 이거를 넣음 주문건수 때문에
         model.addAttribute("status", status);
         return "/product/order";
     }
 
-    //바로구매(장바구니 거치고)
+    //바로구매(장바구니 거치고) 이것만 좀 제대로 수정함 아 귀찮아 그냥 구매 카트 등은 이거 코드보고 나중에 수정하자..
     @GetMapping("/product/order2")//
     public String order2(Model model, Authentication authentication, @RequestParam(name = "list") List<Integer> list) {
         log.info("list : " + list);
@@ -153,13 +197,28 @@ public class MarketController {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
         model.addAttribute("user", user);
-        List<Carts> cartsList = marketService.selectCarts(list);
 
-        List<Integer> counts = cartsList.stream().map(item -> item.getCartProdCount()).toList();
-        List<Integer> nos = cartsList.stream().map(item -> item.getProdNo()).toList();
+
+        List<Carts> cartsList = marketService.selectCarts(list);
+        List<Integer> counts = cartsList.stream().map(item ->   item.getCartProdCount()).toList();
+        List<Integer> nos = cartsList.stream().map(item ->   item.getProdNo()).toList();
         model.addAttribute("cartlist", cartsList);
-        model.addAttribute("subProducts", marketService.selectProducts(nos));
-        model.addAttribute("counts", counts);
+
+        List<SubProducts> tempSubproduct = marketService.selectProducts(nos , counts);
+        Map<String, List<SubProducts>> sellerProductMap = new HashMap<>();
+        for (SubProducts subProduct : tempSubproduct) {
+            String sellerName = subProduct.getProducts().getSellerName();
+            List<SubProducts> productList = sellerProductMap.getOrDefault(sellerName, new ArrayList<>());
+            productList.add(subProduct);
+            sellerProductMap.put(sellerName, productList);
+        }
+        log.info(sellerProductMap.toString() + "here~");
+        //쿠폰 리스트도 걍 넘겨주자여기서
+        model.addAttribute( "coupons",marketService.searchCoupon(user.getUid()));
+
+        model.addAttribute("subProducts", sellerProductMap);
+        //  model.addAttribute("counts", counts);
+        model.addAttribute("number", counts.size()); // 이거를 넣음 주문건수 때문에
         model.addAttribute("status", status);
         return "/product/order";
     }
@@ -170,6 +229,7 @@ public class MarketController {
     public ResponseEntity orderBuy(@RequestBody OrdersDTO ordersDTO) {
         log.info("이거확인 " + ordersDTO.toString());
         return marketService.insertOrderAndPoint(ordersDTO);
+
     }
 
     //구매하기2( 카트제거 , orderItems 넣기)
@@ -194,8 +254,11 @@ public class MarketController {
     }
 
     @GetMapping("/product/orderSuccess")
-    public String successOrder(@RequestParam(name = "orderNo") int orderNo) {
+    public String successOrder(@RequestParam(name = "orderNo") int orderNo, Model model){
 
+
+        model.addAttribute("orderItems", marketService.findOrderItems(orderNo));
+        model.addAttribute("order", marketService.findOrder(orderNo));
         return "/product/complete";
     }
 
@@ -217,7 +280,7 @@ public class MarketController {
         User user = userDetails.getUser();
         List<Carts> carts = marketService.selectCart(user.getUid());
         List<Integer> subProdnos = carts.stream().map(e -> e.getProdNo()).toList();
-        model.addAttribute("subProducts", marketService.selectProducts(subProdnos));
+        model.addAttribute("subProducts", marketService.selectProductsForCart(subProdnos));
         model.addAttribute("carts", carts);
         return "/product/cart";
 
@@ -236,31 +299,6 @@ public class MarketController {
     public String search(String cate, String keyword, ProductsPageRequestDTO requestDTO, Model model, HttpSession session) {
 
         log.info("cate : " + cate);
-
-
-        if (cate != null && !cate.isEmpty()) {
-
-            requestDTO.setCate(cate);
-
-            requestDTO.setKeyword(keyword);
-
-            log.info("카테 값 넣었어? : "+requestDTO.getCate());
-            log.info("keyword 값 넣었어? : "+requestDTO.getKeyword());
-
-
-        } else {
-
-            if (requestDTO == null) {
-
-                requestDTO = new ProductsPageRequestDTO();
-            }
-
-            if (keyword != null && !keyword.isEmpty()) {
-                requestDTO.setKeyword(keyword);
-            }
-         }
-
-        session.setAttribute("keyword", keyword);
 
         ProductsPageResponseDTO searchResult = mainService.searchForProduct(requestDTO);
 

@@ -1,8 +1,15 @@
 /* 초기화 */
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
-  font: normal 12px "Noto Sans CJK KR";
+  font: normal 12px "Pretendard-Regular";
 }
 
 ul,
@@ -646,16 +653,32 @@ footer p > strong {
 }
 
 /* 오른쪽 하단 상단 이동버튼 */
-#top {
+#btnHome{
+  display: inline;
   position: fixed;
-  left: 50%;
-  bottom: 10px;
-  margin-left: 600px;
-  /* display: none; */
-  width: 42px;
-  height: 42px;
-  background-image: url("../images/top.png");
-  border: none;
-  font-size: 0;
-  cursor: pointer;
+  right: 14px;
+  bottom: 140px;
+  border-radius: 0px;
+  width: 48px;
+  font-size: 56px;
+  color: #FF6347;
+  text-align: center;
+  line-height: 1;
+  padding: 8px 0px 12px;
+  z-index: 164;
+}
+
+#btnTop{
+  display: inline;
+  position: fixed;
+  right: 14px;
+  bottom: 180px;
+  border-radius: 0px;
+  width: 48px;
+  font-size: 56px;
+  color: #FF6347;
+  text-align: center;
+  line-height: 1;
+  padding: 8px 0px 12px;
+  z-index: 164;
 }

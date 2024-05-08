@@ -62,11 +62,12 @@
                         </li>
                     </th:block>
                 </ul>
+
                 <form th:action="@{/my/order}">
                     <input type="date" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
                     <span>~</span>
                     <input type="date" name="dateEnd" max="[CURRENT_DATE]" required>
-                    <button class="btnConfirm" type="submit">조회하기</button>
+                    <button class="btnConfirm" type="submit">조회</button>
                 </form>
             </div>
 
@@ -193,7 +194,7 @@
                                                     <span>[[${orderItem.itemPrice * orderItem.itemCount}]]</span>
                                                 </li>
                                                 <li class="discount">
-                                                    <span>할인 ( [[${orderItem.itemDiscount}]] %)</span>
+                                                    <span>상품할인 ( [[${orderItem.itemDiscount}]] %)</span>
                                                     <span>[[${#numbers.formatDecimal(orderItem.itemPrice * orderItem.itemDiscount *0.01 * orderItem.itemCount , 1, 0)}]]</span>
                                                 </li>
                                                 <li class="total">
@@ -212,7 +213,10 @@
                                         <td th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
                                             class="confirm" style="text-align: center">
                                             <ol>
-                                                <li th:href="@{#}" class="receive">수취확인</li>
+                                                <li id="orderCheck"
+                                                    th:if="${orderItem.orderState != '구매확정' &&
+                                                    orderItem.orderState != '환불' &&
+                                                     orderItem.orderState != '주문 취소'}" th:data-itemNo="${orderItem.itemNo}" class="receive">수취확인</li>
                                                 <li th:if="${orderItem.orderState == '구매확정'}" th:href="@{#}"
                                                     class="review" th:data-orderno="${order.orderNo}"
                                                     th:data-itemno="${orderItem.itemNo}"
@@ -221,11 +225,13 @@
                                                     th:data-prodno="${products[index.index][orderindex.index].prodNo}">
                                                     상품평
                                                 </li><!--구매확정이 되면 상품평 입력이 가능함-->
-                                                <li th:href="@{#}" class="exchange">교환신청</li>
+                                                <!--
+                                                <li th:href="@{#}" class="exchange">교환신청</li> -->
                                                 <li id="delete"
                                                     th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
                                                     th:data-itemNo="${orderItem.itemNo}" class="refund">환불(주문취소)신청
                                                 </li>
+
                                             </ol>
                                         </td>
                                         </td>
@@ -236,27 +242,36 @@
                                 <br>
                             </article>
                             <article class="delivery">
-                                <h3>결제 및 배송정보</h3>
-                                <table border="0">
-                                    <tr>
-                                        <th>최종 결제 금액</th>
-                                        <td class="request">[[${#numbers.formatCurrency(order.orderTotalPrice)}]] (사용
-                                            포인트 : [[${order.point}]] )
-                                        </td>
-                                    </tr>
+                                <h3 style="font-size: 20px">결제 및 배송정보</h3>
+                                <h3>
+                                    배송비 <span th:if="${order.delivery != 0}" class="request">[[${#numbers.formatCurrency(order.delivery)}]]></span>
+                                <span th:if="${order.delivery == 0}" class="request">무료</span>
+                                  포인트 사용  <span  th:if="${order.point != 0}"> [[${#numbers.formatCurrency(order.point)}]] </span>
+                                    <span  th:if="${order.point == 0}"> 사용X </span>
+                                    쿠폰 사용 <span th:if="${order.couponDiscount != 0}"> [[${#numbers.formatCurrency(order.couponDiscount)}]]</span>
+                                    <span th:if="${order.couponDiscount == 0}"> 사용X </span>
+                                    상품 할인 금액 <span th:if="${order.getItemDiscount() != 0}">[[${#numbers.formatCurrency(order.getItemDiscount)}]]</span>
+                                    <span th:if="${order.getItemDiscount() == 0}"> 사용X </span>
+                                    = 최종 결제 금액 <span style="color: red; font-weight: bolder"> [[${#numbers.formatCurrency(order.orderTotalPrice)}]]</span>
+                                </h3>
+                                <table border="0" style="width: 100%">
 
                                     <tr>
                                         <th>받으실 분</th>
-                                        <td class="name">[[${order.sendName}]]</td>
+                                        <td class="name">[[${order.receiveName}]]</td>
                                     </tr>
                                     <tr>
                                         <th>연락처</th>
-                                        <td class="hp">[[${order.sendHp}]]</td>
+                                        <td class="hp">[[${order.receiveHp}]]</td>
                                     </tr>
-                                    <tr>
+                                    <tr style="width: auto">
                                         <th>배송지</th>
                                         <td class="address">[ [[${order.zip}]] ] [[${order.addr1}]] [[${order.addr2}]]
                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <th>요청사항</th>
+                                        <td class="hp">[[${order.memo}]]</td>
                                     </tr>
 
                                 </table>
@@ -270,6 +285,7 @@
 
                     //주문취소
                     const deletes = document.querySelectorAll('#delete');
+                    const orderChecks = document.querySelectorAll('#orderCheck');
 
                     deletes.forEach(function (item) {
                         item.onclick = async function () {
@@ -279,8 +295,10 @@
                                     const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
                                     if (result2.data == 1) {
                                         alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
+                                        location.reload();
                                     } else {
                                         alert("취소가 완료되었습니다.")
+                                        location.reload();
                                     }
                                 }
                             } else {
@@ -288,8 +306,10 @@
                                     const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
                                     if (result2.data == 1) {
                                         alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
+                                        location.reload();
                                     } else {
                                         alert("취소가 완료되었습니다.")
+                                        location.reload();
                                     }
                                 }
                             }

@@ -59,6 +59,7 @@ public class Products {
 
     private String sellerName;
 
+    private int hit;
 
     private double avg;//리뷰의 평균값
 

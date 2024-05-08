@@ -17,6 +17,8 @@ public class MainProductsPageResponseDTO {
     private String cateName1;
     private String cateName2;
     private String cateName3;
+    private String cate;
+    private String keyword;
 
     private int pg;
     private int size;
@@ -45,6 +47,8 @@ public class MainProductsPageResponseDTO {
         this.cateName1 = pageRequestDTO.getCateName1();
         this.cateName2 = pageRequestDTO.getCateName2();
         this.cateName3 = pageRequestDTO.getCateName3();
+        this.keyword = pageRequestDTO.getKeyword();
+        this.cate = pageRequestDTO.getCate();
     }
 
 

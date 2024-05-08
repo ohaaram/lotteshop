@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.dto.ProductsPageRequestDTO;
 import kr.co.lotte.entity.Banner;
+import kr.co.lotte.entity.Products;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MainService;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +38,16 @@ public class MainController {
     public String index(Model model){
 
           mainService.upDateVisitor();
-
+          //coupon 변경할것임
+        mainService.CouponStateUpdate();
+        //hit상품 변경
+        mainService.updateHit();
 
         List<BannerDTO> banner1 = adminService.findMAIN1("MAIN1");
         List<BannerDTO> banner2 = adminService.findMAIN2("MAIN2");
         // List<BannerDTO> banner3 = adminService.findPRODUCT1("PRODUCT1");
         model.addAttribute("prodSolds", mainService.selectHitProducts());
+
         model.addAttribute("prodRecommend", mainService.selectRecomendProducts());
         model.addAttribute("prodRecent", mainService.selectRecentProducts());
         model.addAttribute("prodDiscount", mainService.selectDiscountProducts());

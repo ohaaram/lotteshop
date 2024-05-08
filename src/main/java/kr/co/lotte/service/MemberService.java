@@ -167,6 +167,32 @@ public class MemberService {
         memberMapper.updateUserPassword(userDTO);
     }
 
+
+    //일반 사용자의 아이디 찾기
+    public String findId(UserDTO userDTO){
+
+        String uid = memberMapper.findId(userDTO);
+
+        log.info("결과 값으로 찾은 uid : "+uid);
+
+        return uid;
+    }
+    
+    
+    //일반사용자의 정보 찾기(사용자가 있으면 true, 아니면 false)
+    public boolean findPass(String uid,String email){
+
+       String pass =  memberMapper.findPass(uid,email);
+
+       log.info("findPass에서 찾은 pass값 : "+pass);
+
+       boolean isPass = false;
+
+       if(pass != null && !pass.isEmpty()){
+            isPass = true;
+       }
+       return isPass;
+    }
 }
 
 

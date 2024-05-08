@@ -31,4 +31,7 @@ public class SubProducts {
     @Transient
     private String prodName;
 
+    @Transient
+    private int count;
+
 }

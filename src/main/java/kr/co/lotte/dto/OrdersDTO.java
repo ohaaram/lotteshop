@@ -36,4 +36,10 @@ public class OrdersDTO {
     private int point;
 
     private List<OrderItems> orderItems;
+
+    //추가된 친구들쓰~
+    private  int delivery;
+    private  int couponCode;
+    private  int couponDiscount;
+
 }

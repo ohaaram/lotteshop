@@ -4,98 +4,132 @@
       layout:decorate="~{/cs/layouts/csLayout.html}">
 
 <main layout:fragment="content">
-      <section id="cs">
-        <div class="qna">
-          <nav>
-            <div>
-              <p>홈<span>></span>문의하기</p>
-            </div>
-          </nav>
-          <section class="list">
-            <aside>
-              <h2>문의하기</h2>
-              <ul>
-                <li class="on"><a th:href="@{#}">회원</a></li>
-                <li><a th:href="@{#}">쿠폰/이벤트</a></li>
-                <li><a th:href="@{#}">주문/결제</a></li>
-                <li><a th:href="@{#}">배송</a></li>
-                <li><a th:href="@{#}">취소/반품/교환</a></li>
-                <li><a th:href="@{#}">여행/숙박/항공</a></li>
-                <li><a th:href="@{#}">안전거래</a></li>
-              </ul>
-            </aside>
-            <article>
-              <nav>
-                <h1>회원</h1>
-                <h2>회원관련 문의 내용입니다.</h2>
-              </nav>
-              <table>
-                <tr>
-                  <td><a th:href="@{#}">[가입] 가입 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[탈퇴] 탈퇴 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[회원정보] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[로그인] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[로그인] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[로그인] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[회원정보] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[회원정보] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[탈퇴] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-                <tr>
-                  <td><a th:href="@{#}">[탈퇴] 회원정보 문의내용</a></td>
-                  <td>chh**</td>
-                  <td>2022.11.21</td>
-                </tr>
-              </table>
+  <script>
+    window.onload=function (){
+      th:href="@{/cs/qna/view(no=${csQna.no})}"
+      const moveLinks = document.querySelectorAll('#linkMove');
+      moveLinks.forEach(function (item){
+        item.onclick = function (e){
+          e.preventDefault();
+          try {
+            const uid = document.getElementById('uid').value;
+            const writer = item.getAttribute('data-uid');
+            if(uid === writer){
+              document.location.href='/lotteshop/cs/qna/view?no='+item.getAttribute('data-no');
+            }else{
+              alert('작성자가 아니면 볼 수 없습니다.')
+            }
+          }catch (e){
+            alert('작성자가 아니면 볼 수 없습니다.');
+          }
+        }
+      })
 
-              <div class="page">
-                <a th:href="@{#}" class="prev">이전</a>
-                <a th:href="@{#}" class="num on">1</a>
-                <a th:href="@{#}" class="num">2</a>
-                <a th:href="@{#}" class="num">3</a>
-                <a th:href="@{#}" class="next">다음</a>
-              </div>
-
-              <a th:href="@{/cs/qna/write}" class="btnWrite">문의하기</a>
-
-            </article>
-          </section>
+      const question = document.getElementById('question');
+      question.onclick=function (e){
+        e.preventDefault();
+        try{
+          const user = document.getElementById('userId').value;
+          document.location.href = '/lotteshop/cs/qna/write';
+        }catch  (e){
+          alert('로그인 후 이용해주세요.');
+        }
+      }
+    }
+  </script>
+  <section id="cs">
+    <div class="qna">
+      <nav>
+        <div>
+          <p>홈<span>></span>문의하기</p>
         </div>
+      </nav>
+      <section class="list">
+        <aside>
+          <h2><a th:href="@{/cs/list}"></a>문의하기</h2>
+          <ul>
+            <li th:class="${csQna.cate1 == 'user' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='user')}">회원</a></li>
+            <li th:class="${csQna.cate1 == 'event' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='event')}">쿠폰/이벤트</a></li>
+            <li th:class="${csQna.cate1 == 'order' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='order')}">주문/결제</a></li>
+            <li th:class="${csQna.cate1 == 'delivery' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='delivery')}">배송</a></li>
+            <li th:class="${csQna.cate1 == 'cancel' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='cancel')}">취소/반품/교환</a></li>
+            <li th:class="${csQna.cate1 == 'receipt' ? 'on':''}"><a th:href="@{/cs/qna/list(cate1='receipt')}">거래증빙서류</a></li>
+          </ul>
+        </aside>
+        <article class="qna-list">
+          <nav th:unless="${csQna.cate1}">
+            <h1>전체 문의 내용</h1>
+            <h2>전체 문의 내용입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'user'}">
+            <h1>회원</h1>
+            <h2>회원 관련 문의내용 입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'event'}">
+            <h1>쿠폰/이벤트</h1>
+            <h2>쿠폰/이벤트 관련 문의내용 입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'order'}">
+            <h1>주문/결제</h1>
+            <h2>주문/결제 관련 문의내용 입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'delivery'}">
+            <h1>배송</h1>
+            <h2>배송 관련 문의내용 입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'cancel'}">
+            <h1>취소/반품/교환</h1>
+            <h2>취소/반품/교환 관련 문의내용 입니다.</h2>
+          </nav>
+          <nav th:if="${csQna.cate1 == 'receipt'}">
+            <h1>거래증빙서류</h1>
+            <h2>거래증빙서류 관련 문의내용 입니다.</h2>
+          </nav>
+          <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+            <input type="hidden" id="uid" th:value="${#authentication.principal.user.uid}">
+          </th:block>
+          <table class="#" border="0";>
+            <tr th:each="csQna, index : ${csQna.dtoList3}">
+              <td>[[${csQna.no}]]</td>
+              <td th:if="${csQna.cate1 == 'user'}">회원</td>
+              <td th:if="${csQna.cate1 == 'event'}">쿠폰/이벤트</td>
+              <td th:if="${csQna.cate1 == 'order'}">주문/결제</td>
+              <td th:if="${csQna.cate1 == 'delivery'}">배송</td>
+              <td th:if="${csQna.cate1 == 'cancel'}">취소/반품/교환</td>
+              <td th:if="${csQna.cate1 == 'receipt'}">거래증빙서류</td>
+              <td><a id="linkMove" th:data-uid="${csQna.writer}"  th:data-no="${csQna.no}" th:href="@{/cs/qna/view(no=${csQna.no})}">[[${csQna.title}]]</a></td>
+              <td th:text="${#strings.substring(csQna.writer, 0, 3)} + '****'"></td>
+              <td th:text="${#temporals.format(csQna.rdate, 'yyyy-MM-dd')}"></td>
+              <td th:if="${csQna.status == '검토중'}" th:text="${csQna.status}"></td>
+              <td th:if="${csQna.status == '답변완료'}" th:text="${csQna.status}" style="color: #4CAF50;"></td>
+            </tr>
+          </table>
+
+          <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+            <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
+          </th:block>
+          <a th:href="@{/cs/qna/write}" id="question" class="btnWrite">문의하기</a>
+          <div class="paging">
+                        <span class="prev" th:if="${csQna.prev}">
+                            <a th:href="@{/cs/qna/list(pg=${csQna.start -1}, cate1=${csQna.getCate1()} , cate2=${csQna.getCate2()})}"><&nbsp;이전</a>
+                        </span>
+            <span class="num" th:each="num:${#numbers.sequence(csQna.start, csQna.end)}">
+                            <th:block th:if="${num == csQna.pg}">
+                                 <a th:href="@{/cs/qna/list( pg=${num} , cate1=${csQna.getCate1()} , cate2=${csQna.getCate2()})}" class="on">[[${num}]]</a>
+                            </th:block>
+                            <th:block th:if="${num != csQna.pg}">
+
+                                 <a th:href="@{/cs/qna/list( pg=${num} , cate1=${csQna.getCate1()} , cate2=${csQna.getCate2()})}" >[[${num}]]</a>
+                            </th:block>
+                </span>
+            <span class="next" th:if="${csQna.next}">
+                            <a th:href="@{/cs/qna/list( pg=${csQna.end+1} , cate1=${csQna.getCate1()} , cate2=${csQna.getCate2()})}">다음&nbsp;></a>
+                </span>
+          </div>
+        </article>
       </section>
+    </div>
+  </section>
 
 </main>
 </html>

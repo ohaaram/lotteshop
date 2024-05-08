@@ -38,5 +38,12 @@ public class Orders {
     private String addr2;
     private String payment;
     private int point;
+    //추가된 친구들쓰~
+    private  int delivery;
+    private  int couponCode;
+    private  int couponDiscount;
+    private  String receiveHp;
+    private String receiveName;
+    private String memo;
 
 }

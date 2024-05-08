@@ -222,7 +222,7 @@
                     function openPopup(element) {
                         var orderNo = element.getAttribute("data-fno");
                         console.log(orderNo);
-                        window.open("/lotteshop/admin/orderDetail?orderNo="+orderNo, "_blank", "width=600,height=400");
+                        const popupWindow = window.open("/lotteshop/admin/orderDetail?orderNo=" + orderNo, "_blank", "width=600, height=200");
 
                     }
                 </script>
@@ -234,6 +234,7 @@
                 </nav>
                 <!-- 상품등록 컨텐츠 시작 -->
                 <form th:action="@{/admin/orderList}">
+                    <input type="hidden" name="state" th:value="${pageResponseDTO.state}">
                     <input type="date" name="dateBegin" min="[LAST_DATE]" max="[CURRENT_DATE]" required>
                     <span>~</span>
                     <input type="date" name="dateEnd" max="[CURRENT_DATE]" required>
@@ -262,7 +263,7 @@
                                 <!-- <a th:href="@{/product/view(prodno=${products[index.index][0].prodNo})}" class="thumb"><img style="width: 100px; height: 100px" th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>-->
                                 <ul>
                                     <li class="prodName">[[${products[index.index].prodName}]]</li>
-                                    <li> 주문번호 : [[${order.itemNo}]]</li>
+                                    <li> 주문번호 : [[${order.orderNo}]] - [[${order.itemNo}]]</li>
                                     <li th:if="${products[index.index].color != '' }"> 옵션 : [[${products[index.index].color}]] , [[${products[index.index].size}]]</li>
                                     <li> 수량 : [[${order.itemCount}]]</li>
                                     <li> 남은재고 : [[${products[index.index].prodStock}]]</li>

@@ -34,6 +34,8 @@ public class QProducts extends EntityPathBase<Products> {
 
     public final StringPath etc = createString("etc");
 
+    public final NumberPath<Integer> hit = createNumber("hit", Integer.class);
+
     public final StringPath image1 = createString("image1");
 
     public final StringPath image2 = createString("image2");

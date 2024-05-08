@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
+
+
             <section id="admin-index" layout:fragment="content">
                 <nav>
                     <h3>관리자 메인</h3>
@@ -62,56 +64,36 @@
                     </table>                    
                 </article>
 
-                <div>
+                <div id="admin-index-div">
                     <div>
                         <a style="font-size: 15px; font-weight: bold " th:href="@{/admin/cs/notice/list}">공지사항</a>
-                        <article>
-                            <p>
-                                <span>[공지] 판매자님들은 주기적인 비밀번호 변경을 하세요. 판매자님들은 주기적인 비밀번호 변경을 하세요.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[공지] 1주년 기념 신규가입 사은품 안내</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[공지] 1주년 기념 신규가입 사은품 안내</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[공지] 1주년 기념 신규가입 사은품 안내</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[공지] 1주년 기념 신규가입 사은품 안내</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
+                        <article class="admin-index-list">
+                            <ul>
+                                <li style="font-size: 20px;" th:each="notices, index : ${csNotice}" th:if="${index.index} &lt; 5">
+                                    <a th:href="@{/cs/notice/view(no=${notices.no})}" class="title" th:if="${notices.cate1 == 'safe'}" th:text="'[안전거래]' + ' ' + ${notices.title}"></a>
+                                    <a th:href="@{/cs/notice/view(no=${notices.no})}" class="title" th:if="${notices.cate1 == 'event'}" th:text="'[이벤트]' + ' ' + ${notices.title}"></a>
+                                    <a th:href="@{/cs/notice/view(no=${notices.no})}" class="title" th:if="${notices.cate1 == 'danger'}" th:text="'[위해상품]' + ' ' + ${notices.title}"></a>
+                                    <a th:href="@{/cs/notice/view(no=${notices.no})}" class="title" th:if="${notices.cate1 == 'customer'}" th:text="'[고객서비스]' + ' ' + ${notices.title}"></a>
+                                    <span style="float: right" class="date" th:text="${#temporals.format(notices.rdate, 'yyyy-MM-dd')}"></span>
+                                </li>
+                            </ul>
                         </article>
                     </div>
 
                     <div>
-                        <h4>고객문의</h4>
-                        <article>
-                            <p>
-                                <span>[문의] 상품이 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 안녕하세요. 주문자 입니다. 구매한 상품에 문제가 있어서 이렇게 문의글을 남깁니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>                                                                
+                        <a style="font-size: 15px; font-weight: bold " th:href="@{/admin/cs/qna/list}">고객문의</a>
+                        <article class="admin-index-list">
+                            <ul>
+                                <li style="font-size: 20px; color: #343434;" th:each="qnas, index : ${csQna}" th:if="${index.index} &lt; 5">
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'user'}" th:text="'[회원]' + ' ' + ${qnas.title}"></a>
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'event'}" th:text="'[이벤트/쿠폰]' + ' ' + ${qnas.title}"></a>
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'order'}" th:text="'[주문/결제]' + ' ' + ${qnas.title}"></a>
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'delivery'}" th:text="'[배송]' + ' ' + ${qnas.title}"></a>
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'cancel'}" th:text="'[취소/반품/교환]' + ' ' + ${qnas.title}"></a>
+                                    <a th:href="@{/cs/qna/view(no=${qnas.no})}" class="title" th:if="${qnas.cate1 == 'receipt'}" th:text="'[거래증빙서류]' + ' ' + ${qnas.title}"></a>
+                                    <span style="float: right" class="date" th:text="${#temporals.format(qnas.rdate, 'yyyy-MM-dd')}"></span>
+                                </li>
+                            </ul>
                         </article>
                     </div>
                 </div>

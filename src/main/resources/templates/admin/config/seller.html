@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+            xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+            layout:decorate="~{/admin/layout/adminLayout.html}">
+            <section id="admin-config-info" layout:fragment="content">
+                <script>
+                    window.onload=function (e){
+                        const modify = document.getElementById('modify');
+                        const formSubmit = document.formSubmit;
+                        const code = [[${code}]];
+                        if(code == '100'){
+                            alert('수정이 완료되었습니다.');
+                        }
+                        modify.onclick = function (e){
+                            e.preventDefault();
+                            if(confirm('수정하시겠습니까?')){
+                                console.log(formSubmit);
+                                formSubmit.submit();
+                            }
+                        }
+                    }
+                </script>
+                <nav>
+                    <h3>기본환경정보</h3>
+                    <p>
+                        HOME > 환경설정 > <strong>기본환경정보</strong>
+                    </p>
+                </nav>
+                <!-- 상품등록 컨텐츠 시작 -->
+                <article>
+
+                        <section>
+                            <h4>기본정보</h4>
+                         <br>
+                            <table>
+                                <tr>
+                                    <td>쇼핑몰 이름</td>
+                                    <td>
+                                        롯데ON (영문:LotteON)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>부제</td>
+                                    <td>
+                                        롯데 온라인 쇼핑몰
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>버전</td>
+                                    <td>
+                                        v1.0.1
+                                    </td>
+                                </tr>
+                            </table>
+                        </section>
+                        
+                        <section>
+                            <h4>이용약관  <span style="margin-left: 10px" id="modify">수정하기</span></h4>
+                            <a th:href="@{/admin/config/info}">회원가입 약관 |</a>
+                            <a th:href="@{/admin/config/buyer}">구매회원 약관 | </a>
+                            <a th:href="@{/admin/config/seller}">판매회원 약관 | </a>
+                            <a th:href="@{/admin/config/finance}">전자금융거래 약관 | </a>
+                            <a th:href="@{/admin/config/location}">위치정보이용 약관 | </a>
+                            <a th:href="@{/admin/config/privacy}">개인정보수집 방침 | </a>
+                            <form name="formSubmit" th:action="@{/admin/policy/modify/{id}(id=${policy.id})}" method="post">
+                            <br>
+                                <input type="hidden" th:value="${policy.id}">
+                            <table>
+                                <tr>
+                                    <td>제1장</td>
+                                    <td><textarea name="chapter1" style="width: calc(100%) ; height: 150px" th:text="${policy.chapter1}"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>제2장</td>
+                                    <td><textarea name="chapter2" style="width: calc(100%); height: 150px" th:text="${policy.chapter2}"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>제3장</td>
+                                    <td><textarea name="chapter3" style="width: calc(100%); height: 150px" th:text="${policy.chapter3}"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>제4장</td>
+                                    <td><textarea name="chapter4" style="width: calc(100%); height: 150px" th:text="${policy.chapter4}"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>제5장</td>
+                                    <td><textarea name="chapter5" style="width: calc(100%); height: 150px" th:text="${policy.chapter5}"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td>제6장</td>
+                                    <td><textarea name="chapter6" style="width: calc(100%); height: 150px" th:text="${policy.chapter6}"></textarea></td>
+                                </tr>
+                            </table>
+                            </form>
+                        </section>
+                </article>
+
+                <p class="ico alert">
+                    <strong>Warning!</strong>
+                    전자상거래 등에서의 상품 등의 정보제공에 관한 고시에 따라 총 35개 상품군에 대해 상품 특성 등을 양식에 따라 입력할 수 있습니다.
+                </p>
+                <!-- 상품등록 컨텐츠 끝 -->
+            </section>
+</html>
+
+

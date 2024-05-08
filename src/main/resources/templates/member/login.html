@@ -7,6 +7,72 @@
 <div class="login" layout:fragment="content">
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // key 가져온 cookieName 을 넣어줌
+            const key = getCookie("key");
+            const inputId = document.getElementsByName("uid")[0];
+            console.log(inputId);
+
+            if (inputId && key) {
+                inputId.value = key;
+            }
+
+            const savedId = document.getElementById("checkedId");
+            if (savedId && inputId && inputId.value !== "") {
+
+                savedId.checked = true; // ID 저장하기를 체크 상태로 유지
+            }
+            if (savedId && inputId) {
+                savedId.addEventListener("change", function () {
+                    if (savedId.checked) {
+                        setCookie("key", inputId.value, 7); // 7일동안 쿠키 보관
+                    } else {
+                        deleteCookie("key");
+                    }
+                });
+                // ID 저장하기 체크상태에서 ID를 입력하는경우 쿠키 저장
+                inputId.addEventListener("keyup", function () {
+                    if (savedId.checked) {
+                        setCookie("key", inputId.value, 7);
+                    }
+                })
+            }
+        });
+
+        //쿠키 저장
+        function setCookie(cookieName, value, exdays) {
+            const exdate = new Date();
+            exdate.setDate(exdate.getDate() + exdays);
+            const cookieValue = encodeURIComponent(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+            document.cookie = cookieName + "=" + cookieValue;
+        }
+
+        //쿠키 삭제
+        function deleteCookie(cookieName) {
+            const expireDate = new Date();
+            expireDate.setDate(expireDate.getDate() - 1);
+            document.cookie = cookieName + "= " + "; expires=" + expireDate.toUTCString();
+        }
+
+        //쿠기 가져오기
+        function getCookie(cookieName) {
+            cookieName = cookieName + '=';
+            const cookieData = document.cookie; //현재 페이지에서 사용가능한 쿠키 가져오기
+            let start = cookieData.indexOf(cookieName); //cookieName 의 시작위치 찾기, 찾지못하면 -1 반환
+            let cookieValue = '';
+            if (start != -1) {
+                start += cookieName.length; //start 는 쿠키 값 시작 위치 가르키기
+                let end = cookieData.indexOf(';', start); //start 위치부터 ;까지의 문자열을 쿠키값으로 추출
+                if (end == -1)
+                    end = cookieData.length; // 세미콜론이 없으면 문자열의 끝까지가 쿠키 값
+                cookieValue = cookieData.substring(start, end);
+            }
+            return decodeURIComponent(cookieValue);
+            // 추출된 쿠키 값을 디코딩해서
+            // 반환. 디코딩은 URL 인코딩된 문자열을 해독하여 원래의 문자열로 되돌리는 작업
+        }
+
+
         // 클릭 이벤트 처리 함수
         function preventClick(event, element) {
             event.preventDefault(); // 기본 동작 중지
@@ -42,6 +108,7 @@
                 .catch(err => console.log(err))
         }
 
+
     </script>
 
 
@@ -63,9 +130,14 @@
         </table>
         <input type="submit" value="로그인"/>
         <span>
-            <label><input type="checkbox" name="auto"/>자동 로그인</label>
-            <a href="#">아이디찾기</a>
-            <a href="#">비밀번호찾기</a>
+            <label class="save_id">
+                <input type="checkbox" id="checkedId" name="auto"/>
+                <span>아이디 저장</span>
+                <input type="checkbox" id="rememberMe" name="rememberMe"/>
+                <span>자동 로그인</span>
+            </label>
+            <a th:href="@{/member/findId}">아이디찾기</a>
+            <a th:href="@{/member/findPass}">비밀번호찾기</a>
             <a th:href="@{/member/join}">회원가입</a>
         </span>
 
@@ -83,7 +155,7 @@
         </div>
         <th:block th:each="banner : ${banner4}">
             <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
-               th:onclick="'preventClick(event ,this)'" th:href="@{${banner.link}}">
+               onclick="preventClick(event ,this)" th:href="@{${banner.link}}">
                 <img th:src="@{/uploads/__${banner.img_425}__}" alt="1만원 할인 쿠폰 받기">
             </a>
         </th:block>

@@ -81,12 +81,20 @@ header > .logo img {
 header > .logo a {
   font-size: 30px;
   font-weight: bold;
+  color: #343434;
+  text-decoration: inherit;
+
+}
+
+header > .logo a:hover{
+  color: #5F5D6A;
 }
 
 /* 메인 */
 #cs {
   width: 100%;
   height: auto;
+
 }
 
 #cs > .main {
@@ -134,8 +142,7 @@ header > .logo a {
   width: 18px;
   height: 18px;
   content: "";
-  background: url("../images/cs_sprites.png") no-repeat;
-  background-position: -230px -276px;
+
   background-size: 750px auto;
   vertical-align: top;
   margin-left: 6px;
@@ -191,46 +198,60 @@ header > .logo a {
 
 #cs > .main > .faq > ol > li:nth-child(1) > a {
   background-position: 0 0;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(2) > a {
   background-position: -184px 0px;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(3) > a {
   background-position: -92px 0px;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(4) > a {
   background-position: -276px 0;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(5) > a {
   background-position: -368px 0px;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(6) > a {
   background-position: -92px -485px;
+  color: #343434;
+
 }
 #cs > .main > .faq > ol > li:nth-child(7) > a {
   background-position: -644px 0px;
+  color: #343434;
+
 }
 
 #cs > .main > .faq > ol > li:nth-child(1) > a:hover {
-  background-position: 0 -92px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(2) > a:hover {
-  background-position: -184px -92px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(3) > a:hover {
-  background-position: -92px -92px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(4) > a:hover {
-  background-position: -276px -92px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(5) > a:hover {
-  background-position: -368px -92px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(6) > a:hover {
-  background-position: -92px -577px;
+  color: #ef2a23;
 }
 #cs > .main > .faq > ol > li:nth-child(7) > a:hover {
-  background-position: -644px -92px;
+  color: #ef2a23;
 }
 
 #cs > .main > .qna > .ask {
@@ -239,7 +260,7 @@ header > .logo a {
   font-weight: bold;
   margin-left: 10px;
   margin-top: 10px;
-  color: #0078ff;
+  color: #ef2a23;
 }
 
 #cs > .main > .tel {
@@ -706,6 +727,15 @@ footer p > strong {
 
 
 /* faq 공통 */
+#cs a {
+  text-decoration: inherit;
+  color: #5F5D6A;
+
+}
+#cs a:hover {
+  color: #ef2a23;
+
+}
 #cs > .faq {}
 #cs > .faq > nav {
   width: 100%;
@@ -787,16 +817,29 @@ footer p > strong {
 /* faq - 글목록 */
 #cs > .faq > .list > article > div {
   margin-top: 26px;
+
+}
+#cs > .faq > .list > article > div > .faq-content-view {
+  margin-top: 26px;
+  border: 1px solid #F4EBE7; /* 테두리 설정 */
+  border-radius: 5px; /* 테두리의 모서리를 둥글게 만듦 */
+  padding: 20px; /* 콘텐츠와 테두리 사이 여백 설정 */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 음영 효과 추가 */
+  font-size: 14px;
+
 }
 #cs > .faq > .list > article > div > h3 {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 6px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 10px; /* title 아래 여백 추가 */
+
 }
 #cs > .faq > .list > article > div > ul {
   width: 100%;
   height: auto;
-  border: 1px solid #ccc;
+  border: 1px solid #F4EBE7;
   border-radius: 6px;
 }
 #cs > .faq > .list > article > div > ul > li {
@@ -816,6 +859,7 @@ footer p > strong {
   padding: 16px;
   font-size: 16px;
   border-radius: 6px;
+  color: #343434;
   box-sizing: border-box;
 }
 
@@ -827,7 +871,7 @@ footer p > strong {
   font-family: sans-serif;
   font-size: 18px;
   font-weight: bold;
-  color: #006cff;
+  color: #F15B52;
   margin-right: 6px;
 }
 

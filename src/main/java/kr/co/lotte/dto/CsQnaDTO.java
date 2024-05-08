@@ -24,7 +24,8 @@ public class CsQnaDTO {
     private String writer;
     private int file;
     private String content;
-    private int comment;
+    private String comment;
+    private String status;
     private LocalDateTime rdate;
     private String regip;
 
@@ -44,6 +45,7 @@ public class CsQnaDTO {
         csQna.setWriter(writer);
         csQna.setContent(content);
         csQna.setComment(comment);
+        csQna.setStatus(status);
         csQna.setFile(file);
         csQna.setRdate(rdate);
         csQna.setRegip(regip);

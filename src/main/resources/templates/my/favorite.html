@@ -74,7 +74,7 @@
                 </script>
                 <ul>
                     <span class="menu_else"></span>
-                    <li><a th:href="@{/my/favorite}">전체주문내역</a></li>
+                    <li><a th:href="@{/my/order}">전체주문내역</a></li>
                     <li class="on"><a th:href="@{/my/favorite}">관심상품</a></li>
                     <li><a th:href="@{/my/point}">포인트내역</a></li>
                     <li><a th:href="@{/my/coupon}">쿠폰</a></li>
@@ -106,7 +106,7 @@
                                         <div style="flex: 1; margin-left: 10px; height: 80%; position: relative;">
                                             <span style="font-size: small">[ [[${product.sellerName}]] ]</span>
                                             <span style="font-size: small">[[${product.prodName}]] </span>
-                                            <i th:data-prodNo="${product.prodNo}" id="cart" style="position: absolute; right: 25px; top:3px" class="fas fa-shopping-cart"></i>
+                                            <i th:data-prodNo="${product.prodNo}" id="cart" style="position: absolute; right: 25px; top:3px" class="fa fa-shopping-cart"></i>
                                             <span th:data-prodNo="${product.prodNo}" id="delete" style="position: absolute; right: 5px;">X</span>
                                             <br><br>
                                             <p>

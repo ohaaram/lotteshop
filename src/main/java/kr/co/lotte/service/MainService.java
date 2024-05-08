@@ -5,10 +5,8 @@ import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
-import kr.co.lotte.repository.LikeRepository;
-import kr.co.lotte.repository.OrdersRepository;
-import kr.co.lotte.repository.ProductsRepository;
-import kr.co.lotte.repository.VisitorRepository;
+import kr.co.lotte.mapper.ProductMapper;
+import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.SelectKey;
@@ -32,10 +30,21 @@ public class MainService {
     @Autowired
     private VisitorRepository visitorRepository;
     @Autowired
-    private AdminService adminService;
-    @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private CouponRepository couponRepository;
+    @Autowired
+    private ProductMapper productMapper;
 
+    //히트상품 변경
+    public void updateHit(){
+        productMapper.updateHit();
+        List<Products> products = productsRepository.findFirst8ByOrderByProdSoldDesc();
+        for (Products p : products) {
+            p.setHit(1);
+            productsRepository.save(p);
+        }
+    }
     //히트상품 (많이 판매된 순)
     public List<Products> selectHitProducts(){
         return productsRepository.findFirst8ByOrderByProdSoldDesc();
@@ -63,6 +72,20 @@ public class MainService {
         List<Products> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
         return new MainProductsPageResponseDTO(requestDTO, dtoList , total);
+    }
+    //종류별로 정렬
+    public List<Products> searchListForCate(String cate){
+        List<Products> lists = new ArrayList<>();
+        if(cate.equals("a")){
+        lists = productsRepository.findFirst8ByOrderByProdSoldDesc();
+        }else if(cate.equals("b")){
+    lists = productsRepository.findFirst8ByOrderByProdDiscountDesc();
+        }else if(cate.equals("c")){
+            lists = productsRepository.findFirst8ByOrderByProdNoDesc();
+        }else {
+            lists = productsRepository.findFirst8ByDiscount();
+        }
+        return lists;
     }
 
     //방문자수
@@ -127,4 +150,18 @@ public class MainService {
         return new ProductsPageResponseDTO(requestDTO,dtoList,total);
     }
 
+    //쿠폰 상태 정렬
+    public void CouponStateUpdate(){
+        LocalDate currentDate = LocalDate.now();
+        List<Coupon> coupons = couponRepository.findAll();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (Coupon coupon : coupons) {
+            LocalDate endDate = LocalDate.parse(coupon.getEndDate(), formatter); // String을 LocalDate로 변환
+            if (endDate.isBefore(currentDate)) { // 현재 날짜보다 유효기간이 이전인 경우
+                coupon.setState(1); // state를 1로 설정
+                couponRepository.save(coupon);
+            }
+        }
+    }
 }

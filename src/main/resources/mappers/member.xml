@@ -62,4 +62,13 @@
     </update>
 
 
+    <select id="findId" resultType="String">
+        SELECT uid FROM user WHERE name=#{name} AND hp=#{hp}
+    </select>
+
+    <select id="findPass" resultType="String">
+        select pass from user where uid=#{uid}
+    </select>
+
+
 </mapper>

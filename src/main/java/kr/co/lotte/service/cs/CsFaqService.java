@@ -79,7 +79,7 @@ public class CsFaqService {
     public void adminFaqWrite(CsFaqDTO csFaqDTO){
         CsFaq csFaq =csFaqRepository.findFirstByCate2(csFaqDTO.getCate2());
         csFaqDTO.setCatename(csFaq.getCatename());
-       csFaqRepository.save(modelMapper.map(csFaqDTO, CsFaq.class));
+        csFaqRepository.save(modelMapper.map(csFaqDTO, CsFaq.class));
     }
 
     // admin.cs.list 특정 글 조회

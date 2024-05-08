@@ -24,7 +24,7 @@ public class ReviewRatioDTO {
         this.avg = avg;
         this.r_avg = (int)Math.round(avg);
 
-        /*
+
 
         // 각 스코어 별 퍼센트 구하기
         this.percent1 = (int) Math.round((double) oneScore / count * 100);
@@ -33,7 +33,7 @@ public class ReviewRatioDTO {
         this.percent4 = (int) Math.round((double) fourScore / count * 100);
         this.percent5 = (int) Math.round((double) fiveScore / count * 100);
 
-         */
+
 
     }
 

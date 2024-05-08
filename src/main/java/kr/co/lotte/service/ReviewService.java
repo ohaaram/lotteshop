@@ -141,6 +141,35 @@ public class ReviewService {
     }
 
 
+
+    //리뷰의 각 점수의 합계를 구함
+    public Map<Integer, Integer> sumScore(int prodno) {
+        Optional<Products> optProducts = productRepository.findById(prodno);
+
+        if (optProducts.isPresent()) {
+            Products products = optProducts.get();
+            List<Review> reviews = products.getReviews();
+            Map<Integer, Integer> scoreCountMap = new HashMap<>();
+
+            for (Review review : reviews) {
+                int score = review.getScore();
+                scoreCountMap.put(score, scoreCountMap.getOrDefault(score, 0) + 1);
+            }
+
+            // 각 점수가 없는 경우를 처리하여 0으로 초기화
+            for (int i = 5; i >= 1; i--) {
+                scoreCountMap.putIfAbsent(i, 0);
+            }
+
+            return scoreCountMap;
+        } else {
+            log.info("해당하는 상품이 없습니다.");
+            return null;
+        }
+    }
+
+
+
     // 리뷰 작성 + 상품 테이블 recount up + file -> Thumbnails
     @Transient
     public String insertReview(ReviewDTO reviewDTO, MultipartFile thumb) {

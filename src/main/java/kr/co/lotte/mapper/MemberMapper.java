@@ -15,4 +15,8 @@ public interface MemberMapper {
     public void updateUserAddr(UserDTO userDTO);
 
     public void updateUserPassword(UserDTO userDTO);
+
+    public String findId(UserDTO userDTO);
+
+    public String findPass(String uid,String email);
 }

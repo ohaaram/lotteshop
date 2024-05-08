@@ -6,7 +6,8 @@
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script>
 
-        window.onload = function (){
+        window.onload = function () {
+
             orderPriceSub(0);
             //자 주문해보자.. 뭐 해야하냐.. 아.. 귀찮다..
             //1. orderTable에 넣어야하고 (상태는 주문 접수 대기)
@@ -15,9 +16,46 @@
             //4. 상품 재고도 빼야함
 
             //4. 추후 주문 확정시 포인트 적립
-            document.getElementById('buyButton').onclick=function (){
-                forOrder();
+            const searchCoupon = document.getElementById('searchCoupon');
+            const closeButton = document.getElementById('closeButton');
+            searchCoupon.onclick = function () {
+                document.getElementById('couponModal').style.display = 'block';
             }
+            closeButton.onclick = function () {
+                document.getElementById('couponModal').style.display = 'none';
+            }
+
+            const priceElement = document.getElementById('totalPrice');
+            const discountElement = document.getElementById('totalDiscount');
+            const price = parseInt(priceElement.innerText.replace('원', ''), 10);
+            const discount = parseInt(discountElement.innerText.replace('원', ''), 10);
+
+            applyCoupons = document.querySelectorAll('#applyCoupon');
+            applyCoupons.forEach(function (item) {
+                item.onclick = function (e) {
+                    const min = item.getAttribute('data-min');
+                    if(min > price - discount){
+                        alert('최소 금액을 충족하지 못했습니다. \n' +
+                            '배송비 제외 및 상품 할인 가격 적용 후 가격이 최소 금액 이상이어야 합니다.');
+                    }else {
+                        let pointCalc = document.getElementById('point').value;
+                        document.getElementById('couponName').innerText=item.getAttribute('data-name');
+                        document.getElementById('couponDiscountAmount').value=item.getAttribute('data-coupon');
+                        document.getElementById('couponMax').value=item.getAttribute('data-max');
+                        document.getElementById('couponMin').value=item.getAttribute('data-min');
+                        document.getElementById('couponCode').value=item.getAttribute('data-couponCode');
+                        if (pointCalc === ''){
+                            pointCalc=0;
+                        }
+                        orderPriceSub(pointCalc);
+
+                        closeButton.click();
+
+                    }
+                }
+            })
+
+
         }
 
         //우편번호 검색
@@ -76,11 +114,13 @@
                 }
 
             }else{
-                alert('포인트는 1 이상부터 사용가능힙니다.');
+                result.innerText="포인트는 1 이상부터 사용가능합니다.";
+                result.style.color="red";
                 isPointOk = false;
             }
         }
         async function forOrder() {
+
             var isOk = true;
             const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
             //뭐가필요하냐...
@@ -92,13 +132,37 @@
             const addr1 = document.getElementById('inputAddr1').value;
             const addr2 = document.getElementById('inputAddr2').value;
             const payments = document.getElementsByName('payment');
+
+            const receiveHp = document.getElementById('receiveHp').value;
+            const receiveName = document.getElementById('receiveName').value;
+
             let point = document.getElementById('inputUsingPoint').innerText;
+
+            const couponCode = document.getElementById('couponCode').value;
+            let couponDiscount = document.getElementById('couponDiscount').innerText;
+            if (couponDiscount === '적용된 쿠폰이 없습니다.'){
+                couponDiscount =0;
+            }else{
+                couponDiscount = parseInt(couponDiscount.replace('원', ''),0);
+            }
+
+
+            //나중에 배송비(완), receiveName , hp 친구들 추가하기. 유효성 검사까지 귀찮아..!
+            let totalDelCost = document.getElementById('totalDelCost').innerText;
+            if (totalDelCost ==='무료배송'){
+               totalDelCost = 0;
+            }else{
+                totalDelCost= parseInt(totalDelCost.replace('원',''),10);
+            }
+
             console.log(point)
             point = parseFloat(point.replace(/[^\d.-]/g, ''));
             let itemDiscount = document.getElementById('totalDiscount').innerText;
             itemDiscount = parseFloat(itemDiscount.replace(/[^\d.-]/g, ''));
             let orderTotalPrice = document.getElementById('totalOrder').innerText;
             orderTotalPrice = parseFloat(orderTotalPrice.replace(/[^\d.-]/g, ''));
+
+
 
             var payment = '';
             payments.forEach(function (item) {
@@ -113,31 +177,48 @@
             }
             if (sendName === '') {
                 isOk = false;
-                alert('이름을 정확히 입력해주세요.')
+                alert('주문자 성함을 정확히 입력해주세요.')
                 return;
             }
             if (!sendHp.match(reHp)) {
                 isOk = false;
-                alert('휴대폰 번호를 ' - '을 포함하여 정확히 입력해주세요.')
+                alert('휴대폰 번호를 "-"을 포함하여 정확히 입력해주세요.')
                 return;
             }
+
+            if(receiveName === ''){
+                isOk=false;
+                alert('수취인 성함을 정확히 입력해주세요.')
+                return;
+            }
+            if(!receiveHp.match(reHp)){
+                isOk = false;
+                alert('수취인 번호를 "-"을 포함하여 정확히 입력해주세요.');
+                return;
+            }
+
             if (payment === '') {
                 isOk = false;
                 alert('결제 방식을 선택해주세요.');
                 return;
             }
+            const memo = document.getElementById('memo').value;
             console.log(point);
             const jsonData = {
                 userId: userId, sendName: sendName, sendHp: sendHp,
                 zip: zip, addr1: addr1, addr2: addr2, payment: payment, point: point, orderTotalPrice: orderTotalPrice
-                , itemDiscount: itemDiscount
+                , itemDiscount: itemDiscount,  delivery : totalDelCost , couponCode : couponCode, couponDiscount: couponDiscount,
+                receiveHp: receiveHp, receiveName : receiveName ,memo:memo
             };
             console.log(jsonData)
             const result = await fetchPost('/lotteshop/product/orderBuy', jsonData);
+
             console.log(result.orderNo)
             if (result.orderNo != null){
                 order2(result.orderNo);
             }
+
+
         } // orderfunction 끝
 
         async function order2(orderNo) {
@@ -162,6 +243,7 @@
                 }
             }
 
+
         }
         //// 각 장바구니 품목 가격 합산하는 함수 ////
         function orderPriceSub(usingPoint) {
@@ -169,6 +251,7 @@
             let totalProdDisPrice = 0;
             let totalProdDelCost = 0;
             let totalProdPoint = 0;
+            let coupon=0;
             let totalProdTotal = 0; //최종가격
             const subProductTotalPrice =document.querySelectorAll('#subProductTotalPrice');
             const subProductOriginPrice =document.querySelectorAll('#subProductOriginPrice');
@@ -199,30 +282,75 @@
             const totalPoint = document.getElementById('totalPoint');
             const totalOrder = document.getElementById('totalOrder');
             const inputUsingPoint = document.getElementById('inputUsingPoint');
-
+            const couponDiscount = document.getElementById('couponDiscount');
+            coupon = document.getElementById('couponDiscountAmount').value;
+            const max = document.getElementById('couponMax').value;
             if(usingPoint>0){
                 inputUsingPoint.innerText =usingPoint +'원';
-                if(totalProdTotal<30000){
-                    totalDelCost.innerText=totalProdDelCost +'원';
-                    totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost) -parseInt(usingPoint)) +'원';
+                if(coupon>0){
+                    let discountAmount = parseInt((parseInt(totalProdTotal)) * (coupon) * 0.01 );
+                    let totaltempt = parseInt(parseInt(totalProdTotal) * (100 - coupon) * 0.01);
+                    if(discountAmount >max){
+                        discountAmount=max;
+                        totaltempt = parseInt(parseInt(totalProdTotal) - max);
+                    }
+                    couponDiscount.innerText= parseInt(discountAmount ) +'원';
+                    totalProdTotal = parseInt(totaltempt);
+
+                    if(totalProdTotal<30000){
+                        totalDelCost.innerText=totalProdDelCost +'원';
+                        totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost) -parseInt(usingPoint)) +'원';
+                    }else{
+                        totalDelCost.innerText= '무료배송';
+                        totalOrder.innerText =( parseInt(totalProdTotal) -parseInt(usingPoint)) +'원';
+                    }
+
                 }else{
-                    totalDelCost.innerText= '무료배송';
-                    totalOrder.innerText =( parseInt(totalProdTotal) -parseInt(usingPoint)) +'원';
+                    couponDiscount.innerText='적용된 쿠폰이 없습니다.';
+                    if(totalProdTotal<30000){
+                        totalDelCost.innerText=totalProdDelCost +'원';
+                        totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost) -parseInt(usingPoint)) +'원';
+                    }else{
+                        totalDelCost.innerText= '무료배송';
+                        totalOrder.innerText =( parseInt(totalProdTotal) -parseInt(usingPoint)) +'원';
+                    }
+
                 }
 
             }else{
-                inputUsingPoint.innerText ='사용 포인트 없음';
-                if(totalProdTotal<30000){
-                    totalDelCost.innerText=totalProdDelCost +'원';
-                    totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost)) +'원';
+                inputUsingPoint.innerText ='사용한 포인트가 없습니다.';
+                if(coupon>0){
+                    let discountAmount = parseInt((parseInt(totalProdTotal)) * (coupon) * 0.01 );
+                    let totaltempt = parseInt(parseInt(totalProdTotal) * (100 - coupon) * 0.01);
+                    if(discountAmount >max){
+                        discountAmount=max;
+                        totaltempt = parseInt(parseInt(totalProdTotal) - max);
+                    }
+                    couponDiscount.innerText= parseInt(discountAmount ) +'원';
+                    totalProdTotal = parseInt(totaltempt);
+                    if(totalProdTotal<30000){
+                        totalDelCost.innerText=totalProdDelCost +'원';
+                        totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost)) +'원';
+                    }else{
+                        totalDelCost.innerText= '무료배송';
+                        totalOrder.innerText =( parseInt(totalProdTotal)) +'원';
+                    }
+
                 }else{
-                    totalDelCost.innerText= '무료배송';
-                    totalOrder.innerText =( parseInt(totalProdTotal)) +'원';
+                    couponDiscount.innerText='적용된 쿠폰이 없습니다.';
+                    if(totalProdTotal<30000){
+                        totalDelCost.innerText=totalProdDelCost +'원';
+                        totalOrder.innerText =( parseInt(totalProdTotal) + parseInt(totalProdDelCost) ) +'원';
+                    }else{
+                        totalDelCost.innerText= '무료배송';
+                        totalOrder.innerText = parseInt(totalProdTotal)  +'원';
+                    }
+
                 }
             }
 
 
-                totalPrice.innerText=totalProdPrice +'원';
+            totalPrice.innerText=totalProdPrice +'원';
             totalDiscount.innerText=totalProdDisPrice +'원';
 
             totalPoint.innerText=totalProdPoint +'원';
@@ -337,14 +465,58 @@
             <nav>
                 <h1>주문결제</h1>
                 <p>
-                    HOME > 장바구니 > <strong>주문결제</strong>
+                    HOME >  <strong>주문결제</strong>
                 </p>
+
             </nav>
+
+            <!-- 모달 -->
+            <div id="couponModal" class="couponModal">
+                <!-- 모달 내용 -->
+                <div class="couponModal-content">
+                    <span id="closeButton" class="close">&times;</span>
+                    <!-- 여기에 쿠폰 등록 폼 추가 -->
+                    <h4>보유한 쿠폰 목록</h4>
+                        <!--쿠폰쓰 -->
+                        <div th:each="coupon , index:${coupons}" style=" margin-bottom: 10px; margin-top: 50px; display: flex; justify-content: center;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px; width: 80%;">
+                                <div style=" width: 70%; height: 120px; display: flex; justify-content: center; align-items: center;">
+                                    <!-- 초록색 박스 -->
+                                    <div style="display: flex; justify-content: space-between; width: 70%;">
+                                        <div style="border: 1px solid #ff0000; width: 80%; height:  auto; background-color: white;">
+                                            <div style="color: #f34c4c; height: auto; margin-left: 5px;  ">
+                                                <p style="font-size: large; font-weight: bolder">[[${coupon.discount}]]%</p>
+                                                <p style="color: black; ">[[${coupon.couponName}]]</p>
+                                                <p style="color: gray">모든 상품 적용</p>
+                                                <p style="color: gray">최소  주문 금액 [[${coupon.min}]]</p>
+                                                <p style="color: gray">최대 할인 금액 [[${coupon.max}]]</p>
+                                                <p style="color: gray">~[[${coupon.endDate}]]까지</p>
+                                            </div>
+                                        </div>
+                                        <div style=" display: flex; justify-content: center;  align-items: center; background-color: red; width: 30%; height: auto;">
+                                            <p style="font-size: x-large; color: white">on</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="  align-items: center;  width: 20%; height: 120px;">
+                                    <p id="applyCoupon" th:data-couponCode="${coupon.getCouponCode()}"
+                                       th:data-coupon="${coupon.discount}"
+                                       th:data-min="${coupon.getMin()}"
+                                       th:data-max="${coupon.getMax()}" th:data-name="${coupon.getCouponName()}">적용</p>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                        <br>
+                </div>
+            </div>
+
             <th:block th:if="${status == 1}">
                 <th:block th:each="cart , index:${cartlist}">
                 <input type="hidden" name="cartNo" th:value="${cart.getCartNo()}">
                 </th:block>
             </th:block>
+
             <form action="#">
                 <!-- 주문 상품 목록 -->
                 <table>
@@ -362,41 +534,54 @@
                     <tr  class="empty">
                         <td colspan="7">주문하실 상품이 없습니다.</td>
                     </tr>
-                    <tr th:each="subProduct , index:${subProducts}">
+                    <th:block th:each="entry : ${subProducts}"  >
+                        <tr>
+                            <td  colspan="7" th:text="${entry.key}"></td>
+                        </tr>
+                      <tr th:each="subProduct : ${entry.value}">
                         <td>
-                            <article class="orderProd">
-                                <a href="#"><img th:src="@{/uploads/__${subProduct.products.image1}__}" alt=""></a>
-                                <div>
-                                    <h2 th:text="${subProduct.products.prodName}"><a href="#">상품명</a></h2>
-                                    <p th:text="${subProduct.size + '  ' + subProduct.color}">상품설명</p>
-                                </div>
-                            </article>
+                        <article class="orderProd">
+                            <a href="#"><img th:src="@{/uploads/__${subProduct.products.image1}__}" alt=""></a>
+                            <div>
+                                <h2 th:text="${subProduct.products.prodName}"><a href="#">상품명</a></h2>
+                                <p th:text="${subProduct.size + '  ' + subProduct.color}">상품설명</p>
+                            </div>
+                        </article>
                         </td>
-                        <td th:text="${counts[index.index]}"></td>
+                        <td th:text="${subProduct.count }"></td>
                         <td  id="subProductPrice" th:text="${subProduct.prodPrice }"></td>
                         <td id="subProductDiscount" th:text="${subProduct.products.getProdDiscount()}"></td>
                         <td class="delivery" id="subProductDelivery">[[${subProduct.products.delivery}]]</td>
-                        <td id="subProductTotalPrice" th:text="${#numbers.formatDecimal(subProduct.prodPrice * (100 - subProduct.products.prodDiscount) * 0.01 * counts[index.index] ,1,0) }"></td>
-                        <td id="subProductOriginPrice" style="display: none" th:text="${#numbers.formatDecimal(subProduct.prodPrice * counts[index.index] ,1,0) }"></td>
-                        <td id="productsPoint" style="display: none" th:text="${subProduct.products.point * counts[index.index]}"></td>
-                    </tr>
+                        <td id="subProductTotalPrice" th:text="${#numbers.formatDecimal(subProduct.prodPrice * (100 - subProduct.products.prodDiscount) * 0.01 * subProduct.count ,1,0) }"></td>
+                        <td id="subProductOriginPrice" style="display: none" th:text="${#numbers.formatDecimal(subProduct.prodPrice * subProduct.count ,1,0) }"></td>
+                        <td id="productsPoint" style="display: none" th:text="${subProduct.products.point * subProduct.count }"></td>
+                        </tr>
+
+                    </th:block>
+
+
                     </tbody>
                 </table>
+
                 <!-- 최종 결제 정보-->
                 <div class="final">
                     <h2>최종결제 정보</h2>
                     <table border="0">
                         <tr>
                             <td>주문 건수</td>
-                           <td id="totalCount" th:text="${counts.size()}+'건'"></td>
+                           <td id="totalCount" th:text="${number}+'건'"></td>
                         </tr>
                         <tr>
                             <td>총 상품금액</td>
                             <td id = totalPrice></td>
                         </tr>
                         <tr>
-                            <td>할인금액</td>
+                            <td>상품 할인 금액</td>
                             <td id="totalDiscount"></td>
+                        </tr>
+                        <tr>
+                            <td>쿠폰 할인 금액</td>
+                            <td id="couponDiscount"></td>
                         </tr>
                         <tr>
                             <td>배송비</td>
@@ -415,7 +600,8 @@
                             <td id="totalOrder"></td>
                         </tr>
                     </table>
-                    <input type="button" name="" id="buyButton" value="결제하기">
+                    <br>
+                    <input type="button" onclick="forOrder()" id="buyButton" value="결제하기">
                 </div>
 
                 <!-- 배송정보 -->
@@ -432,6 +618,18 @@
                             <td>휴대폰</td>
                             <td>
                                 <input type="text" name="sendHp" id="sendHp" th:value="${user.hp}"/>
+                                <span>- 포함 입력</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>수취인</td>
+                            <td><input type="text" name="receiveName" id="receiveName" /></td>
+
+                        </tr>
+                        <tr>
+                            <td>수취인 휴대폰</td>
+                            <td>
+                                <input type="text" name="receiveHp" id="receiveHp" />
                                 <span>- 포함 입력</span>
                             </td>
                         </tr>
@@ -454,11 +652,17 @@
                                 <input type="text" id="inputAddr2" name="addr2"/>
                             </td>
                         </tr>
+                        <tr>
+                            <td>요청사항 </td>
+                            <td>
+                               <textarea id="memo"></textarea>
+                            </td>
+                        </tr>
                     </table>
                 </article>
 
                 <article class="discount">
-                    <h1>할인정보</h1>
+                    <h1>할인정보  <span>포인트 및 쿠폰 사용시 부분 취소가 불가능하며 전체 주문 취소 및 환불만 가능합니다.</span></h1>
 
                     <div>
                         <p>현재 포인트 : <span class="curPoint" th:text="${user.totalPoint}" ></span>점</p>
@@ -468,7 +672,16 @@
                             <span id="result"></span>
                         </label>
                     </div>
-                    <p>포인트 사용시 부분 취소가 불가능하며 전체 주문 취소 및 환불만 가능합니다.</p>
+                    <div>
+                        <p>쿠폰 :    <span id="couponName">선택된 쿠폰이 없습니다.</span></p>
+                        <label>
+                            <input type="hidden" id="couponDiscountAmount" value="0">
+                            <input type="hidden" id="couponMax" value="0">
+                            <input type="hidden" id="couponMin" value="0">
+                            <input type="hidden" id="couponCode" value="0" >
+                            <input type="button" id="searchCoupon" value="조회"><br>
+                        </label>
+                    </div>
                 </article>
 
                 <!-- 결제방법 -->

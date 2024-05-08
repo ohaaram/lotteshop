@@ -30,4 +30,7 @@ public class OrderItems {
     private String orderState;
     @CreationTimestamp
     private Date orderDate;
+
+    @Transient
+    private Products product;
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{/member/layout/memberLayout.html}">
+
+
+<div class="signup" layout:fragment="content">
+
+    <script th:inline="javascript">
+        window.onload = function () {
+
+            const agree1 = document.getElementsByName('agree1')[0];
+            const agree2 = document.getElementsByName('agree2')[0];
+            const agree3 = document.getElementsByName('agree3')[0];
+            const agree4 = document.getElementsByName('agree4')[0];
+            const agree5 = document.getElementsByName('agree5')[0];
+            const agree6 = document.getElementsByName('agree6')[0];
+            const agree = document.getElementsByClassName('agree')[0];
+
+            agree.onclick = function (e) {
+                if (agree1.checked && agree2.checked && agree3.checked
+                &&agree4.checked&&agree5.checked&&agree6.checked) {
+
+                } else {
+                    e.preventDefault();
+                    alert("이용약관과 개인정보 취급방침은 필수 동의입니다.");
+                }
+            }
+        };
+    </script>
+
+    <nav>
+        <h1>약관동의</h1>
+    </nav>
+    <form th:action method="get">
+        <section>
+            <h3><span class="essential">(필수)</span>제1장</h3>
+            <textarea class="chapter1" readonly>[[${policy.chapter1}]]</textarea>
+            <label><input type="checkbox" name="agree1"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>제1장</h3>
+            <textarea class="chapter2" readonly>[[${policy.chapter2}]]</textarea>
+            <label><input type="checkbox" name="agree2"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>제3장</h3>
+            <textarea class="chapter3" readonly>[[${policy.chapter3}]]</textarea>
+            <label><input type="checkbox" name="agree3"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>제4장</h3>
+            <textarea class="chapter4" readonly>[[${policy.chapter4}]]</textarea>
+            <label><input type="checkbox" name="agree4"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>제5장</h3>
+            <textarea class="chapter5" readonly>[[${policy.chapter5}]]</textarea>
+            <label><input type="checkbox" name="agree5"/>동의합니다.</label>
+
+            <h3><span class="essential">(필수)</span>제6장</h3>
+            <textarea class="chapter6" readonly>[[${policy.chapter6}]]</textarea>
+            <label><input type="checkbox" name="agree6"/>동의합니다.</label>
+        </section>
+
+        <div>
+            <input type="submit" class="agree" value="동의하기"/>
+        </div>
+    </form>
+</div>
+</html>

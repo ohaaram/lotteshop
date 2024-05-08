@@ -8,6 +8,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
     <main id="product">
+        <script>
+            window.onload=function (e){
+                const downloadButton = document.querySelectorAll('#downloadButton');
+
+                downloadButton.forEach(function (item){
+                    item.onclick=async function () {
+                        try {
+                            const userId = document.getElementById('user').value;
+                            const couponCode = item.getAttribute('data-coupon');
+                            const json = {uid : userId, couponCode : couponCode };
+                            const result = await fetchPost('/lotteshop/my/coupon/download',json);
+                            if(result.data === 0){
+                                alert('쿠폰이 다운되었습니다.')
+                            }else{
+                                alert('이미 보유하고 있는 쿠폰입니다.');
+                            }
+                        } catch (e) {
+                            alert('로그인 후 이용해주세요.');
+                        }
+                    }
+                })
+            }
+        </script>
         <aside>
             <!-- 카테고리 -->
             <ul class="category">
@@ -120,39 +143,39 @@
             <br>
             <div style="border: 1px solid #efeeee; background-color: #f1f0f0">
                 <!--쿠폰쓰 -->
-            <div style=" margin-top: 50px; display: flex; justify-content: center;">
-                <div style="display: flex; justify-content: space-between; width: 50%;">
-                    <div style=" width: 70%; height: 120px; display: flex; justify-content: center; align-items: center;">
-                        <!-- 초록색 박스 -->
-                        <div style="display: flex; justify-content: space-between; width: 70%;">
-                            <div style="border: 1px solid #ff0000; width: 70%; height: 120px; background-color: white;">
-                                <div style="color: #f34c4c; margin-left: 5px;  ">
-                                    <br>
-                                <p style="font-size: large; font-weight: bolder">10%</p>
-                                <p style="color: black; ">할인쿠폰</p>
-                                <p style="color: gray">모든 상품 적용</p>
-                                <p style="color: gray">최소, 최대 금액 제한 없음</p>
-                                    <p style="color: gray">~2024-05-20까지</p>
+                <div th:each="coupon , index:${coupons}" style=" margin-bottom: 10px; margin-top: 50px; display: flex; justify-content: center;">
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px; width: 50%;">
+                        <div style=" width: 70%; height: 120px; display: flex; justify-content: center; align-items: center;">
+                            <!-- 초록색 박스 -->
+                            <div style="display: flex; justify-content: space-between; width: 70%;">
+                                <div style="border: 1px solid #ff0000; width: 80%; height:  auto; background-color: white;">
+                                    <div style="color: #f34c4c; height: auto; margin-left: 5px;  ">
+                                        <br>
+                                        <p style="font-size: large; font-weight: bolder">[[${coupon.discount}]]%</p>
+                                        <p style="color: black; ">[[${coupon.couponName}]]</p>
+                                        <p style="color: gray">모든 상품 적용</p>
+                                        <p style="color: gray">최소  주문 금액 [[${coupon.min}]]</p>
+                                        <p style="color: gray">최대 할인 금액 [[${coupon.max}]]</p>
+                                        <p style="color: gray">~[[${coupon.endDate}]]까지</p>
+                                        <br>
+                                    </div>
+                                </div>
+                                <div style=" display: flex; justify-content: center;  align-items: center; background-color: red; width: 30%; height: auto;">
+                                    <p style="font-size: x-large; color: white">on</p>
                                 </div>
                             </div>
-                            <div style=" display: flex; justify-content: center;  align-items: center; background-color: red; width: 30%; height: 122.22px;">
-                                <p style="font-size: x-large; color: white">on</p>
-                            </div>
+                        </div>
+                        <div style=" display: flex; align-items: center;  width: 30%; height: 120px;">
+                            <img id="downloadButton" th:data-coupon="${coupon.getCouponCode()}" style="width: 30px; height: auto; " th:src="@{/product/images/download.png}">
                         </div>
                     </div>
-                    <div style=" display: flex; align-items: center;  width: 30%; height: 120px;">
-                        <img  style="width: 30px; height: auto; " th:src="@{/product/images/download.png}">
-                    </div>
                 </div>
-            </div>
                 <br>
                 <br>
             </div>
-            <article class="info">
-
-
-
-            </article>
+            <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                <input type="hidden" id="user" th:value="${#authentication.principal.user.uid}">
+            </th:block>
         </section>
     </main>
 </div>

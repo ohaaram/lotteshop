@@ -4,63 +4,165 @@
       layout:decorate="~{/cs/layouts/csLayout.html}">
 
 <main layout:fragment="content">
-      <section id="cs">
-        <div class="qna">
-          <nav>
-            <div>
-              <p>홈<span>></span>문의하기</p>
-            </div>
-          </nav>
-          <section class="write">
-            <aside>
-              <h2>문의하기</h2>
-              <ul>
-                <li class="on"><a th:href="@{#}">회원</a></li>
-                <li><a th:href="@{#}">쿠폰/이벤트</a></li>
-                <li><a th:href="@{#}">주문/결제</a></li>
-                <li><a th:href="@{#}">배송</a></li>
-                <li><a th:href="@{#}">취소/반품/교환</a></li>
-                <li><a th:href="@{#}">여행/숙박/항공</a></li>
-                <li><a th:href="@{#}">안전거래</a></li>
-              </ul>
-            </aside>
-            <article>
-              <form action="#">
-                <table>
-                  <tr>
-                    <td>문의유형</td>
-                    <td>
-                      <select name="type">
-                        <option value="0">선택</option>
-                        <option>가입</option>
-                        <option>탈퇴</option>
-                        <option>회원정보</option>
-                        <option>로그인</option>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>문의제목</td>                  
-                    <td>
-                      <input type="text" name="title" placeholder="제목을 입력하세요."/>
-                    </td>
-                  </tr>                
-                  <tr>
-                    <td>문의내용</td>                  
-                    <td>
-                      <textarea name="content" placeholder="내용을 입력하세요."></textarea>
-                    </td>
-                  </tr>
-                </table>
-                <div>
-                  <a th:href="@{/cs/qna/list}" class="btnList">취소하기</a>
-                  <input type="submit" class="btnSubmit" value="등록하기"/>
-                </div>
-              </form>
-            </article>
-          </section>
+  <script>
+    // 타입별 카테조회
+    function firstOption() {
+      const CateOption = event.target;  // 내가 함수를 호출한 현재 태그
+      const CateValue = CateOption.value;  // select태그의 value값
+      const cate2 = document.getElementsByName('cate2')[0];
+
+      console.log(CateValue);
+
+      if (CateValue == 'event'){
+        // 원래 있던 option들 삭제
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="lpoint">L.POINT</option>
+                                        <option value="lstamp">L.STAMP</option>
+                                        <option value="review">리뷰/체험단</option>
+                                        <option value="event">이벤트/쿠폰</option>
+                                        <option value="onmile">온마일리지</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }else if (CateValue == 'user'){
+
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="reg">회원가입</option>
+                                        <option value="grade">회원등급</option>
+                                        <option value="info">정보확인/변경</option>
+                                        <option value="del">회원탈퇴</option>
+                                        <option value="lotteOners">롯데오너스</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }else if(CateValue == 'order'){
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="lpay">L.PAY</option>
+                                        <option value="etc">기타 결제수단</option>
+                                        <option value="mutong">무통장입금</option>
+                                        <option value="ord">주문/결제방법</option>
+                                        <option value="ordlist">주문내역확인/변경</option>
+                                        <option value="card">신용카드 자동결제</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }else if (CateValue == 'delivery') {
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="buy">구매확정/미수령신고</option>
+                                        <option value="delp">배송비</option>
+                                        <option value="delm">배송일정/방법</option>
+                                        <option value="gift">선물포장</option>
+                                        <option value="delinfo">배송정보변경</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }else if (CateValue == 'cancel') {
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="ordcancel">주문취소</option>
+                                        <option value="refund">환불방법/일정</option>
+                                        <option value="as">AS접수/일정</option>
+                                        <option value="returns">반품접수/일정</option>
+                                        <option value="change">교환접수/일정</option>
+                                        <option value="asp">교환/반품 배송비</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }else if (CateValue == 'receipt') {
+        const cate2Child = cate2.childNodes;  // name이 cate2인 select태그 안에있는 option태그 전부
+        Array.from(cate2Child).forEach(function (child) {
+          child.remove();
+        })
+        // 새로운 옵션 삽입
+        const Cate2Option = `<option>1차선택</option>
+                                        <option value="etcord">기타제증빙</option>
+                                        <option value="cashreceipt">현금영수증</option>
+                                        <option value="taxreceipt">세금계산서</option>`;
+        cate2.insertAdjacentHTML('beforeend', Cate2Option);
+      }
+    }
+  </script>
+  <section id="cs">
+    <div class="qna">
+      <nav>
+        <div>
+          <p>홈<span>></span>문의하기</p>
         </div>
+      </nav>
+      <section class="write">
+        <aside>
+          <h2>문의하기</h2>
+          <ul>
+            <li class="on"><a th:href="@{/cs/qna/list(cate1='user')}">회원</a></li>
+            <li><a th:href="@{/cs/qna/list(cate1='event')}">쿠폰/이벤트</a></li>
+            <li><a th:href="@{/cs/qna/list(cate1='order')}">주문/결제</a></li>
+            <li><a th:href="@{/cs/qna/list(cate1='delivery')}">배송</a></li>
+            <li><a th:href="@{/cs/qna/list(cate1='cancel')}">취소/반품/교환</a></li>
+            <li><a th:href="@{/cs/qna/list(cate1='receipt')}">거래증빙서류</a></li>
+          </ul>
+        </aside>
+        <article>
+          <nav>
+            <h1>회원</h1>
+            <h2>회원 관련 문의내용 입니다.</h2>
+          </nav>
+          <form th:action="@{/cs/qna/write}" method="post">
+            <input type="hidden" name="writer" th:value="${#authentication.principal.user.uid}" />
+            <input type="hidden" name="status" th:value="검토중" />
+            <table>
+              <tr>
+                <td>문의유형</td>
+                <td>
+                  <select name="cate1" onchange="firstOption()">
+                    <option>1차선택</option>
+                    <option value="user">회원</option>
+                    <option value="event">쿠폰/이벤트</option>
+                    <option value="order">주문/결제</option>
+                    <option value="delivery">배송</option>
+                    <option value="cancel">취소/반품/환불</option>
+                    <option value="receipt">기타제증빙</option>
+                  </select>
+                  <select name="cate2">
+                    <option>2차선택</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>제목</td>
+                <td>
+                  <input type="text" name="title" placeholder="제목을 입력하세요."/>
+                </td>
+              </tr>
+              <tr>
+                <td>내용</td>
+                <td>
+                  <textarea name="content" placeholder="내용을 입력하세요."></textarea>
+                </td>
+              </tr>
+            </table>
+            <div style="text-align: center; margin-top: 50px">
+              <a th:href="@{/cs/qna/list}"><input type="button" value="취소하기" style="background-color: #9e9e9e; color: white; border: none; padding: 10px 20px; cursor: pointer;"/></a>
+              <input type="submit" value="등록하기" style="background-color: #E60012; color: white; border: none; padding: 10px 20px; cursor: pointer;"/>
+            </div>
+          </form>
+        </article>
       </section>
+    </div>
+  </section>
 
 </main>
 </html>

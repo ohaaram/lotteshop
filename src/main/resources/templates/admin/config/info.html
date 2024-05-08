@@ -56,6 +56,12 @@
                         
                         <section>
                             <h4>이용약관  <span style="margin-left: 10px" id="modify">수정하기</span></h4>
+                            <a th:href="@{/admin/config/info}">회원가입 약관 |</a>
+                            <a th:href="@{/admin/config/buyer}">구매회원 약관 | </a>
+                            <a th:href="@{/admin/config/seller}">판매회원 약관 | </a>
+                            <a th:href="@{/admin/config/finance}">전자금융거래 약관 | </a>
+                            <a th:href="@{/admin/config/location}">위치정보이용 약관 | </a>
+                            <a th:href="@{/admin/config/privacy}">개인정보수집 방침 | </a>
                             <form name="formSubmit" th:action="@{/admin/info/modify}" method="post">
                             <br>
                                 <input type="hidden" th:value="${terms.intPk}">

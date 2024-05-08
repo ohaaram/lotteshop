@@ -66,6 +66,10 @@ public class CsNoticeService {
         csNoticeRepository.deleteById(csNoticeNo);
     }
 
+    // cs.notice list
+    public List<CsNotice> noticeList(){
+        return csNoticeRepository.findAll();
+    }
     // admin.cs.list 특정 글 조회
     public CsFaqPageResponseDTO getNoticeCate1andCate2(CsFaqPageRequestDTO requestDTO){
         Pageable pageable = requestDTO.getPageable("no");

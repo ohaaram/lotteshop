@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/member/layout/memberLayout.html}">
+<div class="join" layout:fragment="content">
+
+    <style>
+        /* 전반적인 스타일 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .join {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            font-size: x-large;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .email-input {
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+
+        .verification-code-input {
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+
+        #btn-send-code,
+        #btn-verify-code {
+            width: 150px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #btn-send-code:hover,
+        #btn-verify-code:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <script>
+
+        isEmailOk = false;
+        isEmailCodeOk = false;
+        isHpOk = false;
+        isNameOk = false;
+
+        window.onload = function () {
+
+            const code = document.getElementById('btn-send-code');
+
+            const type = "email";
+
+            console.log("type : "+type);
+
+            //인증번호 받기를 누르면 이메일 인증번호 발송
+            code.onclick = function () {
+
+                setTimeout(async () => {
+                    const email = document.getElementById('email').value;
+                    console.log("email : "+email);
+
+                    alert('이메일을 보냅니다.');
+
+                    const data = await fetchGet(`/lotteshop/member/send/`+email);
+
+                    if(data.result<=0){
+
+                        console.log("data.result : "+data.result);
+
+                        alert("이메일 주소를 확인해주세요!");
+                    }
+
+                }, 1000);
+
+                isEmailOk = true;
+            }
+
+            //인증번호 확인 버튼 클릭
+            const check = document.getElementById('btn-verify-code');
+
+            check.onclick = async function () {
+
+                const code = document.getElementById('code').value;//입력한 코드 번호
+
+                console.log("입력한 code번호 : " + code);
+
+                const data = await fetchGet(`/lotteshop/member/email/` + code);//입력한 코드 번호가 맞는 건지 검사
+
+                console.log("data-result : " + data.result);
+
+                if (!data.result) {
+                    alert("코드를 잘못 입력하셨습니다!");
+                } else {
+                    //이름과 휴대폰 번호를 이용해서 아이디를 찾기
+                    alert("코드 잘 입력했네?");
+
+                    isEmailCodeOk=true;
+                }
+            }
+        }
+
+        //아이디 찾기
+        function submitForm() {
+
+            const name = document.getElementById('name').value;
+            const hp = document.getElementById('phone').value;
+
+            if(name!=null &&name!=''){
+                isNameOk=true;
+            }
+            if(hp!=null &&hp!=''){
+                isHpOk=true;
+            }
+
+
+            if (!(isNameOk && isHpOk && isEmailCodeOk&& isEmailOk)){
+                alert("입력값을 확인해주세요!");
+                return false; // 폼 전송 중단
+
+            }
+            document.getElementById("findUsernameForm").submit();
+            return true;
+        }
+
+
+        async function fetchGet(url) {
+
+            console.log("fetchData1...1");
+
+            try {
+                console.log("fetchData1...2");
+                const response = await fetch(url);
+                console.log("here1");
+
+                if (!response.ok) {
+                    console.log("here2");
+                    throw new Error('response not ok');
+                }
+
+                const data = await response.json();
+                console.log("data1 : " + data);
+                return data;
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+
+    </script>
+
+    <h2>아이디 찾기</h2>
+    <form id="findUsernameForm" th:action="@{/member/findResult}" onsubmit="return submitForm()">
+        <div class="form-group">
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" class="form-input" placeholder="가입 시 등록한 이름을 입력하세요" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">휴대폰 번호</label>
+            <input type="tel" id="phone" name="hp" class="form-input" placeholder="가입 시 등록한 휴대폰 번호를 입력하세요" required>
+        </div>
+        <div class="form-group">
+            <label for="email">이메일</label>
+            <div class="email-input">
+                <input type="email" id="email" name="email" class="form-input" placeholder="가입 시 등록한 이메일을 입력하세요" required>
+                <button type="button" id="btn-send-code">인증번호 받기</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="code">인증번호</label>
+            <div class="verification-code-input">
+                <input type="text" id="code" name="code" class="form-input" placeholder="인증번호를 입력하세요" required>
+                <button type="button" id="btn-verify-code">인증번호 확인</button>
+            </div>
+        </div>
+        <button type="submit" id="btn-submit" class="btn-submit">아이디 찾기</button>
+    </form>
+</div>
+</html>

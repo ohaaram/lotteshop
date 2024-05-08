@@ -602,6 +602,10 @@ button[type=submit] {
 #admin-cs-notice > section > table  tr > td:nth-child(7) {width: 80px;}
 
 
-
-
+/* jo9 css */
+#admin-cs > table .cs-qna-faq-list > tr:nth-child(2) > td:nth-child(1) {
+    width: 5px;}
+.faq-list-checkbox{
+    width: 20px;
+}
 

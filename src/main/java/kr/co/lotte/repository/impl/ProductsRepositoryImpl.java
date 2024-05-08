@@ -13,6 +13,7 @@ import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.custom.ProductsRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.compiler.ast.Keyword;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -139,39 +140,99 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
 
     @Override
     public Page<Products> searchAllProductsForList(MainProductsPageRequestDTO pageRequestDTO, Pageable pageable) {
+
         String cateName1 = pageRequestDTO.getCateName1();
         String cateName2 = pageRequestDTO.getCateName2();
         String cateName3 = pageRequestDTO.getCateName3();
-        QueryResults<Products> results = null;
+
+        String cate = pageRequestDTO.getCate();
+        String keyword = pageRequestDTO.getKeyword();
+
+
+        JPAQuery<Products> query = null;
+        OrderSpecifier<?> orderSpecifier;
+
         if (cateName1 != null && cateName2 != null && cateName3 != null && cateName1 != "" && cateName2 != "" && cateName3 != "") {
-            results = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts)
+
                     .from(qProducts)
-                    .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2).and(qProducts.cateName3.eq(cateName3))))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetchResults();
+                    .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2).and(qProducts.cateName3.eq(cateName3))));
 
         } else if (cateName1 != null && cateName2 != null && cateName1 != "" && cateName2 != "") {
-            results = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts)
                     .from(qProducts)
-                    .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2)))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetchResults();
+                    .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2)));
+
+
+
         } else if (cateName1 != null && cateName1 != "") {
-            results = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts)
                     .from(qProducts)
-                    .where(qProducts.cateName1.eq(cateName1))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetchResults();
-        } else {
-            results = jpaQueryFactory.select(qProducts)
+                    .where(qProducts.cateName1.eq(cateName1));
+
+
+        }else if(keyword!=null && keyword!=""){//키워드가 들어오면 키워드로 상품 검색 실시
+            query = jpaQueryFactory.select(qProducts)
                     .from(qProducts)
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetchResults();
+                    .where(qProducts.prodName.contains(keyword));
+
+        }else {
+            query = jpaQueryFactory.select(qProducts)
+                    .from(qProducts);
         }
+
+        // 동적으로 order by 절 추가
+        if (pageRequestDTO.getCate() != null && !pageRequestDTO.getCate().isEmpty()) {
+
+            log.info("cate값이 있을 때 동적으로 order by 절 추가 ");
+
+            switch (pageRequestDTO.getCate()) {
+                case "prodSold":
+                    log.info("많이 팔린 순");
+                    orderSpecifier = qProducts.prodSold.desc();//많이 팔린 순
+                    break;
+
+                case "lowPrice":
+                    log.info("가격이 낮은 순");
+                    orderSpecifier = qProducts.prodPrice.asc();//가격이 낮은 순
+                    break;
+
+                case "highPrice":
+                    log.info("가격이 높은 순");
+                    orderSpecifier = qProducts.prodPrice.desc();//가격이 높은 순
+                    break;
+
+
+                case "current":
+                    log.info("최근 등록순");
+                    orderSpecifier = qProducts.RegProdDate.desc();//최근 등록순
+                    break;
+
+                case "highAvg":
+                    log.info("평균이 높은 순");
+                    orderSpecifier = qProducts.avg.desc();//평균이 높은 순
+                    break;
+
+                case "highReview":
+                    log.info("리뷰가 많은 순");
+                    orderSpecifier = qProducts.reviews.size().desc();//리뷰가 많은 순
+                    break;
+
+                default:
+                    log.info("기본값 : 상품명 오름차순");
+                    orderSpecifier = qProducts.prodName.asc(); // 기본값: 상품명 오름차순
+                    break;
+            }
+            query = query.orderBy(orderSpecifier);
+        }
+
+        // offset, limit 적용 및 실행
+        QueryResults<Products> results = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+
         List<Products> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
@@ -204,12 +265,14 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         // 기본 검색어 조건 추가
         builder.and(qProducts.prodName.contains(pageRequestDTO.getKeyword()));//이거 가능함. 테스트 완료
 
-        log.info("지금 나는 상품명 체크박스를 클릭 했었어 : " + pageRequestDTO.getDetailCheckbox());
+        log.info("체크박스를 클릭 했었어 : " + pageRequestDTO.getDetailCheckbox());
 
-        log.info("지금 디테일에 내가 적은 상의2가 잇어야해 : " + pageRequestDTO.getDetail());
+        log.info("디테일에 내가 적은게 잇어야해 : " + pageRequestDTO.getDetail());
 
         // 체크 박스에 상품명과 상품설명이 같이 체크된 경우
-        if (pageRequestDTO.getDetailCheckbox() != null && pageRequestDTO.getEtcCheckbox() != null) {
+        if (pageRequestDTO.getDetailCheckbox() != null && pageRequestDTO.getEtcCheckbox() != null
+        && pageRequestDTO.getDetailCheckbox() != "" && pageRequestDTO.getEtcCheckbox() != ""
+        ) {
             if (pageRequestDTO.getDetailCheckbox().equals("상품명") && pageRequestDTO.getEtcCheckbox().equals("상품설명")) {
                 log.info("여기는 상품명&상품설명 같이 체크");
                 builder.and(qProducts.prodName.contains(pageRequestDTO.getDetail()));
@@ -218,13 +281,14 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         }
 
         // 체크 박스에 상품명만 체크된 경우
-        if (pageRequestDTO.getDetailCheckbox() != null && pageRequestDTO.getEtcCheckbox() == null) {
+        if (pageRequestDTO.getDetailCheckbox() != null && pageRequestDTO.getEtcCheckbox() == null
+        && pageRequestDTO.getDetailCheckbox() != "" && pageRequestDTO.getEtcCheckbox() != "") {
             if (pageRequestDTO.getDetailCheckbox().equals("상품명")) {
                 log.info("여기는 상품명만 체크");
                 builder.and(qProducts.prodName.contains(pageRequestDTO.getDetail()));
             }
         }
-
+        //wow~ 이제 paginatio에도 다 넘겨주고~~
         // 체크 박스에 상품설명만 체크된 경우
         if (pageRequestDTO.getDetailCheckbox() == null && pageRequestDTO.getEtcCheckbox() != null) {
             if (pageRequestDTO.getEtcCheckbox().equals("상품설명")) {
@@ -248,12 +312,20 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         //체크박스를 선택하지 않았는데 값은 입력이 되있을 떄
         if (pageRequestDTO.getDetailCheckbox() == null
                 && pageRequestDTO.getEtcCheckbox() == null
-                && pageRequestDTO.getPriceCheckbox() == null) {
+                && pageRequestDTO.getPriceCheckbox() == null
+                ||pageRequestDTO.getDetailCheckbox() == ""
+                && pageRequestDTO.getEtcCheckbox() == ""
+                && pageRequestDTO.getPriceCheckbox() == "") {
             if (pageRequestDTO.getDetail() != null && !pageRequestDTO.getDetail().isEmpty()) {//(1.값이 검색어일때)
+
+                log.info("체크박스를 선택하지 않았지만 값은 입력이 되어있을 때 - 값이 검색어 일 때");
+
                 builder.and(qProducts.prodName.contains(pageRequestDTO.getDetail()));
             }
             if (pageRequestDTO.getMinPrice() != null && pageRequestDTO.getMaxPrice() != null
                     && !pageRequestDTO.getMaxPrice().isEmpty() && !pageRequestDTO.getMinPrice().isEmpty()) {//(2.값이 금액일때)
+
+                log.info("체크박스를 선택하지 않았지만 값은 입력이 되어있을 때 - 값이 금액일 때");
 
                 int min = Integer.parseInt(pageRequestDTO.getMinPrice());
                 int max = Integer.parseInt(pageRequestDTO.getMaxPrice());
@@ -282,34 +354,44 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
 
         // 동적으로 order by 절 추가
         if (pageRequestDTO.getCate() != null && !pageRequestDTO.getCate().isEmpty()) {
+
+            log.info("cate값이 있을 때 동적으로 order by 절 추가 ");
+
             OrderSpecifier<?> orderSpecifier;
             switch (pageRequestDTO.getCate()) {
                 case "prodSold":
+                    log.info("많이 팔린 순");
                     orderSpecifier = qProducts.prodSold.desc();//많이 팔린 순
                     break;
 
                 case "lowPrice":
+                    log.info("가격이 낮은 순");
                     orderSpecifier = qProducts.prodPrice.asc();//가격이 낮은 순
                     break;
 
                 case "highPrice":
+                    log.info("가격이 높은 순");
                     orderSpecifier = qProducts.prodPrice.desc();//가격이 높은 순
                     break;
 
 
                 case "current":
+                    log.info("최근 등록순");
                     orderSpecifier = qProducts.RegProdDate.desc();//최근 등록순
                     break;
 
                 case "highAvg":
+                    log.info("평균이 높은 순");
                     orderSpecifier = qProducts.avg.desc();//평균이 높은 순
                     break;
 
                 case "highReview":
+                    log.info("리뷰가 많은 순");
                     orderSpecifier = qProducts.reviews.size().desc();//리뷰가 많은 순
                     break;
 
                 default:
+                    log.info("기본값 : 상품명 오름차순");
                     orderSpecifier = qProducts.prodName.asc(); // 기본값: 상품명 오름차순
                     break;
             }

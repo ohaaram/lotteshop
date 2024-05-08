@@ -42,7 +42,8 @@ public class CsQna {
 
     @OneToMany(mappedBy = "ano")
     private List<File> fileList;
-    private int comment;
+    private String comment;
+    private String status;
 
     public CsQnaDTO toDTO(){
         return CsQnaDTO.builder()
@@ -55,6 +56,7 @@ public class CsQna {
                 .writer(this.writer)
                 .content(this.content)
                 .comment(this.comment)
+                .status(this.status)
                 .file(this.file)
                 .rdate(this.rdate)
                 .regip(this.regip)

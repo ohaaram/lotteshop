@@ -25,6 +25,7 @@ import java.util.List;
 public class CsFaqRepositoryImpl implements CsRepositoryCustom {
     private  QCsFaq csFaq = QCsFaq.csFaq;
     private  QCsNotice csNotice = QCsNotice.csNotice;
+    private  QCsQna csQna = QCsQna.csQna;
 
     private final QProdImage qImages = QProdImage.prodImage;
     private final QSeller qSeller = QSeller.seller;
@@ -77,8 +78,33 @@ public class CsFaqRepositoryImpl implements CsRepositoryCustom {
                     .limit(pageable.getPageSize())
                     .fetchResults();
         }
-    List<CsNotice> content = results.getResults();
-    long total = results.getTotal();
+        List<CsNotice> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    //notice 페이징처리
+    @Override
+    public Page<CsQna> searchAllCsQna(CsFaqPageRequestDTO pageRequestDTO, Pageable pageable) {
+        QueryResults<CsQna> results =null;
+        String cate1 = pageRequestDTO.getCate1();
+        if(cate1 != null && cate1 != ""){
+            results = jpaQueryFactory.select( csQna)
+                    .from( csQna)
+                    .where(csQna.cate1.eq(cate1))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+
+        }else{
+            results = jpaQueryFactory.select( csQna)
+                    .from( csQna)
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetchResults();
+        }
+        List<CsQna> content = results.getResults();
+        long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }
 

@@ -1,10 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
 
-</body>
+<section id="admin-cs-faq" layout:fragment="content">
+    <nav>
+        <h3>문의하기 답변</h3>
+        <p>
+            HOME > 고객센터 > <strong>문의하기</strong>
+        </p>
+    </nav>
+    <article>
+        <form th:action="@{/admin/cs/qna/reply}" method="post">
+            <input type="hidden" name="no" th:value="${adminCsQna.no}" />
+            <table>
+                <tbody>
+                <tr>
+                    <td>유형</td>
+                    <td th:if="${adminCsQna.cate1 == 'user'}" style="white-space: nowrap;">회원</td>
+                    <td th:if="${adminCsQna.cate1 == 'event'}" style="white-space: nowrap;">쿠폰/이벤트</td>
+                    <td th:if="${adminCsQna.cate1 == 'order'}" style="white-space: nowrap;">주문/결제</td>
+                    <td th:if="${adminCsQna.cate1 == 'delivery'}" style="white-space: nowrap;">배송</td>
+                    <td th:if="${adminCsQna.cate1 == 'cancel'}" style="white-space: nowrap;">취소/반품/환불</td>
+                    <td th:if="${adminCsQna.cate1 == 'receipt'}" style="white-space: nowrap;">거래증빙서류</td>
+                </tr>
+                <tr>
+                    <td>제목</td>
+                    <td th:text="${adminCsQna.title}"></td>
+                </tr>
+                <tr>
+                    <td>내용</td>
+                    <td th:text="${adminCsQna.content}" style="width: 90%; height: 150px;"></td>
+                </tr>
+                <tr>
+                    <td>답변</td>
+                    <td>
+                        <textarea name="comment" cols="100" rows="10" th:text="${adminCsQna.comment}"></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="text-align: right; margin-top: 50px">
+                <a th:href="@{/admin/cs/qna/delete(qnaNo=${adminCsQna.no})}"><input type="button" value="삭제" />
+                    <input type="submit" value="답변등록" />
+                    <a th:href="@{/admin/cs/qna/list}"><input type="button" value="목록"  /></a>
+                </a>
+            </div>
+
+        </form>
+    </article>
+
+
+
+    <!-- 상품목록 컨텐츠 끝 -->
+</section>
+<!--내용 끝-->
 </html>

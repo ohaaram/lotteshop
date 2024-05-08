@@ -38,7 +38,7 @@ public class CsNoticeController {
     // cs.notice 제목 누르면 그 글로 이동
     @GetMapping("/cs/notice/view")
     public String noticeViewNo(Model model, int no){
-        model.addAttribute("view", csNoticeService.adminNoticeView(no));
+        model.addAttribute("noticeView", csNoticeService.adminNoticeView(no));
         return "/cs/notice/view";
     }
 

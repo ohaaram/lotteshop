@@ -2,8 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
-
-<section id="admin-cs-" layout:fragment="content">
+<style>
+    .faq-list-checkbox{
+        width: 20px;
+    }
+</style>
+<section id="admin-cs-faq" layout:fragment="content">
     <script>
         window.onload = function() {
             const all = document.getElementById('all');
@@ -34,7 +38,7 @@
                 } else {
                     if (confirm('삭제 하시겠습니까!?')) {
                         const jsonData = {list: selectedNoList}
-                        const result = await fetchGet('/lotteshop/admin/cs/delete', jsonData);
+                        const result = await fetchGet('/lotteshop/admin/cs//delete', jsonData);
                         console.log(result.result);
                     }
                     location.reload();
@@ -48,21 +52,20 @@
 
             console.log("Cate1 : " + Cate1);
             console.log("Cate2 : " + Cate2);
-
         }
 
         // 타입별 카테조회
         function firstOption(){
             const cate1Option = event.target;
             const cate1Value = cate1Option.value; // 내가 함수를 호출한 현재 태그의 value 값
-            const qnaCate2 = document.getElementsByName('qnaCate2')[0];
+            const faqCate2 = document.getElementsByName('qnaCate2')[0];
 
             console.log(cate1Value);
 
             if(cate1Value == 'user'){
                 //원래 있던 option 삭제
-                const qnaCate2Child = qnaCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -74,10 +77,10 @@
                                          <option value="grade">회원등급</option>
                                          <option value="del">회원탈퇴</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
             }else if (cate1Value == 'event'){
-                const qnaCate2Child = qnaCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes; // name이 cate2인 select 태그 안에 있는 option 태그 전부
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -89,10 +92,10 @@
                                          <option value="onmile">온마일리지</option>
                                          <option value="event">이벤트/쿠폰</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
             }else if (cate1Value == 'order'){
-                const qnaCate2Child = qnaCate2.childNodes;
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes;
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -105,10 +108,10 @@
                                          <option value="card">신용카드 자동결제</option>
                                          <option value="ordlist">주문내역확인/변경</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
             }else if (cate1Value == 'delivery'){
-                const qnaCate2Child = qnaCate2.childNodes;
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes;
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -120,10 +123,10 @@
                                          <option value="delinfo">배송정보변경</option>
                                          <option value="gift">선물포장</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
             }else if (cate1Value == 'cancel'){
-                const qnaCate2Child = qnaCate2.childNodes;
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes;
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -136,10 +139,10 @@
                                          <option value="change">교환접수/일정</option>
                                          <option value="returns">반품접수/일정</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
             }else if (cate1Value == 'receipt'){
-                const qnaCate2Child = qnaCate2.childNodes;
-                Array.from(qnaCate2Child).forEach(function (child){
+                const faqCate2Child = faqCate2.childNodes;
+                Array.from(faqCate2Child).forEach(function (child){
                     child.remove();
                 })
 
@@ -149,7 +152,7 @@
                                          <option value="cashreceipt">현금영수증</option>
                                          <option value="taxreceipt">세금계산서</option>`
 
-                qnaCate2.insertAdjacentHTML('beforeend', cate2Option);
+                faqCate2.insertAdjacentHTML('beforeend', cate2Option);
 
             }
 
@@ -163,21 +166,22 @@
             }
         }
 
+
     </script>
     <nav>
-        <h3>qna 보기</h3>
+        <h3>FAQ 보기</h3>
         <p>
-            HOME > 고객센터 > <strong>qna 관리</strong>
+            HOME > 고객센터 > <strong>FAQ 관리</strong>
         </p>
     </nav>
 
     <section>
         <div>
-            <form id="deleteSelectedForm" th:action="@{#}" method="post">
+            <form id="deleteSelectedForm" th:action="@{/admin/cs/qna/delete/selectDelete}" method="post">
                 <input type="hidden" id="selectedNoList" name="selectedNoList" />
                 <!-- 카테고리별 조회 -->
                 <div>
-                    <select name="cate1"  id="qnaCate1" onchange="firstOption()">
+                    <select name="qnaCate1"  id="qnaCate1" onchange="firstOption()">
                         <option>유형1</option>
                         <option value="user">회원</option>
                         <option value="event">이벤트/쿠폰</option>
@@ -186,7 +190,7 @@
                         <option value="cancel">취소/반품/교환</option>
                         <option value="receipt">거래증빙서류</option>
                     </select>
-                    <select name="cate2" id="qnaCate2" onchange="redirectToCate1Cate2()">
+                    <select name="qnaCate2" id="qnaCate2" onchange="redirectToCate1Cate2()">
                         <option>유형2</option>
                         <option value="info">롯데오너스</option>
                         <option value="info">정보확인/변경</option>
@@ -197,19 +201,18 @@
                     <input type="button" id="search" value="검색"/>
                 </div>
 
-                <table border="0">
+                <table class="cs-qna-faq-list" border="0">
                     <tr>
                         <th><input type="checkbox" name="all" id="all"></th>
-                        <th>번호</th>
                         <th>유형1</th>
                         <th>유형2</th>
                         <th>제목</th>
-                        <th>내용</th>
                         <th>관리</th>
+                        <th>상태</th>
                     </tr>
-                    <tr th:each="">
-                        <td class="qna-list-checkbox">
-                            <input type="checkbox" name="selectedNoList" class="check" th:value="${}" />
+                    <tr th:each="qna, index: ${adminCsQna.dtoList3}">
+                        <td class="faq-list-checkbox">
+                            <input type="checkbox" name="selectedNoList" class="check" th:value="${qna.no}" />
                         </td>
 
                         <td th:if="${qna.cate1 == 'user'}" style="white-space: nowrap;">[회원]</td>
@@ -219,53 +222,61 @@
                         <td th:if="${qna.cate1 == 'cancel'}" style="white-space: nowrap;">[취소/반품/교환]</td>
                         <td th:if="${qna.cate1 == 'receipt'}" style="white-space: nowrap;">[거래증빙서류]</td>
 
-                        <td th:if="${qna.cate2 == 'lotteOners'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'info'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'reg'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'grade'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'del'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'lotteOners'}" style="white-space: nowrap;">롯데오너스</td>
+                        <td th:if="${qna.cate2 == 'info'}" style="white-space: nowrap;">정보확인/변경</td>
+                        <td th:if="${qna.cate2 == 'reg'}" style="white-space: nowrap;">회원가입</td>
+                        <td th:if="${qna.cate2 == 'grade'}" style="white-space: nowrap;">회원등급</td>
+                        <td th:if="${qna.cate2 == 'del'}" style="white-space: nowrap;">회원탈퇴</td>
 
-                        <td th:if="${qna.cate2 == 'lpoint'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'lstamp'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'review'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'onmile'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'event'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'lpoint'}" style="white-space: nowrap;">L.POINT</td>
+                        <td th:if="${qna.cate2 == 'lstamp'}" style="white-space: nowrap;">L.STAMP</td>
+                        <td th:if="${qna.cate2 == 'review'}" style="white-space: nowrap;">리뷰/체험단</td>
+                        <td th:if="${qna.cate2 == 'onmile'}" style="white-space: nowrap;">온마일리지</td>
+                        <td th:if="${qna.cate2 == 'event'}" style="white-space: nowrap;">이벤트/쿠폰</td>
 
-                        <td th:if="${qna.cate2 == 'lpay'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'etc'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'mutong'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'ord'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'ordlist'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'card'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'lpay'}" style="white-space: nowrap;">L.PAY</td>
+                        <td th:if="${qna.cate2 == 'etc'}" style="white-space: nowrap;">기타 결제수단</td>
+                        <td th:if="${qna.cate2 == 'mutong'}" style="white-space: nowrap;">무통장입금</td>
+                        <td th:if="${qna.cate2 == 'ord'}" style="white-space: nowrap;">주문/결제방법</td>
+                        <td th:if="${qna.cate2 == 'ordlist'}" style="white-space: nowrap;">주문내역확인/변경</td>
+                        <td th:if="${qna.cate2 == 'card'}" style="white-space: nowrap;">신용카드 자동결제</td>
 
-                        <td th:if="${qna.cate2 == 'buy'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'delp'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'delm'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'delinfo'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'gift'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'buy'}" style="white-space: nowrap;">구매확정/미수령신고</td>
+                        <td th:if="${qna.cate2 == 'delp'}" style="white-space: nowrap;">배송비</td>
+                        <td th:if="${qna.cate2 == 'delm'}" style="white-space: nowrap;">배송일정/방법</td>
+                        <td th:if="${qna.cate2 == 'delinfo'}" style="white-space: nowrap;">배송정보변경</td>
+                        <td th:if="${qna.cate2 == 'gift'}" style="white-space: nowrap;">선물포장</td>
 
-                        <td th:if="${qna.cate2 == 'ordcancel'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'refund'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'as'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'asp'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'change'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'returns'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'ordcancel'}" style="white-space: nowrap;">주문취소</td>
+                        <td th:if="${qna.cate2 == 'refund'}" style="white-space: nowrap;">환불방법/일정</td>
+                        <td th:if="${qna.cate2 == 'as'}" style="white-space: nowrap;">AS접수/일정</td>
+                        <td th:if="${qna.cate2 == 'asp'}" style="white-space: nowrap;">교환/반품 배송비</td>
+                        <td th:if="${qna.cate2 == 'change'}" style="white-space: nowrap;">교환접수/일정</td>
+                        <td th:if="${qna.cate2 == 'returns'}" style="white-space: nowrap;">반품접수/일정</td>
 
-                        <td th:if="${qna.cate2 == 'etcord'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'cashreceipt'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
-                        <td th:if="${qna.cate2 == 'taxreceipt'}" style="white-space: nowrap;">[[${qna.catename}]]</td>
+                        <td th:if="${qna.cate2 == 'etcord'}" style="white-space: nowrap;">기타제증빙</td>
+                        <td th:if="${qna.cate2 == 'cashreceipt'}" style="white-space: nowrap;">현금영수증</td>
+                        <td th:if="${qna.cate2 == 'taxreceipt'}" style="white-space: nowrap;">세금계산서</td>
 
                         <td>
                             <span>
-                                <a th:href="@{/admin/cs/qna/view/{no}(no=${qna.no})}">
-                            [[${qna.title}]]
+                                <a th:href="@{/admin/cs/qna/reply(no=${qna.no})}" th:text="${qna.title}">
                                 </a>
                             </span>
                         </td>
-                        <td th:text="${#strings.length(qna.content) > 20 ? #strings.substring(qna.content, 0, 20) + '...' : qna.content} "></td>
+
                         <td>
-                            <a th:href="@{/admin/cs/qna/{no}(no=${qna.no})}">[수정]</a>
+                            <a th:href="@{/admin/cs/qna/reply(no=${qna.no})}">[답변]</a>
                             <a th:href="@{/admin/cs/qna/delete/{no}(no=${qna.no})}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
+                        </td>
+                        <td>
+                            <th:block th:if="${qna.status == '검토중'}">
+                                <p style="font-size: 16px; color: #0D3A46"  th:text="${qna.status}"></p>
+                            </th:block>
+                            <th:block th:if="${qna.status != '검토중'}">
+                                <p  style="font-size: 16px; color: #4CAF50 "  th:text="${qna.status}"></p>
+                            </th:block>
+
                         </td>
                     </tr>
                 </table>
@@ -277,22 +288,22 @@
                 <a class="cs-write" style="float: right" th:href="@{/admin/cs/qna/register}">질문 작성</a>
             </div>
             <div class="paging">
-                        <span class="prev" th:if="${csQnas.prev}">
-                            <a th:href="@{/admin/cs/qna/list(pg=${csQnas.start -1}, cate1=${csQnas.getCate1()} , cate2=${csQnas.getCate2()})}"><&nbsp;이전</a>
+                        <span class="prev" th:if="${adminCsQna.prev}">
+                            <a th:href="@{/admin/cs/faq/list(pg=${adminCsQna.start -1}, cate1=${adminCsQna.getCate1()} , cate2=${adminCsQna.getCate2()})}"><&nbsp;이전</a>
                         </span>
-                <span class="num" th:each="num:${#numbers.sequence(csQnas.start, csQnas.end)}">
-                            <th:block th:if="${num == csQnas.pg}">
-                                 <a th:href="@{/admin/cs/qna/list( pg=${num} , cate1=${csQnas.getCate1()} , cate2=${csQnas.getCate2()})}" class="on">[[${num}]]</a>
+                <span class="num" th:each="num:${#numbers.sequence(adminCsQna.start, adminCsQna.end)}">
+                            <th:block th:if="${num == adminCsQna.pg}">
+                                 <a th:href="@{/admin/cs/faq/list( pg=${num} , cate1=${adminCsQna.getCate1()} , cate2=${adminCsQna.getCate2()})}" class="on">[[${num}]]</a>
                             </th:block>
 
-                            <th:block th:if="${num != csQnas.pg}">
+                            <th:block th:if="${num != adminCsQna.pg}">
 
-                                 <a th:href="@{/admin/cs/qna/list( pg=${num} , cate1=${csQnas.getCate1()} , cate2=${csQnas.getCate2()})}" >[[${num}]]</a>
+                                 <a th:href="@{/admin/cs/faq/list( pg=${num} , cate1=${adminCsQna.getCate1()} , cate2=${adminCsQna.getCate2()})}" >[[${num}]]</a>
                             </th:block>
 
                         </span>
-                <span class="next" th:if="${csQnas.next}">
-                            <a th:href="@{/admin/cs/qna/list( pg=${csQnas.end+1} , cate1=${csQnas.getCate1()} , cate2=${csQnas.getCate2()})}">다음&nbsp;></a>
+                <span class="next" th:if="${adminCsQna.next}">
+                            <a th:href="@{/admin/cs/faq/list( pg=${adminCsQna.end+1} , cate1=${adminCsQna.getCate1()} , cate2=${adminCsQna.getCate2()})}">다음&nbsp;></a>
                         </span>
             </div>
         </div>

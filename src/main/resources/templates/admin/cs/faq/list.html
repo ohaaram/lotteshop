@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
-<section id="admin-cs-" layout:fragment="content">
+<section id="admin-cs-faq" layout:fragment="content">
     <script>
         window.onload = function() {
             const all = document.getElementById('all');
@@ -200,7 +200,7 @@
                     <input type="button" id="search" value="검색"/>
                 </div>
 
-                <table border="0">
+                <table class="cs-qna-faq-list" border="0">
                     <tr>
                         <th><input type="checkbox" name="all" id="all"></th>
                         <th>번호</th>

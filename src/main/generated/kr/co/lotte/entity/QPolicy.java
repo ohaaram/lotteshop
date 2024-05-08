@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QNewTerms is a Querydsl query type for NewTerms
+ * QPolicy is a Querydsl query type for Policy
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QNewTerms extends EntityPathBase<NewTerms> {
+public class QPolicy extends EntityPathBase<Policy> {
 
-    private static final long serialVersionUID = 1455728587L;
+    private static final long serialVersionUID = 519096886L;
 
-    public static final QNewTerms newTerms = new QNewTerms("newTerms");
+    public static final QPolicy policy = new QPolicy("policy");
 
     public final StringPath chapter1 = createString("chapter1");
 
@@ -31,20 +31,20 @@ public class QNewTerms extends EntityPathBase<NewTerms> {
 
     public final StringPath chapter6 = createString("chapter6");
 
-    public final NumberPath<Integer> intPk = createNumber("intPk", Integer.class);
+    public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final StringPath name = createString("name");
 
-    public QNewTerms(String variable) {
-        super(NewTerms.class, forVariable(variable));
+    public QPolicy(String variable) {
+        super(Policy.class, forVariable(variable));
     }
 
-    public QNewTerms(Path<? extends NewTerms> path) {
+    public QPolicy(Path<? extends Policy> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QNewTerms(PathMetadata metadata) {
-        super(NewTerms.class, metadata);
+    public QPolicy(PathMetadata metadata) {
+        super(Policy.class, metadata);
     }
 
 }

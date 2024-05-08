@@ -53,7 +53,7 @@
                 <span th:if="${#authentication.principal.user.role == 'ADMIN'}">[[${#authentication.principal.user.name}]]님 반갑습니다.</span>
                 <span th:if="${#authentication.principal.user.role != 'ADMIN'}">[[${#authentication.principal.user.sellerName}]]님 반갑습니다.</span>
 
-                <a th:href="@{/admin/index}">HOME |</a>
+                <a th:href="@{/index}">HOME |</a>
                 <a th:href="@{/member/logout}">로그아웃 |</a>
 
                 <a href="#">고객센터</a>

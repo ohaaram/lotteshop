@@ -26,7 +26,7 @@ public class QCsQna extends EntityPathBase<CsQna> {
 
     public final StringPath catename = createString("catename");
 
-    public final NumberPath<Integer> comment = createNumber("comment", Integer.class);
+    public final StringPath comment = createString("comment");
 
     public final StringPath content = createString("content");
 
@@ -41,6 +41,8 @@ public class QCsQna extends EntityPathBase<CsQna> {
     public final DateTimePath<java.time.LocalDateTime> rdate = createDateTime("rdate", java.time.LocalDateTime.class);
 
     public final StringPath regip = createString("regip");
+
+    public final StringPath status = createString("status");
 
     public final StringPath title = createString("title");
 
