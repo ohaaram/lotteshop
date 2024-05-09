@@ -28,3 +28,5 @@
 0.1.5-SNAPSHOT : 리뷰 table 및 entity 수정 중, 쿠폰 기능 구현 중
 
 0.1.6-SNAPSHOT : 쿠폰 완료, 약관 부분 완료, 리뷰 수정 완료, faq 다 됨
+
+0.1.7-SNAPSHOT : 관리자 약관 완료, hit 상품 처리, myHome 부분 완료 , product/complete 완료

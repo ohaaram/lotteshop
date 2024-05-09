@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #444;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        section {
+            padding: 20px;
+            margin: 20px;
+            background-color: #fff;
+            position: relative; /* 컨테이너를 relative로 설정 */
+            cursor: pointer;
+        }
+
+        .post {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+
+        }
+
+        .post img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .deleteBtn {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+
+            //글의 상세페이지로 넘어가기!
+            document.querySelectorAll('.lotteon').forEach(section => {
+                section.addEventListener('click', function() {
+                    const bno = this.querySelector('.deleteBtn').getAttribute('data-bno');
+
+                    alert('섹션을 클릭한 글의 bno:'+bno);
+
+                    window.location.href=`/lotteshop/admin/blogView/${bno}`;
+
+                });
+            });
+        }
+
+        async function fetchGet(url) {
+
+            console.log("fetchData1...1");
+
+            try {
+                console.log("fetchData1...2");
+                const response = await fetch(url);
+                console.log("here1");
+
+                if (!response.ok) {
+                    console.log("here2");
+                    throw new Error('response not ok');
+                }
+
+                const data = await response.json();
+                console.log("data1 : " + data);
+                return data;
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+
+    </script>
+</head>
+<body>
+<header>
+    <h1>Welcome to LotteON Blog</h1>
+</header>
+
+<nav>
+    <a th:href="@{/admin/blogList}">LotteON</a>
+    <a href="#interview">Interview</a>
+    <a href="#recruit">Recruit</a>
+    <a href="#culture">Culture</a>
+</nav>
+
+<th:block th:each="blogs:${blog}">
+    <section class="lotteon">
+        <div>
+            <h2 th:text="${blogs.title}">LotteON</h2>
+            <button class="deleteBtn" th:attr="data-bno=${blogs.bno}">삭제</button>
+        </div>
+        <div class="post">
+            <h3 th:text="${blogs.oneLine}">Post Title</h3>
+            <p th:text="${#strings.length(blogs.content) > 200 ? #strings.substring(blogs.content, 0, 200) + ' <생략..>' : blogs.content}"></p>
+
+        </div>
+    </section>
+</th:block>
+<!--
+
+<div class="paging" style="text-align: center">
+                        <span class="prev" th:if="${reviewPage.prev}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1})}"><&nbsp;이전</a>
+                        </span>
+    <span class="num" th:each="num:${#numbers.sequence(reviewPage.start, reviewPage.end)}">
+                            <th:block th:if="${num == reviewPage.rpg}">
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view( prodno =${reviewPage.getProdno()},rpg=${num})}">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != reviewPage.rpg}">
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${num})}">[[${num}]]</a>
+                            </th:block>
+                        </span>
+    <span class="next" th:if="${reviewPage.next}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${reviewPage.end+1} )}">다음&nbsp;></a>
+                        </span>
+</div>
+-->
+<footer>
+    <p>&copy; 2024 LotteON Blog</p>
+</footer>
+</body>
+</html>

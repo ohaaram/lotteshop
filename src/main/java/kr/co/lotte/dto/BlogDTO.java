@@ -2,6 +2,7 @@ package kr.co.lotte.dto;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +18,11 @@ public class BlogDTO {
     private String title;
     private String content;
     private String cate;
-    private String author;
     private LocalDateTime date;
     private String oneLine;
+
+    private MultipartFile multImage1;
+
     private String iamges;
 
 }

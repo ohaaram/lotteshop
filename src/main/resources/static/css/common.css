@@ -682,3 +682,18 @@ footer p > strong {
   padding: 8px 0px 12px;
   z-index: 164;
 }
+
+#btnDown{
+  display: inline;
+  position: fixed;
+  right: 14px;
+  bottom: 100px;
+  border-radius: 0px;
+  width: 48px;
+  font-size: 56px;
+  color: #FF6347;
+  text-align: center;
+  line-height: 1;
+  padding: 8px 0px 12px;
+  z-index: 164;
+}

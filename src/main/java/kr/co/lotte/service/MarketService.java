@@ -31,6 +31,8 @@ public class MarketService {
     private final CartsRepository cartsRepository;
     private final DownloadCouponRepository downloadCouponRepository;
     private  final  CouponRepository couponRepository;
+    @Autowired
+    private OrderItemsRepository orderItemsRepository;
 
     // 장보기 글보기 페이지 - 장보기 게시글 출력
     public ProductsDTO selectProduct(int prodno) {
@@ -311,24 +313,75 @@ public class MarketService {
         Map<String, String> map = new HashMap<>();
 
         OrderItems orderItems = ordersItemRepository.findById(itemNo).get();
+
         Orders order = ordersRepository.findById(orderItems.getOrderNo()).get();
-        if (order.getPoint() > 0) {
+
+        List<OrderItems> lists = ordersItemRepository.findAllByOrderNo(order.getOrderNo());
+        if (order.getPoint() > 0 || order.getCouponDiscount() > 0) {
             map.put("data", "1");
+            int size = lists.size()-1;
+            String name =
+                    productRepository.findById(subProductsRepository.findById(orderItems.getProdNo()).get().getProdNo() ).get().getProdName()
+                    +" 외 "+size +"건";
+
+            map.put("name", name);
+
+            String refundPoint = String.valueOf(order.getPoint());
+            map.put("refundPoint", refundPoint);
+
+            Points oldPoint = pointsRepository.findByOrderNoAndState(order.getOrderNo(), "적립");
+            int old = oldPoint.getPoint();
+            map.put("minusPoint", String.valueOf(old));
+
+            //배송비처리
+            boolean delivery = false;
+            for(OrderItems orderItems1 :lists){
+                if(!orderItems1.getOrderState().equals("주문 대기")){
+                    delivery = true;
+                    break;
+                }
+            }
+            if(delivery){
+                map.put("delivery", "3000");
+                //최종 결제 가격 - 배송비
+                int total = order.getOrderTotalPrice() - 3000;
+                map.put("refundTotal", String.valueOf(total));
+            }else{
+                map.put("delivery", "0");
+                map.put("refundTotal", String.valueOf(order.getOrderTotalPrice()));
+            }
+
         } else {
             map.put("data", "0");
+            String name =  productRepository.findById(subProductsRepository.findById(orderItems.getProdNo()).get().getProdNo() ).get().getProdName();
+            map.put("name", name);
+            map.put("refundPoint" , "0");
+
+            int price =orderItems.getItemPrice() * orderItems.getItemCount() ;
+            map.put("minusPoint", String.valueOf((int)(price * 0.01)));
+
+            if(orderItems.getOrderState().equals("주문 대기")){
+                map.put("delivery", "0");
+                map.put("refundTotal" , String.valueOf((int)(price *(100-orderItems.getItemDiscount()*0.01 ) )));
+            }else{
+                map.put("delivery", "3000");
+                map.put("refundTotal", String.valueOf((int)((price *(100-orderItems.getItemDiscount()*0.01)+3000 ) )));
+            }
+
+
         }
         return ResponseEntity.ok().body(map);
     }
 
     //주문 취소반품 본격시작
-    public ResponseEntity orderDelete(int itemNo, String uid) {
+    public ResponseEntity orderDelete(int itemNo, String uid, String excuse) {
         Map<String, Integer> map = new HashMap<>();
         User user = memberRepository.findById(uid).get();
         OrderItems orderItems = ordersItemRepository.findById(itemNo).get();
         Orders order = ordersRepository.findById(orderItems.getOrderNo()).get();
         int state = 0;
         if (orderItems.getOrderState().equals("주문 대기")) {
-            if (order.getPoint() > 0) {
+            if (order.getPoint() > 0 || order.getCouponDiscount() > 0) {
                 //포인트를 사용한 경우 전체 취소
                 List<OrderItems> lists = ordersItemRepository.findAllByOrderNo(order.getOrderNo());
 
@@ -344,6 +397,11 @@ public class MarketService {
                         subProductsRepository.save(subProducts);
                         state = 1;
                         orderItem.setOrderState("환불");
+                    }
+                    if(orderItem.getItemNo() == itemNo){
+                        orderItem.setExcuse(excuse);
+                    }else{
+                        orderItem.setExcuse("복합 결제로 인한 동반 환불");
                     }
                     ordersItemRepository.save(orderItem);
                 }
@@ -380,6 +438,7 @@ public class MarketService {
                 subProducts.setProdStock(subProducts.getProdStock() + orderItems.getItemCount());
                 subProductsRepository.save(subProducts);
                 orderItems.setOrderState("주문 취소");
+                orderItems.setExcuse(excuse);
                 ordersItemRepository.save(orderItems);
 
                 //적립된 포인트는 빼자
@@ -414,6 +473,13 @@ public class MarketService {
                         subProductsRepository.save(subProducts);
                         orderItem.setOrderState("환불");
                     }
+
+                    if(orderItem.getItemNo() == itemNo){
+                        orderItem.setExcuse(excuse);
+                    }else{
+                        orderItem.setExcuse("복합 결제로 인한 동반 환불");
+                    }
+
                     ordersItemRepository.save(orderItem);
                 }
                 //포인트를 돌려주자
@@ -448,6 +514,7 @@ public class MarketService {
                 subProducts.setProdStock(subProducts.getProdStock() + orderItems.getItemCount());
                 subProductsRepository.save(subProducts);
                 orderItems.setOrderState("환불");
+                orderItems.setExcuse(excuse);
                 ordersItemRepository.save(orderItems);
 
                 //적립된 포인트는 빼자
@@ -513,5 +580,13 @@ public class MarketService {
       return ordersRepository.findById(orderNo).get();
     }
 
-
+    //주문확정
+    public ResponseEntity completeOrder(int itemNo){
+        OrderItems orderItems = orderItemsRepository.findById(itemNo).get();
+        orderItems.setOrderState("구매 확정");
+        orderItemsRepository.save(orderItems);
+        Map <String , String > map = new HashMap<>();
+        map.put("result", "succes");
+        return ResponseEntity.ok().body(map);
+    }
 }

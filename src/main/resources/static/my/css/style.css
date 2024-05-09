@@ -362,7 +362,6 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .home > section > article > table * {
-    font-family: '돋움';
     color: #444;
 }
 
@@ -427,7 +426,6 @@ footer p > strong {
 }        
 #my > .home > section > article > table a.refund {
     margin-top: 2px;
-    font-family: '돋움';
     font-size: 11px;
     color: #676767;
     text-indent: 5px;
@@ -436,7 +434,6 @@ footer p > strong {
 }
 #my > .home > section > article > table a.exchange {
     margin-top: 2px;
-    font-family: '돋움';
     font-size: 11px;
     color: #676767;
     text-indent: 5px;
@@ -463,7 +460,6 @@ footer p > strong {
 #my > .home > section > article > table .answered {color: #01a900;}
 
 #my > .home > section > .myinfo * {
-    font-family: '돋움';
 }
 #my > .home > section > .myinfo > h3 {
     width: 96px;
@@ -548,7 +544,6 @@ footer p > strong {
 }
 
 #my > .ordered > section > article > .byDate * {
-    font-family: '돋움';
     color: #444;
 }
 #my > .ordered > section > article > .byDate > .tit {
@@ -637,7 +632,6 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .ordered > section > article > table * {
-    font-family: '돋움';
     color: #444;
 }
 
@@ -670,7 +664,6 @@ footer p > strong {
 }        
 #my > .ordered > section > article > table .prodPrice {
     margin-top: 6px;
-    font-family: '고딕';
     font-size: 16px;
     font-weight: bold;
     color: #222;
@@ -695,7 +688,6 @@ footer p > strong {
 }        
 #my > .ordered > section > article > table a.refund {
     margin-top: 2px;
-    font-family: '돋움';
     font-size: 11px;
     color: #676767;
     text-indent: 5px;
@@ -704,7 +696,6 @@ footer p > strong {
 }
 #my > .ordered > section > article > table a.exchange {
     margin-top: 2px;
-    font-family: '돋움';
     font-size: 11px;
     color: #676767;
     text-indent: 5px;
@@ -755,7 +746,6 @@ footer p > strong {
 }
 
 #my > .point > section > article > .byDate * {
-    font-family: '돋움';
     color: #444;
 }
 #my > .point > section > article > .byDate > .tit {
@@ -844,8 +834,8 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .point > section > article > table * {
-    font-family: '돋움';
     color: #444;
+
 }
 
 #my > .point > section > article > table th {
@@ -904,7 +894,6 @@ footer p > strong {
 /* my - coupon(쿠폰) */
 #my > .coupon > section > article > p {
     margin: 10px 0;
-    font-family: '돋움';
     font-size: 11px;
     color: #888;
 }
@@ -928,7 +917,6 @@ footer p > strong {
 }
 #my > .coupon > section > article > .bg dt {
     float: left;
-    font-family: '돋움';
     color: #676767;
     margin-top: 10px;
 }
@@ -942,7 +930,6 @@ footer p > strong {
     color: #ec0e0e;
 }
 #my > .coupon > section > article > .bg dd > span {
-    font-family: '돋움';
     font-weight: bold;
     color: #ec0e0e;
 }
@@ -955,8 +942,8 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .coupon > section > article > table * {
-    font-family: '돋움';
     color: #444;
+
 }
 
 #my > .coupon > section > article > table th {
@@ -995,7 +982,6 @@ footer p > strong {
 }
 
 #my > .coupon > section > article > .info > li {
-    font-family: '돋움';
     font-size: 11px;
     color: #777;
     letter-spacing: -1px;
@@ -1011,7 +997,6 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .review > section > article > table * {
-    font-family: '돋움';
     color: #444;
 }
 
@@ -1098,7 +1083,6 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .qna > section > article > table * {
-    font-family: '돋움';
     color: #444;
 }
 
@@ -1197,7 +1181,6 @@ footer p > strong {
     border-collapse: collapse;            
 }
 #my > .info > section > form > article > table * {
-    font-family: '돋움';
 }
 
 #my > .info > section > form > article > table th {
@@ -1258,7 +1241,6 @@ footer p > strong {
     margin: 10px auto;
     background-image: url('../images/btn_my_change.png');
     color: #fff;
-    font-family: '돋움';
     border: none;
 }
 

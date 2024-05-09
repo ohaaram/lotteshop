@@ -18,6 +18,7 @@ public class MainProductsPageResponseDTO {
     private String cateName2;
     private String cateName3;
     private String cate;
+    private String board;
     private String keyword;
 
     private int pg;

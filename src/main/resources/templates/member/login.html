@@ -149,9 +149,9 @@
             <a th:href="@{/oauth2/authorization/kakao}">
                 <img class="kakao_img" th:src="@{/member/images/kakao.png}" alt="로그인">
             </a>
-            <a th:href="@{/oauth2/authorization/naver}">
-                <img class="naver_img" th:src="@{/member/images/naver.png}" alt="로그인">
-            </a>
+<!--            <a th:href="@{/oauth2/authorization/naver}">-->
+<!--                <img class="naver_img" th:src="@{/member/images/naver.png}" alt="로그인">-->
+<!--            </a>-->
         </div>
         <th:block th:each="banner : ${banner4}">
             <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"

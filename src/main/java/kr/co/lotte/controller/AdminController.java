@@ -3,6 +3,8 @@ package kr.co.lotte.controller;
 
 import com.querydsl.core.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
@@ -10,6 +12,7 @@ import kr.co.lotte.repository.BannerRepository;
 import kr.co.lotte.security.MyManagerDetails;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
+import kr.co.lotte.service.BlogService;
 import kr.co.lotte.service.cs.CsNoticeService;
 import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.AlgorithmConstraints;
 import java.text.ParseException;
@@ -43,17 +47,18 @@ public class AdminController {
     private AdminService adminService;
     private final CsNoticeService csNoticeService;
     private final CsQnaService csQnaService;
+    private final BlogService blogService;
 
     @GetMapping(value = {"/admin/index", "/admin"})
-    public String adminIndex(Authentication authentication , Model model){
+    public String adminIndex(Authentication authentication, Model model) {
 
         model.addAttribute("csNotice", csNoticeService.noticeList());
         model.addAttribute("csQna", csQnaService.qnaList());
 
-        try{
+        try {
             //여기는 관리자
             MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-            Map<String, Integer> map= adminService.Formain();
+            Map<String, Integer> map = adminService.Formain();
             int count = map.get("count");
             int total = map.get("total");
             int user = map.get("user");
@@ -75,13 +80,13 @@ public class AdminController {
             model.addAttribute("visitor", visitor);
             return "/admin/index";
 
-        }catch (Exception e){
+        } catch (Exception e) {
             //여기는 매니저
-            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            MyManagerDetails myManagerDetails = (MyManagerDetails) authentication.getPrincipal();
             Seller seller = myManagerDetails.getUser();
-            String uid= seller.getSellerUid();
+            String uid = seller.getSellerUid();
 
-            Map<String, Integer> map= adminService.forManager(uid);
+            Map<String, Integer> map = adminService.forManager(uid);
             int count = map.get("count");
             int total = map.get("total");
             int user = map.get("user");
@@ -107,7 +112,7 @@ public class AdminController {
 
     //config
     @GetMapping("/admin/config/banner")
-    public String banner(Model model){
+    public String banner(Model model) {
 
         List<BannerDTO> banner1 = adminService.findMAIN1("MAIN1");
         List<BannerDTO> banner2 = adminService.findMAIN2("MAIN2");
@@ -115,7 +120,7 @@ public class AdminController {
         List<BannerDTO> banner4 = adminService.findMEMBER1("MEMBER1");
         List<BannerDTO> banner5 = adminService.findMY1("MY1");
 
-        log.info("AdminController - banner : "+banner1.toString());
+        log.info("AdminController - banner : " + banner1.toString());
 
         model.addAttribute("banner1", banner1);
         model.addAttribute("banner2", banner2);
@@ -128,32 +133,38 @@ public class AdminController {
 
     //info
     @GetMapping("/admin/config/info")
-    public String info(Model model, @RequestParam(name = "code", required = false)String code){
-        if(code == null){
-            code ="0";
+    public String info(Model model, @RequestParam(name = "code", required = false) String code) {
+        if (code == null) {
+            code = "0";
         }
-        model.addAttribute("code",code);
+        model.addAttribute("code", code);
         model.addAttribute("terms", adminService.findTerms(1));
         return "/admin/config/info";
     }
 
     //info modify
     @PostMapping("/admin/info/modify")
-    public String modifyInfo( TermsDTO termsDTO){
+    public String modifyInfo(TermsDTO termsDTO) {
         adminService.modifyTerms(termsDTO);
         return "redirect:/admin/config/info?code=100";
     }
 
 
+    @PostMapping("/admin/product/subOptionModify")
+    public ResponseEntity modifyOption(@RequestBody Map<String, List<SubProductsDTO>> map){
+        List<SubProductsDTO> list = map.get("list");
+        return adminService.modifyOptions(list);
+    }
+
 
     //product
     @GetMapping("/admin/product/list")
-    public String list(Model model, ProductsPageRequestDTO pageRequestDTO, Authentication authentication){
+    public String list(Model model, ProductsPageRequestDTO pageRequestDTO, Authentication authentication) {
 
         String uid = null;
         Boolean isSeller = false;
 
-        if(pageRequestDTO.getCate()!=null){
+        if (pageRequestDTO.getCate() != null) {
             log.info(pageRequestDTO.getCate());
         }
 
@@ -172,7 +183,7 @@ public class AdminController {
             isSeller = adminService.findBySeller(uid);
         }
 
-        if(pageRequestDTO.getCate()==null) {
+        if (pageRequestDTO.getCate() == null) {
             pageRequestDTO.setCate(""); // 여기서 cate 필드를 빈 문자열로 초기화
         }
 
@@ -198,16 +209,16 @@ public class AdminController {
     }
 
     @GetMapping("/admin/product/register")
-    public String register(Model model, @RequestParam(name="code" , required = false) String code){
+    public String register(Model model, @RequestParam(name = "code", required = false) String code) {
         List<Categories> list = adminService.searchCategories();
         List<String> cateNameLists = list.stream().map(categories -> categories.getCateName()).toList();
         Set<String> cateNames = cateNameLists.stream().collect(Collectors.toSet());
         log.info(list.toString());
         model.addAttribute("cates", list);
-        model.addAttribute("cateNames",cateNames);
-        if(code == null){
+        model.addAttribute("cateNames", cateNames);
+        if (code == null) {
             model.addAttribute("code", 0);
-        }else{
+        } else {
             model.addAttribute("code", code);
         }
         return "/admin/product/register";
@@ -216,37 +227,47 @@ public class AdminController {
 
     @ResponseBody
     @PostMapping("/admin/product/selectSecondCate")
-    public ResponseEntity selectSecondCate(@RequestBody Map<String, String> map){
+    public ResponseEntity selectSecondCate(@RequestBody Map<String, String> map) {
         String name = map.get("cate");
         return adminService.searchCategoriesSecondNames(name);
     }
 
     @ResponseBody
     @PostMapping("/admin/product/selectThridCate")
-    public ResponseEntity selectThridCate(@RequestBody Map<String, String> map){
+    public ResponseEntity selectThridCate(@RequestBody Map<String, String> map) {
         String name = map.get("cate");
         return adminService.searchCategoriesThridNames(name);
     }
 
     @PostMapping("/admin/product/register")
-    public String register( ProductsDTO productsDTO){
+    public String register(ProductsDTO productsDTO) {
         log.info(productsDTO.toString());
         adminService.productRegister(productsDTO);
-      return  "redirect:/admin/product/register?code=100";
+        return "redirect:/admin/product/register?code=100";
     }
+
+    @PostMapping("/admin/product/modify")
+    public String modify( ProductsDTO productsDTO){
+        log.info(productsDTO.toString());
+        adminService.productModify(productsDTO);
+        return  "redirect:/admin/product/modify?code=200&prodNo="+productsDTO.getProdNo();
+    }
+
 
 
     @ResponseBody
     @PostMapping("/admin/product/subOption")
-    public ResponseEntity registersubOption(@RequestBody List<SubProductsDTO> subProductsDTOS){
+    public ResponseEntity registersubOption(@RequestBody List<SubProductsDTO> subProductsDTOS) {
         log.info(subProductsDTOS.toString());
         return adminService.insertSubOptions(subProductsDTOS);
-    };
+    }
+
+    ;
 
     //상품수정
     @GetMapping("/admin/product/modify")
-    public String modify(Model model, @RequestParam int prodNo){
-        log.info(prodNo+"prodNo");
+    public String modify(Model model, @RequestParam int prodNo) {
+        log.info(prodNo + "prodNo");
         model.addAttribute("products", adminService.findOnlyOneProduct(prodNo));
         model.addAttribute("subProducts", adminService.subProductsFind(prodNo));
         return "/admin/product/modify";
@@ -258,7 +279,7 @@ public class AdminController {
     //상품 삭제
     @ResponseBody
     @PutMapping("/admin/product/delete")
-    public ResponseEntity delete(@RequestBody Map<String, List<Integer>> map){
+    public ResponseEntity delete(@RequestBody Map<String, List<Integer>> map) {
         List<Integer> lists = map.get("list");
         log.info(lists.toString());
         adminService.deleteProducts(lists);
@@ -266,11 +287,12 @@ public class AdminController {
         result.put("result", "success");
         return ResponseEntity.ok().body(map);
     }
+
     //하나만 삭제
     @PostMapping("/admin/product/deleteOne")
-    public void deleteOne(@RequestBody Map<String, Integer> map){
+    public void deleteOne(@RequestBody Map<String, Integer> map) {
         int subNo = map.get("number");
-        log.info(subNo+"subNo");
+        log.info(subNo + "subNo");
         adminService.deleteProduct(subNo);
     }
 
@@ -278,7 +300,7 @@ public class AdminController {
     //배너에 등록에 대한 컨트롤러
     @ResponseBody
     @PostMapping("/banner/register")
-    public ResponseEntity<String> register(BannerDTO bannerDTO){
+    public ResponseEntity<String> register(BannerDTO bannerDTO) {
 
         log.info("정상적으로 여기에 들어와지니?");
 
@@ -292,38 +314,38 @@ public class AdminController {
 
     //선택삭제를 위한 컨트롤러
     @PostMapping("/banner/delete")
-    public ResponseEntity<?> SelectDelete(@RequestBody Map<String, String> requestData){
+    public ResponseEntity<?> SelectDelete(@RequestBody Map<String, String> requestData) {
 
         log.info("삭제하려고 controller로 왔습니다.");
 
         String bannerNo = requestData.get("bannerNo");
 
-        log.info("bannerNo:"+bannerNo);
+        log.info("bannerNo:" + bannerNo);
 
         adminService.bannerDelete(bannerNo);
 
         log.info("BannerNo로 삭제를 성공했느냐? ");
 
         Map<String, String> result = new HashMap<>();
-        result.put("data","1");
+        result.put("data", "1");
         return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/banner/active")
-    public String bannerActive(@RequestParam("bannerNo") String bannerNo, RedirectAttributes redirectAttributes){
+    public String bannerActive(@RequestParam("bannerNo") String bannerNo, RedirectAttributes redirectAttributes) {
 
-        log.info("bannerNo : "+bannerNo);//배너번호 잘 넘어옴
+        log.info("bannerNo : " + bannerNo);//배너번호 잘 넘어옴
 
         BannerDTO bannerDTO = adminService.findById(bannerNo);//배너번호를 이용해서 설정하기 내용은 읽어오기!
 
-        log.info("status값 확인 : "+bannerDTO);//status 변경되었는지 확인하기
+        log.info("status값 확인 : " + bannerDTO);//status 변경되었는지 확인하기
 
         return "redirect:/admin/config/banner";
 
     }
 
     @GetMapping("/banner/inactive")
-    public String bannerInactive(@RequestParam("bannerNo") String bannerNo){
+    public String bannerInactive(@RequestParam("bannerNo") String bannerNo) {
 
 
         adminService.findByIdForDelete(bannerNo);//status 0으로 바꾸기
@@ -334,23 +356,23 @@ public class AdminController {
 
     //주문현황
     @GetMapping("/admin/orderList")
-    public String orderList(Model model , Authentication authentication , OrdersPageRequestDTO requestDTO) throws ParseException {
-        OrdersPageResponseDTO pageResponseDTO =null;
+    public String orderList(Model model, Authentication authentication, OrdersPageRequestDTO requestDTO) throws ParseException {
+        OrdersPageResponseDTO pageResponseDTO = null;
         List<SubProducts> products = new ArrayList<>();
         //모두 조회 해주자..
         try {
             //여기는 관리자
             MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-            pageResponseDTO=adminService.searchOrdersForAdmin(requestDTO);
+            pageResponseDTO = adminService.searchOrdersForAdmin(requestDTO);
             log.info(pageResponseDTO.getDtoList2().toString());
             products = adminService.searchProductsForOrder(pageResponseDTO.getDtoList2());
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info(e.getMessage());
             log.info("??");
-            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            MyManagerDetails myManagerDetails = (MyManagerDetails) authentication.getPrincipal();
             Seller seller = myManagerDetails.getUser();
-            pageResponseDTO=adminService.searchOrdersForManager(requestDTO, seller.getSellerUid());
+            pageResponseDTO = adminService.searchOrdersForManager(requestDTO, seller.getSellerUid());
             products = adminService.searchProductsForOrder(pageResponseDTO.getDtoList2());
         }
         model.addAttribute("pageResponseDTO", pageResponseDTO);
@@ -360,26 +382,23 @@ public class AdminController {
 
     //주문 상세 현황
     @GetMapping("/admin/orderDetail")
-    public String orderDetail(@RequestParam(name = "orderNo")int orderNo , Model model){
+    public String orderDetail(@RequestParam(name = "orderNo") int orderNo, Model model) {
         model.addAttribute("order", adminService.forOrderDetail(orderNo));
         return "/admin/order/orderView";
     }
 
 
-
-
-
     //판매자 현황 띄우기
     @GetMapping("/admin/seller/seller_status")
-    public String seller_status(Model model,CsFaqPageRequestDTO pageRequestDTO){
+    public String seller_status(Model model, CsFaqPageRequestDTO pageRequestDTO) {
 
-        StatusPageResponseDTO pageResponseDTO =null;
+        StatusPageResponseDTO pageResponseDTO = null;
 
         pageResponseDTO = adminService.seller_status(pageRequestDTO);
 
         model.addAttribute("pageResponseDTO", pageResponseDTO);
 
-        log.info("adminController - seller_status : "+pageResponseDTO.toString());
+        log.info("adminController - seller_status : " + pageResponseDTO.toString());
 
 
         return "/admin/seller/seller_status";
@@ -387,7 +406,7 @@ public class AdminController {
 
     //판매자 모달창에 띄울 정보들
     @GetMapping("/admin/seller/{uid}")
-    public ResponseEntity<?> modal(@PathVariable("uid")String uid) {
+    public ResponseEntity<?> modal(@PathVariable("uid") String uid) {
 
 
         SellerDTO sellerDTO = adminService.findSellerInfo(uid);//판매자 정보
@@ -400,8 +419,9 @@ public class AdminController {
 
         return ResponseEntity.ok().body(resultMap);
     }
+
     @GetMapping("/admin/checkOrder")
-    public ResponseEntity checkOrder(@RequestParam(name = "orderNo")int orderNo , Model model){
+    public ResponseEntity checkOrder(@RequestParam(name = "orderNo") int orderNo, Model model) {
         log.info("들어옴!");
         return adminService.changeOrderState(orderNo);
 
@@ -409,7 +429,7 @@ public class AdminController {
 
     //주문 바꾸기들
     @PutMapping("/admin/checkOrders")
-    public ResponseEntity checkOrders(@RequestBody Map<String , List<Integer>> map){
+    public ResponseEntity checkOrders(@RequestBody Map<String, List<Integer>> map) {
         log.info(map.get("list").toString());
         return adminService.changeOrderStates(map.get("list"));
 
@@ -417,8 +437,8 @@ public class AdminController {
 
     //매출현황 가보자고
     @GetMapping("/admin/sale")
-    public String sale(Model model , Authentication authentication, @RequestParam(name = "state") String state){
-        try{
+    public String sale(Model model, Authentication authentication, @RequestParam(name = "state") String state) {
+        try {
             //여기는 관리자 (매출은 어떻게 집계하지? order에 totalPrice가 있으니까 그걸로 해볼까?)
             MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
             Map<String, List<Integer>> map = adminService.saleForAdmin(state);
@@ -430,9 +450,9 @@ public class AdminController {
             model.addAttribute("price", price);
             model.addAttribute("order", order);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             //여기는 판매자
-            MyManagerDetails myManagerDetails =( MyManagerDetails) authentication.getPrincipal();
+            MyManagerDetails myManagerDetails = (MyManagerDetails) authentication.getPrincipal();
             Seller seller = myManagerDetails.getUser();
             Map<String, List<Integer>> map = adminService.saleForManager(state, seller.getSellerUid());
             List<Integer> price = map.get("price");
@@ -466,4 +486,53 @@ public class AdminController {
         return "/admin/order/sale";
 
     }
+
+    //블로그 모든 글 띄우기
+    @GetMapping("/admin/blogList")
+    public String blogList(Model model,BlogPageRequestDTO pageRequestDTO) {
+
+         List<Blog> blogs = blogService.findAll();
+
+         model.addAttribute("blog",blogs);
+
+        return "/admin/blog/list";
+    }
+
+
+    //블로그 글쓰기 페이지 이동
+    @GetMapping("/admin/blogWrite")
+    public String blogWrite() {
+
+        return "/admin/blog/write";
+    }
+
+    //블로그 글 정보 전송
+    @ResponseBody
+    @PostMapping("/admin/blogWrite")
+    public String blogRegister(BlogDTO blogDTO, HttpServletResponse response) throws IOException {
+
+        log.info("블로그 글 정보 전송하는 컨트롤러");
+
+        log.info("전송되어온 데이터 출력 : "+blogDTO);
+
+        blogService.bRegister(blogDTO);
+
+        return "redirect:/admin/blogList";
+    }
+
+    @GetMapping("/admin/blogView/{bno}")
+    public String blogView(@PathVariable("bno") int bno, Model model) {
+
+        log.info("blogView Get - controller입니다.");
+
+        Blog blog = blogService.BlogFindById(bno);
+
+        model.addAttribute("blog", blog);
+
+        log.info("bno 값 : "+bno);
+
+        return "/admin/blog/view";
+    }
+
+
 }

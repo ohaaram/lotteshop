@@ -1467,3 +1467,181 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+/* jo9 css*/
+#view-qna-article{
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#view-qna{
+    background-color: #f9f9f9;
+    justify-content: space-between;
+
+}
+#view-qna .product-qna-write {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-right: 15px;
+    margin-top: -13px;
+    float: right;
+    text-align: center;
+    text-decoration: none;
+    background-color: #343b4d; /* 버튼 배경색 */
+    color: #f9f9f9; /* 버튼 텍스트 색상 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#view-qna .product-qna-title1{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    line-height: 1.57;
+}
+
+#view-qna .product-qna-title {
+    height: 50px;
+    margin-top: 6px;
+}
+
+#view-qna .product-qna-title-1 {
+    padding-top: 1em;
+    padding-left: 20px;
+    font-size: 14px;
+    color: #5F5D6A;
+}
+#view-qna .product-qna-title > p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    unicode-bidi: isolate;
+}
+#view-qna .product-qna-info {
+    padding-top: 0.5em;
+    border-top: 1px solid #8C9697;
+    display: block;
+    color: #5F5D6A;
+    unicode-bidi: isolate;
+}
+
+#view-qna .product-qna-content {
+    margin-top: 80px;
+    padding-bottom: 80px;
+    padding-top: 60px;
+    background-repeat: no-repeat;
+    background-position: center 0;
+    background-size: 60px auto;
+}
+
+/* 모달 스타일 */
+.qna-modal {
+    display: none; /* 초기에는 보이지 않도록 설정 */
+    position: fixed; /* 화면에 고정 */
+    z-index: 1; /* 다른 요소 위에 표시 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 뷰포트 너비 */
+    height: 100%; /* 뷰포트 높이 */
+    overflow: auto; /* 스크롤이 생기면 자동으로 스크롤 가능 */
+    background-color: rgba(0,0,0,0.4); /* 배경 어둡게 */
+
+}
+
+/* 모달 내용 스타일 */
+.qna-modal-content {
+    background-color: #fefefe;
+    position: fixed; /* 모달 내용의 위치를 고정시킴 */
+    left: 50%; /* 왼쪽에서 가운데로 이동하기 위해 50% 위치로 조정 */
+    top: 50%; /* 위쪽에서 가운데로 이동하기 위해 50% 위치로 조정 */
+    transform: translate(-50%, -50%); /* 모달 내용을 세로 및 가로로 절반만큼 이동시켜 가운데로 정렬 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 530px; /* 원하는 너비로 조정 */
+    max-width: 90%; /* 너비가 너무 클 경우 최대 너비 지정 */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* 그림자 추가 */
+    border-radius: 20px;
+}
+
+.qna-modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    right: 21px;
+    position: absolute;
+    top: 21px;
+    width: 18px;
+    height: 18px;
+    margin-top: 0;
+}
+
+.qna-modal-close:hover,
+.qna-modal-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.qna-modal-content-h2{
+    margin: 0; /* 기본적인 마진 제거 */
+    padding: 30px 30px 18px; /* 위쪽과 오른쪽 여백 추가 */
+    display: flex; /* 아이템을 수평으로 정렬하기 위해 flexbox 사용 */
+    justify-content: space-between; /* 아이템을 양쪽으로 정렬 */
+    align-items: center; /* 아이템을 수직으로 중앙 정렬 */
+    border-bottom: 1px solid #eee;
+}
+.qna-modal-content-title{
+
+    font-size: 20px;
+
+}
+.qna-modal-btnWrap{
+    display: flex; /* 아이템을 수평으로 정렬하기 위해 flexbox 사용 */
+    padding: 30px 22px 12px;
+    justify-content: space-around; /* 아이템을 동일한 간격으로 수평 정렬 */
+    margin: 0 -4px;
+    text-align: center;
+}
+
+.qna-modal-btnItem{
+    display: inline-block;
+    width: auto; /* 컨텐츠 크기에 맞게 너비 조정 */
+    padding: 0 4px;
+    vertical-align: middle;
+}
+
+.qna-modal-btnLink{
+    display: block;
+    width: 150px; /* 버튼 너비 설정 */
+    height: 40px;
+    margin-top: 0px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    letter-spacing: -.71px;
+}
+.product-inquiry-select{
+    width: 100%;
+    border: 1px;
+    border-color: #0b8404w;
+    border-radius: 5px;
+}
+.qna-product-textarea{
+    width: 100%;
+    height: 150px;
+    border-radius: 5px;
+}

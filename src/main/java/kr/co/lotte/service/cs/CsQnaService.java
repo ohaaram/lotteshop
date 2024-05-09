@@ -5,6 +5,8 @@ import kr.co.lotte.dto.CsFaqPageRequestDTO;
 import kr.co.lotte.dto.CsFaqPageResponseDTO;
 import kr.co.lotte.dto.CsQnaDTO;
 import kr.co.lotte.entity.CsQna;
+import kr.co.lotte.entity.ProductQna;
+import kr.co.lotte.repository.ProductQnaRepository;
 import kr.co.lotte.repository.cs.CsFaqRepository;
 import kr.co.lotte.repository.cs.CsQnaRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class CsQnaService {
     private final ModelMapper modelMapper;
     private final CsQnaRepository csQnaRepository;
     private final CsFaqRepository csFaqRepository;
+    private final ProductQnaRepository productQnaRepository;
 
 
     // cs.qna reg
@@ -61,5 +64,11 @@ public class CsQnaService {
         CsQna csQna = modelMapper.map(csQnaDTO, CsQna.class);
         CsQna savedCsQna = csQnaRepository.save(csQna);
 
+    }
+
+    // prod.view.qna 저장
+    public ProductQna writeProdQna(ProductQna productQna){
+        ProductQna savedProductQna = productQnaRepository.save(productQna);
+        return modelMapper.map(savedProductQna, ProductQna.class);
     }
 }

@@ -34,6 +34,7 @@ public class ProductsPageRequestDTO {
     private String etcCheckbox;//상품 설명 체크박스 클릭되었나?
     private String priceCheckbox;
     private String cate;
+    private String board;
 
     public Pageable getPageable(String sort){
         return PageRequest.of(this.pg - 1, this.size, Sort.by(sort).descending());

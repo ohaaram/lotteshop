@@ -20,6 +20,7 @@
     <script   type="text/javascript" th:src="@{/js/util.js}" ></script>
 <script>
     //검색
+    window.onload = function (){
     function submitForm() {
         var keyword = document.getElementById("searchInput").value;
         if (keyword.trim() === "") {
@@ -30,7 +31,72 @@
         return true;
     }
 
-</script>
+    }
+
+    ///////////////////////////////////////////////////////////
+    ////////////////페이지 상단이동////////////////////////////
+    ///////////////////////////////////////////////////////////
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 300) {
+                $('#btnTop').fadeIn();
+            } else {
+                $('#btnTop').fadeOut();
+            }
+        });
+        $('#btnTop').click(function () {
+            $('html, body').animate({scrollTop: 0}, 400);
+            return false;
+        });
+    });
+    ///////////////////////////////////////////////////////////
+    ////////////////페이지 하단이동////////////////////////////
+    ///////////////////////////////////////////////////////////
+    $(document).ready(function () {
+        var scrolling = false; // 스크롤 상태를 나타내는 변수
+        var scrollInterval; // 스크롤 동작을 위한 인터벌 변수
+
+        // 아래로 스크롤하는 버튼 클릭 이벤트
+        $('#btnDown').mousedown(function (event) {
+            if (event.detail === 2) { // 더블클릭 이벤트를 감지합니다.
+                scrollToBottom(); // 제일 아래로 스크롤하는 함수를 호출합니다.
+            } else {
+                scrolling = true; // 스크롤 상태를 true로 변경합니다.
+
+                // 스크롤 동작을 시작합니다.
+                scrollInterval = setInterval(scrollPage, 100);
+
+                // 마우스 버튼을 놓을 때 스크롤 동작을 중지하고, 위로 스크롤하는 버튼을 숨깁니다.
+                $(document).mouseup(function () {
+                    scrolling = false;
+                    clearInterval(scrollInterval);
+                    $('#btnTop').fadeOut();
+                });
+            }
+        });
+
+        // 스크롤 페이지 함수 정의
+        function scrollPage() {
+            if (scrolling) {
+                $('html, body').animate({scrollTop: '+=150px'}, 100, function() {
+                    // 스크롤 동작 후 버튼이 화면 맨 위에 위치하지 않으면 보여줍니다.
+                    if ($(window).scrollTop() > 0) {
+                        $('#btnTop').fadeIn();
+                    }
+                });
+            }
+        }
+
+        // 제일 아래로 스크롤하는 함수 정의
+        function scrollToBottom() {
+            $('html, body').animate({scrollTop: $(document).height()}, 500);
+        }
+    });
+
+
+
+
+    </script>
 </head>
 <body>
 
@@ -80,10 +146,10 @@
         <div class="menu">
             <div>
                 <ul>
-                    <li><a th:href="@{/product/list(cate = 'a')}">히트상품</a></li>
-                    <li><a th:href="@{/product/list(cate = 'b')}">추천상품</a></li>
-                    <li><a th:href="@{/product/list(cate = 'c')}">최신상품</a></li>
-                    <li><a th:href="@{/product/list(cate = 'd')}">할인상품</a></li>
+                    <li><a th:href="@{/product/list(board = 'a')}">히트상품</a></li>
+                    <li><a th:href="@{/product/list(board = 'b')}">추천상품</a></li>
+                    <li><a th:href="@{/product/list(board = 'c')}">최신상품</a></li>
+                    <li><a th:href="@{/product/list(board = 'd')}">할인상품</a></li>
                 </ul>
                 <ul>
                     <li><a th:href="@{/product/coupon}">쿠폰존</a></li>
@@ -99,24 +165,6 @@
 
 
 <div layout:fragment="content">
-    <script>
-        window.onload = function (){
-            $(document).ready(function () {
-                $(window).scroll(function () {
-                    if ($(this).scrollTop() > 250) {
-                        $('#btnTop').fadeIn();
-                    } else {
-                        $('#btnTop').fadeOut();
-                    }
-                });
-                $('#btnTop').click(function () {
-                    $('html, body').animate({scrollTop: 0}, 400);
-                    return false;
-                });
-            });
-        }
-    </script>
-
 
 </div>
 
@@ -145,14 +193,19 @@
     </div>
 </footer>
 <aside>
-    <a href="javascript:history.go(-1)" id="btnHome">
+    <a href="#" id="btnHome" onclick="back()">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
             <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
         </svg>
     </a>
-    <a href="#" id="btnTop">
+    <a href="#" id="btnTop" onclick="topButton()" >
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
             <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0"/>
+        </svg>
+    </a>
+    <a href="#" id="btnDown">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-down-square-fill" viewBox="0 0 16 16">
+            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5a.5.5 0 0 1 1 0"/>
         </svg>
     </a>
 </aside>

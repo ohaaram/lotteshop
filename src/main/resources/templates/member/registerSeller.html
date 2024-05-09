@@ -19,7 +19,7 @@
                     <th><span class="essential">*</span>아이디</th>
                     <td><input type="text" name="sellerUid" placeholder="아이디를 입력"
                                required/>
-                        <button type="button" id="btnCheckUid" data-type="uid">아이디 중복체크</button>
+                        <button type="button"  id="btnCheckUid" data-type="sellerUid">아이디 중복체크</button>
                         <div id="result_uid" class="deprecation-block"></div>
                         <span class="msgSId">&nbsp;&nbsp;영문, 숫자로4~12자까지 설정해 주세요.</span>
                     </td>
@@ -27,14 +27,17 @@
                 <tr>
                     <th><span class="essential">*</span>비밀번호</th>
                     <td><input type="password" name="sellerPass"
-                               placeholder="비밀번호를 입력" required/> <span class="msgPass">&nbsp;&nbsp;영문,
-										숫자, 특수문자를 조합하여 8~12자까지 설정해 주세요.</span></td>
+                               placeholder="비밀번호를 입력" required/>
+                        <span class="msgPass">&nbsp;&nbsp;영문, 숫자, 특수문자를 조합하여 8~12자까지 설정해 주세요.</span></td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>비밀번호확인</th>
-                    <td><input type="password" name="sellerPass2"
-                               placeholder="비밀번호를 확인" required/> <span class="msgPass">&nbsp;&nbsp;비밀번호
-										재입력</span></td>
+                    <td>
+                        <input type="password" name="sellerPass2"
+                               placeholder="비밀번호를 확인" required/>
+                        <span class="msgPass">&nbsp;&nbsp;비밀번호 재입력</span>
+                        <div id="result_pass"></div>
+                    </td>
                 </tr>
             </table>
         </section>
@@ -45,43 +48,73 @@
                 <tr>
                     <th><span class="essential">*</span>회사명</th>
                     <td><input type="text" name="sellerName"
-                               placeholder="회사명 입력" required/> <span class="msgCompany">&nbsp;&nbsp;(주)포함
-										입력, 예) (주)케이마켓</span></td>
+                               placeholder="회사명 입력" data-type="sellerName" required/> <span class="msgCompany">&nbsp;&nbsp;(주)포함
+										입력, 예) (주)케이마켓</span>
+                        <div>
+                        <span id="result_name"></span>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>대표자</th>
                     <td><input type="text" name="sellerCEO" placeholder="대표자 입력"
-                               required/></td>
+                               required/>
+                        <div>
+                            <span id="result_ceo"></span>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>사업자등록번호</th>
                     <td><input type="text" name="sellerSaNumber"
-                               placeholder="사업자등록번호 입력" required/> <span class="msgCorp">&nbsp;&nbsp;-
-										표시 포함 12자리 입력, 예) 123-45-67890</span></td>
+                               placeholder="사업자등록번호 입력" data-type="sellerSaNumber" required/> <span class="msgCorp">&nbsp;&nbsp;-
+										표시 포함 12자리 입력, 예) 123-45-67890</span>
+                        <div>
+                            <span id="result_sellerSaNumber"></span>
+                        </div>
+                    </td>
 
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>통신판매업신고 번호</th>
                     <td><input type="text" name="sellerTongNumber"
                                placeholder="통신판매업신고 입력" required/> <span class="msgOnline">&nbsp;&nbsp;-
-										표시 포함, 예) 강남-12345, 제 1-01-23-4567호, 2017-경기성남-0011</span></td>
+										표시 포함, 예) 강남-12345, 제 1-01-23-4567호, 2017-경기성남-0011</span>
+                        <div id="result_sellerTongNumber"></div></td>
+                    </td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>전화번호</th>
-                    <td><input type="text" name="sellerHp" placeholder="전화번호 입력"
-                               required/> <span class="msgTel">&nbsp;&nbsp;- 표시 포함,
-										지역번호 포함, 예) 02-234-1234</span></td>
+                    <td><input type="text" name="sellerHp" placeholder="전화번호 입력" data-type="sellerHp"
+                               required/> <span class="msgTel" >&nbsp;&nbsp;- 표시 포함,
+										지역번호 포함, 예) 02-234-1234</span>
+                        <div id="result_hp"></div></td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>팩스번호</th>
-                    <td><input type="text" name="sellerFax" placeholder="팩스번호 입력"
+                    <td><input type="text" name="sellerFax" placeholder="팩스번호 입력" data-type="sellerFax"
                                required/> <span class="msgFax">&nbsp;&nbsp;- 표시 포함,
-										지역번호 포함, 예) 02-234-1234</span></td>
+										지역번호 포함, 예) 02-234-1234</span>
+                        <div id="result_fax"></div></td>
                 </tr>
                 <tr>
                     <th><span class="essential">*</span>EMAIL</th>
-                    <td><input type="email" name="sellerEmail"
-                               placeholder="이메일 입력" required/></td>
+                    <td><input id="inputEmail" type="email" name="sellerEmail" placeholder="이메일 입력" required/>
+                        <button class="btnSubmit" type="button" id="btn_email" data-type="sellerEmail">이메일 인증</button>
+                        <span id="result_email"></span>
+
+                        <div id="divEmailCode">
+                            <input class="form-control" id="inputEmailCode" name="code" type="text"
+                                   placeholder="이메일 인증코드 입력"/>
+
+                            <button type="button" class="btnSubmit" id="btnCheckEmailCode"
+                                    data-type="email">
+                                <span class="" role="status">인증코드 확인</span>
+                            </button>
+                            <div id="resultEmailCode" class="d-block"></div>
+                        </div>
+
+                    </td>
                 </tr>
                 <tr class="addr">
                     <th>회사주소</th>

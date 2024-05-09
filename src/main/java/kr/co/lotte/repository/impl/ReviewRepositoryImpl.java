@@ -4,7 +4,6 @@ package kr.co.lotte.repository.impl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.co.lotte.dto.ReviewDTO;
 import kr.co.lotte.dto.ReviewPageRequestDTO;
 import kr.co.lotte.entity.QProducts;
 import kr.co.lotte.entity.QReview;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j

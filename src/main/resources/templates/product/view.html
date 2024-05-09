@@ -731,28 +731,115 @@
 
                             });
 
-                        }
-                    </script>
-                    <script>
-                        ////////////////////////////////////////////////////////
-                        //////btnTop, Home 버튼 설정////////////////////////////
-                        ////////////////////////////////////////////////////////
-                        window.onload = function (){
-                            $(document).ready(function () {
-                                $(window).scroll(function () {
-                                    if ($(this).scrollTop() > 400) {
-                                        $('#btnTop').fadeIn();
-                                    } else {
-                                        $('#btnTop').fadeOut();
-                                    }
-                                });
-                                $('#btnTop').click(function () {
-                                    $('html, body').animate({scrollTop: 0}, 400);
-                                    return false;
-                                });
+
+                            // "문의하기" 버튼 클릭 이벤트 핸들러
+                            document.getElementById('openModal').addEventListener('click', function() {
+                                openModal(); // 모달 열기 함수 호출
                             });
+
+                            // 모달 열기 함수
+                            function openModal() {
+                                // 모달 창을 나타내는 요소 가져오기
+                                var modal = document.getElementById('qnaModal');
+                                // 모달 창 보이도록 스타일 설정
+                                modal.style.display = 'block';
+                            }
+
+                            // 모달 바깥 클릭 이벤트 핸들러 등록
+                            window.addEventListener('click', function(event) {
+                                var modal = document.getElementById('qnaModal');
+                                // 모달 바깥을 클릭하고 모달이 열려있는 경우에만 모달을 닫음
+                                if (event.target === modal) {
+                                    closeModal();
+                                }
+                            });
+
+                            // 모달 닫기 버튼 클릭 이벤트 핸들러 등록
+                            document.querySelector('.qna-modal-close').addEventListener('click', closeModal);
+
+                            // 모달 닫기 함수
+                            function closeModal() {
+                                var modal = document.getElementById('qnaModal');
+                                // 모달 창 닫기
+                                modal.style.display = 'none';
+                            }
+
+                            // "상품 문의" 버튼 클릭 이벤트 핸들러
+                            document.getElementById('openProductInquiryModal').addEventListener('click', function() {
+                                openProductInquiryModal(); // 모달 열기 함수 호출
+                            });
+
+                            // "상품 문의" 모달 열기 함수
+                            function openProductInquiryModal() {
+                                // 모달 창을 나타내는 요소 가져오기
+                                var modal = document.getElementById('productInquiryModal');
+                                // 모달 창 보이도록 스타일 설정
+                                modal.style.display = 'block';
+                            }
+
+                            // "상품 문의" 모달 닫기 함수
+                            function closeProductInquiryModal() {
+                                var modal = document.getElementById('productInquiryModal');
+                                // 모달 창 닫기
+                                modal.style.display = 'none';
+                            }
+
+                            // 모달 바깥 클릭 이벤트 핸들러 등록
+                            window.addEventListener('click', function(event) {
+                                var modal = document.getElementById('productInquiryModal');
+                                // 모달 바깥을 클릭하고 모달이 열려있는 경우에만 모달을 닫음
+                                if (event.target === modal) {
+                                    closeProductInquiryModal();
+                                }
+                            });
+
+                            // 모달 내의 "닫기" 버튼 클릭 이벤트 핸들러 등록
+                            document.querySelector('#productInquiryModal .qna-modal-close').addEventListener('click', closeProductInquiryModal);
+
+                            ///////////////////////////////////////////////////////////////////////////////////////////
+                            // 상품 문의 모달의 확인 버튼 클릭 이벤트 핸들러
+                            ///////////////////////////////////////////////////////////////////////////////////////////
+                            document.querySelector('.qna-product-btnLink').addEventListener('click', function() {
+                                // 입력된 내용 가져오기
+                                var inquiryCate = document.querySelector('.product-inquiry-select').value;
+                                var inquiryContent = document.querySelector('.qna-product-textarea').value;
+                                var isStatus2 = document.querySelector('input[type="checkbox"]').checked;
+
+                                // 상품 문의 데이터 객체 생성
+                                var qnaData = {
+                                    inquiryType: inquiryCate,
+                                    inquiryContent: inquiryContent,
+                                    isSecret: isStatus2
+                                };
+
+                                // AJAX 요청을 위한 설정
+                                var xhr = new XMLHttpRequest();
+                                xhr.open('POST', '/product/view/qna', true);
+                                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                                // 서버 응답 처리
+                                xhr.onload = function() {
+                                    if (xhr.status === 200) {
+                                        // 성공적으로 저장된 경우
+                                        alert('상품 문의가 성공적으로 등록되었습니다.');
+                                        // 모달 닫기
+                                        closeModal();
+                                    } else {
+                                        // 오류 발생 시
+                                        alert('상품 문의 등록에 실패했습니다.');
+                                    }
+                                };
+
+                                // 서버로 데이터 전송
+                                xhr.send(JSON.stringify(qnaData));
+                            });
+
+
                         }
+
+
                     </script>
+
                     <th:block th:if="${#authentication.principal != 'anonymousUser'}">
                         <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
                     </th:block>
@@ -938,6 +1025,7 @@
             </article>
 
             <!-- 상품 리뷰 내용 -->
+
             <div class="prodReviewBox" id="prodReviewBox">
                 <div class="prodReviewHeader">
                     <div>
@@ -1081,66 +1169,35 @@
                 </div>
             </div>
 
-            <div style="border: 1px solid #c9c9c9;" class="container">
-                <h2>문의 내용</h2>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>번호</th>
-                        <th>내용</th>
-                        <th>작성 시간</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                        <td>2024-04-21 19:18:51</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                        <td>2024-04-21 19:18:51</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td style="font-size: 42px">여기서 문의 내용을 입력하세요.</td>
-                        <td>2024-04-21 19:18:51</td>
-                    </tr>
-                    <!-- 여기에 나머지 문의 내용 추가 -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="QA_view">
+            <!-- Q&A 내용 -->
+            <br/><br/>
+            <article id="view-qna-article" style="width: 953px; height: 100%; ">
+            <div id="view-qna">
                 <div>
-                    <div>
-                        <strong>Q&A</strong>
-                        <span>(943)</span>
+                    <div class="product-qna-title1">
+                        <strong style="margin-left: 20px; font-weight: 600; font-size: 24px;">Q&A</strong><span>(943)</span>
+                        <hr/>
                     </div>
                 </div>
-                <div>
-                    <p>"답변은"
-                        <strong>마이롯데 > 나의 문의 내역</strong>
+                <div style="font-size: 14px;" class="product-qna-title">
+                    <p class="product-qna-title-1">"답변은"
+                        <strong style="font-size: 14px; font-weight: 700">마이롯데 > 나의 문의 내역</strong>
                         "에서 확인하실 수 있습니다."
-                    </p>
-                    <button>문의하기</button>
+                        <button class="product-qna-write" id="openModal">문의하기</button>
+                    </p><br/><br/>
+
                 </div>
                 <ul>
                     <li>
-                        <div>
-                            <span>상품정보</span>
-                            <span>::before
+                        <div class="product-qna-info">
+                            <span class="">상품정보</span>
+                            <span >::before
                                 "옵션":061 포피 코랄
                                 </span>
-                            <div>
-                                <button>
-                                    <span>메뉴더보기</span>
-                                </button>
-                            </div>
                         </div>
-                        <div>
+                        <div class="product-qna-content">
                             <p>
-                                <span>비밀글입니다</span>
+                                <span>비밀글입니다</span><br>
                                 <span>비밀글답변입니다</span>
                             </p>
                         </div>
@@ -1148,6 +1205,85 @@
                         <div></div>
                     </li>
                 </ul>
+            </div>
+            </article>
+
+            <!-- QNA 모달 -->
+            <div id="qnaModal" class="qna-modal">
+                <!-- 모달 내용 -->
+                <div class="qna-modal-content">
+                    <h2 class="qna-modal-content-h2">
+                        <span class="qna-modal-content-title">문의하기</span>
+                    </h2>
+                    <div class="qna-modal-btnWrap">
+                        <div class="qna-modal-btnItem">
+                            <span>
+                                <button id="openProductInquiryModal" class="qna-modal-btnLink">상품 문의</button>
+                            </span>
+                        </div>
+                        <div>
+                            <span>
+                                <a th:href="@{/cs}" class="qna-modal-btnLink">고객 센터 메인</a>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- 모달 닫기 버튼 -->
+                    <span class="qna-modal-close">&times;</span>
+                </div>
+            </div>
+
+            <!-- 상품 문의 모달 -->
+            <div id="productInquiryModal" class="qna-modal">
+                <div class="qna-modal-content">
+                    <!-- 상품 정보 -->
+                    <h2 class="qna-modal-content-h2">
+                        <span class="qna-modal-content-title">상품 문의</span>
+                    </h2>
+                    <div class="product-info">
+                        <span>
+                            <p> 상품 정보 불러오기</p>
+                        </span>
+                    </div>
+                    <!-- 상품 문의 내용 입력 폼 -->
+                    <div class="product-inquiry-form">
+                        <div>
+                        <span>
+                              <h2>문의유형</h2>
+                              <select class="product-inquiry-select" name="cate">
+                                <option value="#">문의유형 선택</option>
+                                <option value="#">상품정보</option>
+                                <option value="#">사이즈/용량</option>
+                                <option value="#">사용설명</option>
+                                <option value="#">디자인/색상</option>
+                                <option value="#">기타</option>
+                              </select>
+                        </span>
+                        </div>
+                        <div>
+                            <span>
+                                <h2>문의내용</h2>
+                                <textarea name="content" class="qna-product-textarea" placeholder="최소 10자 이상 입력해 주세요. 연락처, 주민번호 등 개인정보 기입은 삼가주시기 바랍니다. 개인정보 포함 시 임의로 삭제될 수 있습니다."></textarea>
+                            </span>
+                        </div>
+                        <div>
+                            <p>비밀글 하실?</p><input name="status2" type="checkbox" />
+                        </div>
+                        <div class="qna-product-btnWrap">
+                            <div class="qna-product-btnItem">
+                                <span>
+                                    <a class="qna-product-btnLink-cancle">취소</a>
+                                </span>
+                            </div>
+                            <div>
+                                <span>
+                                    <a class="qna-product-btnLink">확인</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 모달 닫기 버튼 -->
+                    <span class="qna-modal-close">&times;</span>
+                </div>
             </div>
 
 

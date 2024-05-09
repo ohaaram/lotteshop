@@ -23,10 +23,32 @@
     <header>
         <div class="top">
             <div>
-                <a th:href="@{/member/login}">로그인</a>
+                <th:block th:if="${#authentication.principal == 'anonymousUser'}">
+                    <a th:href="@{/member/login}">로그인</a>
+                </th:block>
+
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <a th:href="@{/member/logout}">로그아웃</a>
+                </th:block>
+
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role != 'USER'}">
+                        <a th:href="@{/admin/index}">관리자페이지</a>
+                    </th:block>
+                </th:block>
                 <a th:href="@{/member/join}">회원가입</a>
-                <a href="#"`>마이페이지</a>
-                <a href="#"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
+                <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                    <th:block th:if="${#authentication.principal.user.role == 'USER'}">
+                        <a th:href="@{/my/home}">마이페이지</a>
+                        <th:block>
+                        </th:block>
+                        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                            <th:block th:if="${#authentication.principal.user.role == 'USER'}">
+                                <a th:href="@{/product/cart}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                </th:block>
             </div>
         </div>
         <div class="logo">
@@ -46,10 +68,10 @@
 
     <footer>
         <ul>
-            <li><a href="#">회사소개</a></li>
-            <li><a href="#">서비스이용약관</a></li>
-            <li><a href="#">개인정보처리방침</a></li>
-            <li><a href="#">전자금융거래약관</a></li>
+            <li><a th:href="@{/company/index}">회사소개</a></li>
+            <li><a th:href="@{/policy/buyer}">서비스이용약관</a></li>
+            <li><a th:href="@{/policy/privacy}">개인정보처리방침</a></li>
+            <li><a th:href="@{/policy/finance}">전자금융거래약관</a></li>
         </ul>
         <div>
             <p><img th:src="@{/images/footer_logo.png}" alt="로고" /></p>

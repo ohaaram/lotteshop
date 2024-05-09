@@ -5,11 +5,9 @@ import com.nimbusds.jose.shaded.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.*;
-import kr.co.lotte.entity.Carts;
-import kr.co.lotte.entity.Products;
-import kr.co.lotte.entity.SubProducts;
-import kr.co.lotte.entity.User;
+import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.CartsRepository;
+import kr.co.lotte.repository.OrderItemsRepository;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.MainService;
 import kr.co.lotte.service.MarketService;
@@ -38,12 +36,14 @@ public class MarketController {
 
     @Autowired
     private final MainService mainService;
+    @Autowired
+    private OrderItemsRepository orderItemsRepository;
 
 
     @GetMapping("/product/list")
     public String list(Model model, MainProductsPageRequestDTO requestDTO, @AuthenticationPrincipal MyUserDetails userDetails) {
         int view = 0;
-        if(requestDTO.getCate() == "" || requestDTO.getCate() == null){
+        if(requestDTO.getBoard() == "" || requestDTO.getBoard() == null){
             MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
             List<Products> products = pageResponseDTO.getDtoList();
             try {
@@ -60,7 +60,7 @@ public class MarketController {
             model.addAttribute("pageResponseDTO", pageResponseDTO);
         }else{
             view = 1;
-            List<Products> products = mainService.searchListForCate(requestDTO.getCate());
+            List<Products> products = mainService.searchListForCate(requestDTO.getBoard());
             try {
                 User user = userDetails.getUser();
                 products  = mainService.hahaha(products, user.getUid());
@@ -69,7 +69,7 @@ public class MarketController {
                     p.setLikeState(0);
                 }
             }
-            model.addAttribute("state", requestDTO.getCate());
+            model.addAttribute("state", requestDTO.getBoard());
             model.addAttribute("products", products);
             model.addAttribute("view", view);
 
@@ -324,11 +324,11 @@ public class MarketController {
 
 
     @GetMapping("/product/orderDelete")
-    public ResponseEntity orderDelete(Model model, @RequestParam(name = "itemNo") int itemNo, Authentication authentication) {
+    public ResponseEntity orderDelete(Model model, @RequestParam(name = "itemNo") int itemNo, @RequestParam(name= "excuse") String excuse, Authentication authentication) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         User user = userDetails.getUser();
 
-        return marketService.orderDelete(itemNo, user.getUid());
+        return marketService.orderDelete(itemNo, user.getUid() , excuse);
 
     }
 
@@ -345,6 +345,12 @@ public class MarketController {
     @GetMapping("/product/likeSearch")
     public ResponseEntity likeSearch(@RequestParam(name = "userId") String uid, @RequestParam(name = "prodNo") int prodNo) {
         return marketService.search(uid, prodNo);
+    }
+
+    //구매확정
+    @GetMapping("/product/completeOrder")
+    public ResponseEntity completeOrder(@RequestParam(name = "itemNo") int itemNo) {
+        return marketService.completeOrder(itemNo);
     }
 
 }

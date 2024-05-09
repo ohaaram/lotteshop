@@ -36,10 +36,14 @@ public class MemberController {
     }
 
     @GetMapping("/member/login")
-    public String login(Model model, HttpServletRequest request) {
+
+    public String login(Model model , HttpServletRequest request, @RequestParam(name = "success", required = false)String success) {
+
         String previousUrl = request.getHeader("Referer");
         HttpSession session = request.getSession();
-        session.setAttribute("previousUrl", previousUrl);
+        if(session.getAttribute("previousUrl") == null && success == null) {
+            session.setAttribute("previousUrl", previousUrl);
+        }
 
         List<BannerDTO> banner4 = adminService.findMEMBER1("MEMBER1");
         model.addAttribute("banner4", banner4);
@@ -76,6 +80,30 @@ public class MemberController {
 
         if (type.equals("email") && count <= 0) {
             log.info("email={}", value);
+            memberService.sendEmailCode(session, value);
+        }
+
+        //Json 생성
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", count);
+
+        return ResponseEntity.ok().body(resultMap);
+    }
+    @ResponseBody
+    @GetMapping("/seller/check/{type}/{value}")
+    public ResponseEntity<?> checkSeller(HttpSession session,
+                                       @PathVariable("type") String type,
+                                       @PathVariable("value") String value) {
+
+        log.info("memberController.......");
+        log.info("type={}", type);
+        log.info("value={}", value);
+        int count = memberService.selectCountSeller(type, value);
+
+        log.info("count={}", count);
+
+        if (type.equals("sellerEmail") && count <= 0) {
+            log.info("sellerEmail={}", value);
             memberService.sendEmailCode(session, value);
         }
 

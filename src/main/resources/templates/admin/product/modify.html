@@ -7,90 +7,6 @@
         let optionList = [];
 
         window.onload=function (){
-            const cateName1 = document.getElementById('cateName1');
-            const cateName2 = document.getElementById('cateName2');
-            const selectElement = document.querySelector('select[name="cateName2"]');
-            const selectElement2 = document.querySelector('select[name="cateName3"]');
-            cateName1.onchange=async function () {
-                var value = this.value;
-                console.log(value)
-                const jsondata = {cate: value}
-                const result1 = await fetchPost('/lotteshop/admin/product/selectSecondCate', jsondata);
-
-                for (let i = selectElement.options.length - 1; i >= 0; i--) {
-                    const option = selectElement.options[i];
-                    if (option.value !== "cate0") {
-                        selectElement.removeChild(option);
-                    }
-                }
-
-                result1.data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.textContent = item;
-                    selectElement.appendChild(option);
-                });
-            }
-
-            cateName2.onchange=async function () {
-                var value = this.value;
-                console.log(value)
-                const jsondata = {cate: value}
-                const result1 = await fetchPost('/lotteshop/admin/product/selectThridCate', jsondata);
-
-                for (let i = selectElement2.options.length - 1; i >= 0; i--) {
-                    const option = selectElement2.options[i];
-                    if (option.value !== "cate0") {
-                        selectElement2.removeChild(option);
-                    }
-                }
-
-                result1.data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.textContent = item;
-                    selectElement2.appendChild(option);
-                });
-
-
-            }
-
-
-            document.getElementById('addOption').addEventListener('click', function () {
-                // 테이블 요소 찾기
-                var table = document.querySelector('table[name="option"]');
-
-                // 새로운 행 생성
-                var newRow = document.createElement('tr');
-
-                // 새로운 행에 셀과 입력 필드 추가
-                newRow.innerHTML = `
-            <td class="label">가격 :</td>
-            <td><input type="text" name="prodPrice"/></td>
-            <td class="label">재고 :</td>
-            <td><input type="text" name="prodStock"/></td>
-            <td class="label">색상 :</td>
-            <td><input type="text" name="color" placeholder="필요시 입력"/></td>
-            <td class="label">사이즈 :</td>
-            <td><input type="text" name="size"  placeholder="필요시 입력"/></td>
-        `;
-
-                // 테이블에 새로운 행 추가
-                table.appendChild(newRow);
-            });
-
-
-            document.getElementById('minusOption').addEventListener('click', function () {
-                var table = document.querySelector('table[name="option"]');
-                var lastRow = table.rows[table.rows.length - 1];
-                table.removeChild(lastRow);
-            });
-
-            const submit= document.getElementById('submit');
-            submit.onclick=async function (e) {
-                e.preventDefault();
-                const formData = new FormData(document.getElementById('form'));
-                console.log(formData)
-
-            };
 
 
             // 폼 제출 시 추가 옵션들을 리스트로 만들어서 JSON으로 변환하여 전송
@@ -108,25 +24,23 @@
                         prodPrice: row.cells[1].querySelector('input[name="prodPrice"]').value,
                         prodStock: row.cells[3].querySelector('input[name="prodStock"]').value,
                         color: row.cells[5].querySelector('input[name="color"]').value,
-                        size: row.cells[7].querySelector('input[name="size"]').value
+                        size: row.cells[7].querySelector('input[name="size"]').value,
+                        subProdNo: row.cells[8].querySelector('input[name="prodNo"]').value
                     };
                     optionList.push(option);
                 }
-
-                // 옵션 리스트를 JSON으로 변환하여 서버로 전송
-                const response = await fetch('/lotteshop/admin/product/subOption', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(optionList),
-                });
-                const data = await response.json();
-                if(data.data===1){
+                console.log(optionList)
+              const json = {list : optionList }
+                const response = await fetchPost('/lotteshop/admin/product/subOptionModify', json);
+                if(response != null){
                     document.getElementById('form').submit();
                 }
-                console.log(data);
+
+
+
             });
+
+
         }
     </script>
     <nav>
@@ -137,11 +51,13 @@
     </nav>
     <!-- 상품등록 컨텐츠 시작 -->
     <article>
-        <form th:action="@{/}" method="post" enctype="multipart/form-data" id="form">
+        <form th:action="@{/admin/product/modify}" method="post" enctype="multipart/form-data" id="form">
             <!-- 상품분류 -->
             <section>
                 <h4>상품분류</h4>
-
+                <input type="hidden" name="prodNo" th:value="${products.prodNo}">
+                <input type="datetime-local" style="display: none" name="RegProdDate" th:value="${products.RegProdDate}">
+                <input type="hidden"  name="sellerName" th:value="${products.sellerName}">
                 <table>
                     <tr>
                         <td>1차 분류</td>
@@ -208,13 +124,6 @@
                     <tr>
                         <td>상품 썸네일</td>
                         <td>
-                            <!--
-                            <span>크기 190 x 190, 상품 목록에 출력될 이미지 입니다. </span>
-                            <input type="file" name="#"/>
-
-                            <span>크기 230 x 230, 상품 메인에 출력될 이미지 입니다. </span>
-                            <input type="file" name="#"/>
--->
                             <span>크기 456 x 456, 상품 목록, 메인, 상세에 출력될 이미지 입니다. </span>
                             <input type="file" name="multImage3"/>
                             <a th:href="@{/uploads/__${products.image1}__}">기존 이미지 보기</a>
@@ -299,9 +208,10 @@
                         <td class="label">재고 :</td>
                         <td><input type="text" name="prodStock" th:value="${sub.prodStock}"/></td>
                         <td class="label">색상 :</td>
-                        <td><input type="text" name="color" th:value="${sub.color}"/></td>
+                        <td><input type="text" name="color" th:value="${sub.color}" readonly/></td>
                         <td class="label">사이즈 :</td>
-                        <td><input type="text" name="size"  th:value="${sub.size}"/>
+                        <td><input type="text" name="size"  th:value="${sub.size}" readonly/>  </td>
+                        <td><input type="hidden" name="prodNo"  th:value="${sub.subProdNo}" readonly/>
 
                         </td>
                     </tr>

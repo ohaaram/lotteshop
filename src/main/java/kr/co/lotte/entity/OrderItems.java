@@ -31,6 +31,8 @@ public class OrderItems {
     @CreationTimestamp
     private Date orderDate;
 
+    private String excuse;
+
     @Transient
     private Products product;
 }

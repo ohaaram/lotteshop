@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #444;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        section {
+            padding: 20px;
+            margin: 20px;
+            background-color: #fff;
+        }
+
+        .post {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+
+        .post img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+
+        select {
+            display: inline-block;
+            width: 70%;
+            border: none;
+            outline: none;
+            font-size: 20px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* 입력(input) 박스 스타일 */
+        #title {
+            display: inline-block;
+            width: 70%;
+            border: none;
+            outline: none;
+            font-size: 20px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #oneLine {
+            border: none;
+            outline: none;
+            padding: 10px;
+        }
+
+        #content {
+            border: none;
+            outline: none;
+            padding: 15px;
+
+        }
+
+        /* 이미지 업로드 버튼 스타일 */
+        #imgUpload {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            /*background-color: #E3E2E2;*/
+            color: #1e1e1e;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* 글쓰기 버튼 스타일 */
+        #writeBtn {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            margin-left: auto; /* 우측 정렬을 위한 속성 추가 */
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to My Blog</h1>
+</header>
+
+<nav>
+    <a href="#lotteon">LotteON</a>
+    <a href="#interview">Interview</a>
+    <a href="#recruit">Recruit</a>
+    <a href="#culture">Culture</a>
+</nav>
+<section id="lotteon">
+    <form id="blogForm" th:action="@{/admin/blogWrite}" method="post" enctype="multipart/form-data">
+        <select name="cate" style="width: 70%; border: none; outline: none; font-size: 20px;">
+            <option value="" disabled selected>카테고리를 선택해주세요</option>
+            <option value="lotteOn">LotteON</option>
+            <option value="interview">Interview</option>
+            <option value="recruit">Recruit</option>
+            <option value="culture">Culture</option>
+        </select>
+        <input id="title" name ="title" type="text" placeholder="여기에 제목을 입력해주세요">
+        <input id="oneLine" name="oneLine" type="text" placeholder="부제목을 입력해주세요">
+        <div class="post">
+            <input id="content" name="content" type="text" placeholder="내용을 입력해주세요">
+        </div>
+        <input type="file" id="imgUpload" name="multImage1" accept="image/*">
+        <button id="writeBtn">글쓰기</button>
+    </form>
+</section>
+
+<footer>
+    <p>&copy; 2024 My Blog</p>
+</footer>
+</body>
+</html>

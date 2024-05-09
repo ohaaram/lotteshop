@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 public interface MemberMapper {
 
     public int selectCountMember(@Param("type") String type, @Param("value") String value);
+
     public UserDTO findUser(String uid);
 
     public void updateUserForType(@Param("type") String type, @Param("value") String value, String uid);

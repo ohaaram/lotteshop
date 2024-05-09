@@ -19,8 +19,6 @@ public class QBlog extends EntityPathBase<Blog> {
 
     public static final QBlog blog = new QBlog("blog");
 
-    public final StringPath author = createString("author");
-
     public final NumberPath<Integer> bno = createNumber("bno", Integer.class);
 
     public final StringPath cate = createString("cate");

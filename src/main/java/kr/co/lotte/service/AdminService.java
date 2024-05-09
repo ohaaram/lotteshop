@@ -285,11 +285,147 @@ public class AdminService {
 
     }
 
+    public ResponseEntity productModify(ProductsDTO productsDTO)  {
+        Products products =modelMapper.map(productsDTO, Products.class);
+        Products old = productsRepository.findById(products.getProdNo()).get();
+        MultipartFile image3 = productsDTO.getMultImage3();
+        MultipartFile image4 = productsDTO.getMultImage4();
+
+        if(image3.getOriginalFilename() == null || image3.getOriginalFilename() == ""){
+            log.info("here...");
+            products.setImage1(old.getImage1());
+            products.setImage2(old.getImage2());
+            products.setImage3(old.getImage3());
+        }else{
+            try {
+                List<ProdImageDTO> lists = fileModifyOne(image3);
+                for (int i = 0; i < lists.size(); i++) {
+                    ProdImageDTO imageDTO = lists.get(i);
+                    if (i == 0) {
+                        products.setImage1(imageDTO.getSName());
+                    } else if (i == 1) {
+                        products.setImage2(imageDTO.getSName());
+                    } else if (i == 2) {
+                        products.setImage3(imageDTO.getSName());
+                    }
+                }
+            }catch (Exception e){
+
+            }
+        }
+
+        if(image4.getOriginalFilename() == null || image4.getOriginalFilename() == ""){
+            products.setImage4(old.getImage4());
+        }else{
+            try {
+             ProdImageDTO image = fileModifyTwo(image4);
+                products.setImage4(image.getSName());
+            }catch (Exception e){
+
+            }
+        }
+        products.setRegProdDate(old.getRegProdDate());
+        productsRepository.save(products);
+
+        Map<String, Integer> map = new HashMap<>();
+        return ResponseEntity.ok().body(map);
+    }
+
 
     //여기 하다가 말았음!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //(아래는)파일 크기 조정
     @Value("${file.upload.path}")
     private String fileUploadPath;
+
+    public List<ProdImageDTO> fileModifyOne(MultipartFile files) throws IOException {
+
+        if (fileUploadPath.startsWith("file:")) {
+
+            fileUploadPath = fileUploadPath.substring("file:".length());
+        }
+        ;
+
+        String path = new File(fileUploadPath).getAbsolutePath();
+
+        // 이미지 정보 리턴을 위한 리스트
+        List<ProdImageDTO> imageDTOS = new ArrayList<>();
+
+        MultipartFile mf = files;
+          String oName = mf.getOriginalFilename();
+         String ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+           String sName = UUID.randomUUID().toString() + ext;
+         File file = new File(path, sName);
+                        Thumbnails.of(mf.getInputStream())
+                                .size(190, 190) // 썸네일 크기 지정
+                                .toFile(file);
+
+                        ProdImageDTO prodImageDTO = ProdImageDTO.builder()
+                                .oName(oName)
+                                .sName(sName)
+                                .build();
+
+                        oName = mf.getOriginalFilename();
+                        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+                        sName = UUID.randomUUID().toString() + ext;
+                        file = new File(path, sName);
+                        Thumbnails.of(mf.getInputStream())
+                                .size(230, 230) // 썸네일 크기 지정
+                                .toFile(file);
+
+                        ProdImageDTO prodImageDTO2 = ProdImageDTO.builder()
+                                .oName(oName)
+                                .sName(sName)
+                                .build();
+
+
+                        oName = mf.getOriginalFilename();
+                        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+                        sName = UUID.randomUUID().toString() + ext;
+                        file = new File(path, sName);
+                        Thumbnails.of(mf.getInputStream())
+                                .size(456, 456) // 썸네일 크기 지정
+                                .toFile(file);
+
+                        ProdImageDTO prodImageDTO3 = ProdImageDTO.builder()
+                                .oName(oName)
+                                .sName(sName)
+                                .build();
+
+                        imageDTOS.add(prodImageDTO);
+                        imageDTOS.add(prodImageDTO2);
+                        imageDTOS.add(prodImageDTO3);
+        return imageDTOS;
+    }
+
+    public ProdImageDTO fileModifyTwo(MultipartFile files) throws IOException {
+
+        if (fileUploadPath.startsWith("file:")) {
+
+            fileUploadPath = fileUploadPath.substring("file:".length());
+        }
+        ;
+
+        String path = new File(fileUploadPath).getAbsolutePath();
+
+        // 이미지 정보 리턴을 위한 리스트
+        MultipartFile mf=files;
+        String oName = mf.getOriginalFilename();
+        String ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+        String sName = UUID.randomUUID().toString() + ext;
+        File file = new File(path, sName);
+
+        Thumbnails.of(mf.getInputStream())
+                .width(940)
+                .keepAspectRatio(true)// 썸네일 크기 지정
+                .toFile(file);
+
+        ProdImageDTO prodImageDTO = ProdImageDTO.builder()
+                .oName(oName)
+                .sName(sName)
+                .build();
+
+        return  prodImageDTO ;
+    }
 
     public List<ProdImageDTO> fileUpload(List<MultipartFile> files) {
 
@@ -305,11 +441,12 @@ public class AdminService {
         List<ProdImageDTO> imageDTOS = new ArrayList<>();
 
         log.info("fileUploadPath..1 : " + path);
-
         for (int i = 0; i < files.size(); i++) {
             MultipartFile mf = files.get(i);
-            if (!mf.isEmpty()) {
+            if(mf.getOriginalFilename() ==null || mf.getOriginalFilename() == "")
+            {
 
+            }else {
                 try {
 
                     if (i == 0) {
@@ -383,7 +520,9 @@ public class AdminService {
                 } catch (IOException e) {
                     log.error("Failed to upload file: " + e.getMessage());
                 }
-            }
+            };
+
+
         }
 
         return imageDTOS;
@@ -1074,5 +1213,20 @@ public class AdminService {
         Optional<Seller> seller = sellerRepository.findById(uid);
 
         return seller.isPresent();
+    }
+
+    //옵션수정
+    public ResponseEntity modifyOptions(List<SubProductsDTO> subProductsDTOS){
+        Map<String, String> map = new HashMap<>();
+
+        for(SubProductsDTO subProductsDTO : subProductsDTOS){
+            SubProducts old = subProductsRepository.findById(subProductsDTO.getSubProdNo()).get();
+            old.setProdStock(subProductsDTO.getProdStock());
+            old.setProdPrice(subProductsDTO.getProdPrice());
+            subProductsRepository.save(old);
+        }
+
+        map.put("result", "1");
+        return ResponseEntity.ok().body(map);
     }
 }

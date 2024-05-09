@@ -9,6 +9,7 @@ import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
 
 import kr.co.lotte.mapper.MemberMapper;
+import kr.co.lotte.mapper.SellerMapper;
 import kr.co.lotte.mapper.TermsMapper;
 import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TermsMapper termsMapper;
     private final PointsRepository pointsRepository;
+    private final SellerMapper sellerMapper;
     private final ReviewRepository reviewRepository;
     private final ReviewImgRepository reviewImgRepository;
 
@@ -53,6 +55,10 @@ public class MemberService {
     //회원 등록이 되어 있는지 확인하는 서비스(0또는 1)
     public int selectCountMember(String type, String value) {
         return memberMapper.selectCountMember(type, value);
+    }
+
+    public int selectCountSeller(String type, String value) {
+        return sellerMapper.selectCountSeller(type, value);
     }
 
     //이메일 보내기 서비스
@@ -282,6 +288,8 @@ public class MemberService {
 
         return count;
     }
+
+
 }
 
 

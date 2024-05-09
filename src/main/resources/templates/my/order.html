@@ -86,7 +86,7 @@
                                     style="width: 100px; height: 100px"
                                     th:src="@{/uploads/__${products[index.index][0].image1}__}" alt=""></a>
                             <ul>
-                                <li class="prodName"><span th:href="@{#}" onclick="openPopup()">[[${products[index.index][0].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]개</span>
+                                <li class="prodName"><span th:href="@{#}" onclick="openPopup()">[[${products[index.index][0].prodName}]] 외 [ [[${orderItems[index.index].size() - 1}]] ]건</span>
                                 </li>
                                 주문번호 : <span class="ordNo">[[${order.orderNo}]]</span></li>
                                 <li class="prodPrice">[[${order.orderTotalPrice}]]</li>
@@ -107,7 +107,62 @@
                     </tr>
                 </th:block>
             </table>
+            <!-- 주문 취소를 위한 모달-->
+            <div id="deleteOrder" class="modal on">
+                <div class="modal-content">
+                    <span id="close_order" class="close_btn">&times;</span>
+                    <h3>주문 취소 환불</h3>
+                    <form th:action="@{#}" id="reviewForm" method="post">
+                        <input type="hidden" id="prodno" name="prodNo"/>
+                        <input type="hidden" id="prodname" name="prodname"/>
+                        <input type="hidden" id="uid" name="uid"/>
+                        <input type="hidden" id="orderno" name="orderno"/>
+                        <input type="hidden" id="itemno" name="itemno"/>
 
+                        <div class="form-group">
+                            <label for="reviewTitle">내역 </label>
+                            <table style="border: 1px gray solid; width: 100%; font-size: 14px">
+                                <tr style="border-bottom: 1px solid gray;">
+                                    <th style="  width: 30%">환불할 상품</th>
+                                    <td id="refundProduct"></td>
+                                </tr>
+                                <tr>
+                                    <th style=" ">돌려받으실 포인트</th>
+                                    <td id="backPoint"></td>
+                                </tr>
+                                <tr>
+                                    <th style=" ">차감될 포인트</th>
+                                    <td id="discountPoint"></td>
+                                </tr>
+                                <tr>
+                                    <th style=" ">부가되는 배송비</th>
+                                    <td id="deliveryFee"></td>
+                                </tr>
+                                <tr>
+                                    <th >환불 받으실 금액</th>
+                                    <td id="refundTotal" style="color: red"></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reviewContent">취소/환불 사유</label> <br>
+
+                            <label for="excuse">
+                                <select id="excuse" >
+                                <option style="font-size: large" value="단순 변심" >단순 변심</option>
+                                <option style="font-size: large" value="주문 실수" >주문 실수</option>
+                                <option style="font-size: large" value="제품 불량" >제품 불량</option>
+                                <option style="font-size: large" value="더 저렴한 상품을 찾아서" >더 저렴한 상품을 찾아서</option>
+                                <option style="font-size: large" value="기타" >기타</option>
+                            </select>
+                            </label>
+                        </div>
+                    </form>
+                    <input type="hidden" value="" id="refundItemNo">
+                    <button class="btn_review" id="refundRegister" type="submit" style="text-align: center">요청</button>
+                </div>
+            </div>
 
             <!-- 리뷰 작성을 위한 모달 -->
             <div id="reviewModal" class="modal">
@@ -210,23 +265,22 @@
                                                 <li></li>
 
                                             </ol>
+                                        </td>
                                         <td th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
-                                            class="confirm" style="text-align: center">
+                                            class="confirm" style="text-align: center; ">
                                             <ol>
                                                 <li id="orderCheck"
-                                                    th:if="${orderItem.orderState != '구매확정' &&
+                                                    th:if="${orderItem.orderState != '구매 확정' &&
                                                     orderItem.orderState != '환불' &&
                                                      orderItem.orderState != '주문 취소'}" th:data-itemNo="${orderItem.itemNo}" class="receive">수취확인</li>
-                                                <li th:if="${orderItem.orderState == '구매확정'}" th:href="@{#}"
+                                                <li th:if="${orderItem.orderState == '구매 확정'}" th:href="@{#}"
                                                     class="review" th:data-orderno="${order.orderNo}"
                                                     th:data-itemno="${orderItem.itemNo}"
                                                     th:data-prodname="${products[index.index][orderindex.index].prodName}"
                                                     th:data-uid="${#authentication.principal.user.uid}"
                                                     th:data-prodno="${products[index.index][orderindex.index].prodNo}">
                                                     상품평
-                                                </li><!--구매확정이 되면 상품평 입력이 가능함-->
-                                                <!--
-                                                <li th:href="@{#}" class="exchange">교환신청</li> -->
+                                                </li>
                                                 <li id="delete"
                                                     th:if="${orderItem.orderState != '주문 취소' && orderItem.orderState != '환불'}"
                                                     th:data-itemNo="${orderItem.itemNo}" class="refund">환불(주문취소)신청
@@ -234,7 +288,7 @@
 
                                             </ol>
                                         </td>
-                                        </td>
+
                                     </tr>
 
                                 </table>
@@ -286,31 +340,77 @@
                     //주문취소
                     const deletes = document.querySelectorAll('#delete');
                     const orderChecks = document.querySelectorAll('#orderCheck');
+                    const close_order = document.getElementById('close_order');
+                    const refundRegister = document.getElementById('refundRegister');
+                    close_order.onclick=function (e){
+                        e.preventDefault();
+                        closeDelete();
+                    }
+                    //주문확인
+                    orderChecks.forEach(function (item){
+                        item.onclick = async function () {
+                            if(confirm('구매를 확정하겠습니까?')){
+                                const result = await fetchGet('/lotteshop/product/completeOrder?itemNo='+item.getAttribute('data-itemNo'));
+                                if(result != null){
+                                    alert('구매가 확정되었습니다.')
+                                    location.reload();
+                                }
+                            }
+                        }
+                    })
 
                     deletes.forEach(function (item) {
                         item.onclick = async function () {
                             const result = await fetchGet('/lotteshop/product/checkOrder?itemNo=' + item.getAttribute('data-itemNo'));
                             if (result.data == "1") {
-                                if (confirm('포인트를 사용한 경우 부분 취소가 아닌, 전체 취소만 가능합니다. 그렇게 하시겠습니까?')) {
-                                    const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
-                                    if (result2.data == 1) {
-                                        alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
-                                        location.reload();
-                                    } else {
-                                        alert("취소가 완료되었습니다.")
-                                        location.reload();
+                                if (confirm('포인트 및 쿠폰을 사용한 경우 부분 취소가 아닌, 전체 취소만 가능합니다. 그렇게 하시겠습니까?')) {
+                                    document.querySelectorAll('.btnClose').forEach(function (item){
+                                        item.click();
+                                    })
+                                    //모달 띄우기
+                                     openDelete();
+                                    console.log(result)
+                                    //내용 채우기
+                                    setDeleteContent(result.name , result.refundPoint, result.minusPoint, result.delivery, result.refundTotal)
+                                    refundRegister.onclick=async function (e) {
+                                        e.preventDefault();
+
+                                        if (confirm('정말로 취소하시겠습니까?')) {
+                                            const excuse = document.getElementById('excuse').value;
+
+                                            const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo')+'&excuse='+excuse);
+                                            if (result2.data != null) {
+                                                alert("취소가 완료되었습니다.")
+                                                location.reload();
+                                            }
+                                        }
                                     }
                                 }
                             } else {
                                 if (confirm('정말 취소하시겠습니까?')) {
-                                    const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo'));
-                                    if (result2.data == 1) {
-                                        alert("취소가 완료되었습니다. (배송비 3000원 결제 완료)");
-                                        location.reload();
-                                    } else {
-                                        alert("취소가 완료되었습니다.")
-                                        location.reload();
-                                    }
+                                    document.querySelectorAll('.btnClose').forEach(function (item){
+                                        item.click();
+                                    })
+                                    //모달 띄우기
+                                    openDelete();
+                                    console.log(result)
+                                    //내용 채우기
+                                    setDeleteContent(result.name , result.refundPoint, result.minusPoint, result.delivery, result.refundTotal);
+
+                                    refundRegister.onclick=async function (e) {
+                                        e.preventDefault();
+                                        if (confirm('정말로 취소하시겠습니까?')) {
+                                            const excuse = document.getElementById('excuse').value;
+
+                                            const result2 = await fetchGet('/lotteshop/product/orderDelete?itemNo=' + item.getAttribute('data-itemNo')+'&excuse='+excuse);
+                                            if (result2.data != null) {
+                                                alert("취소가 완료되었습니다.")
+                                                location.reload();
+                                            }
+                                        }
+                                    };
+
+
                                 }
                             }
                         }
@@ -417,6 +517,22 @@
                         if (event.target === modal || event.target === close) {
                             closeModal();
                         }
+                    }
+                    //주문 취소
+                    function openDelete() {
+                        document.getElementById('deleteOrder').style.display = 'block';
+                    }
+                    function closeDelete() {
+                        document.getElementById('deleteOrder').style.display = 'none';
+                    }
+
+                    // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
+                    function setDeleteContent(uid, prodno, prodname, orderno,itemno) {
+                        document.getElementById('refundProduct').innerText = uid;
+                        document.getElementById('backPoint').innerText = prodno;
+                        document.getElementById('discountPoint').innerText = prodname;
+                        document.getElementById('deliveryFee').innerText = orderno;
+                        document.getElementById('refundTotal').innerText = itemno;
                     }
 
 

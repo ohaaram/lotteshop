@@ -49,7 +49,6 @@ public class CsQnaDTO {
         csQna.setFile(file);
         csQna.setRdate(rdate);
         csQna.setRegip(regip);
-
         return csQna;
     }
 }

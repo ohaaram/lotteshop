@@ -267,6 +267,7 @@
                                     <li th:if="${products[index.index].color != '' }"> 옵션 : [[${products[index.index].color}]] , [[${products[index.index].size}]]</li>
                                     <li> 수량 : [[${order.itemCount}]]</li>
                                     <li> 남은재고 : [[${products[index.index].prodStock}]]</li>
+                                    <li style="text-decoration: underline" th:if="${order.orderState == '주문 취소' || order.orderState =='환불'}"> [[${order.excuse}]]</li>
                                     <li class="list-item" >
                                         <input type="hidden" id="aec" th:value="${index.index}">
                                         <span onclick="openPopup(this)" th:data-fno="${order.orderNo}" class="detailOrder" > 주문자 상세 보기</span> </li>

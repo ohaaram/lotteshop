@@ -18,6 +18,8 @@ public class OrderItemsDTO {
     private int itemDiscount;
     private int itemCount;
 
+    private String excuse;
+
     private String orderState;
     private Date orderDate;
 }

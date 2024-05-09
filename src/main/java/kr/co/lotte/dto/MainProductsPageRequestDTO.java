@@ -29,6 +29,7 @@ public class MainProductsPageRequestDTO {
 
     private String keyword;
     private String cate;
+    private String board;
 
 
     public Pageable getPageable(String sort){
