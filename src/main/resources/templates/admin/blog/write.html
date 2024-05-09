@@ -30,6 +30,11 @@
             color: #fff;
             text-decoration: none;
             padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #555;
         }
 
         section {
@@ -122,14 +127,14 @@
 </head>
 <body>
 <header>
-    <h1>Welcome to My Blog</h1>
+    <h1><a th:href="@{/admin/blogList}" style="text-decoration: none;color: #ffffff">Welcome to LotteON Blog</a></h1>
 </header>
 
 <nav>
-    <a href="#lotteon">LotteON</a>
-    <a href="#interview">Interview</a>
-    <a href="#recruit">Recruit</a>
-    <a href="#culture">Culture</a>
+    <a th:href="@{/admin/blogList(cate=lotteOn)}">LotteON</a>
+    <a th:href="@{/admin/blogList(cate=interview)}">Interview</a>
+    <a th:href="@{/admin/blogList(cate=recruit)}">Recruit</a>
+    <a th:href="@{/admin/blogList(cate=culture)}">Culture</a>
 </nav>
 <section id="lotteon">
     <form id="blogForm" th:action="@{/admin/blogWrite}" method="post" enctype="multipart/form-data">
@@ -143,7 +148,7 @@
         <input id="title" name ="title" type="text" placeholder="여기에 제목을 입력해주세요">
         <input id="oneLine" name="oneLine" type="text" placeholder="부제목을 입력해주세요">
         <div class="post">
-            <input id="content" name="content" type="text" placeholder="내용을 입력해주세요">
+            <input style="width: 80%;height: auto" id="content" name="content" type="text" placeholder="내용을 입력해주세요">
         </div>
         <input type="file" id="imgUpload" name="multImage1" accept="image/*">
         <button id="writeBtn">글쓰기</button>

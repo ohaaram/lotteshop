@@ -154,7 +154,6 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
 
         if (cateName1 != null && cateName2 != null && cateName3 != null && cateName1 != "" && cateName2 != "" && cateName3 != "") {
             query = jpaQueryFactory.select(qProducts)
-
                     .from(qProducts)
                     .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2).and(qProducts.cateName3.eq(cateName3))));
 

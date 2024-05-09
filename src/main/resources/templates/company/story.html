@@ -77,7 +77,7 @@
                 <div class="row">
                     <div th:each="cards : ${card}" class="col-md-4 mb-4">
                         <div class="card" style="width: 351px;height: 429px">
-                            <img th:src="@{/company/images/__${cards.images}__}" class="card-img-top" alt="블로그이미지"
+                            <img th:src="@{/uploads/__${cards.images}__}" class="card-img-top" alt="블로그이미지"
                                  style="height: 50%">
                             <div class="card-body">
                                 <p class="card-title" style="font-size: 17px;font-weight: bold"

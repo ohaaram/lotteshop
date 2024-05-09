@@ -25,7 +25,7 @@ public class BlogPageResponseDTO {
     private boolean prev, next;
 
     @Builder
-    public BlogPageResponseDTO (MainProductsPageRequestDTO pageRequestDTO, List<Blog> dtoList, int total){
+    public BlogPageResponseDTO (BlogPageRequestDTO pageRequestDTO, List<Blog> dtoList, int total){
         this.pg = pageRequestDTO.getPg();
         this.size = pageRequestDTO.getSize();
         this.total = total;

@@ -18,6 +18,7 @@ import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -489,11 +490,11 @@ public class AdminController {
 
     //블로그 모든 글 띄우기
     @GetMapping("/admin/blogList")
-    public String blogList(Model model,BlogPageRequestDTO pageRequestDTO) {
+    public String blogList(Model model, BlogPageRequestDTO pageRequestDTO) {
 
-         List<Blog> blogs = blogService.findAll();
+        BlogPageResponseDTO findAllList = blogService.findAllList(pageRequestDTO);
 
-         model.addAttribute("blog",blogs);
+        model.addAttribute("blog",findAllList);
 
         return "/admin/blog/list";
     }
@@ -520,6 +521,7 @@ public class AdminController {
         return "redirect:/admin/blogList";
     }
 
+    //블로그 글 상세보기
     @GetMapping("/admin/blogView/{bno}")
     public String blogView(@PathVariable("bno") int bno, Model model) {
 
@@ -535,4 +537,32 @@ public class AdminController {
     }
 
 
+    //글 삭제
+    @GetMapping("/admin/blogDel/{bno}")
+    public ResponseEntity<?> blogDelete(@PathVariable("bno")int bno){
+
+        log.info("여기는 AdminController - blogDelte");
+
+        blogService.blogDel(bno);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("result", true);
+
+        return ResponseEntity.ok().body(resultMap);
+
+    }
+
+
+    //블로그 글 가져오기(수정을 위해서)
+    @GetMapping("/admin/blogModify")
+    public String modify(@RequestParam("bno")int bno,Model model){
+
+        log.info("AdminController - modify - bno : "+bno);
+
+        Blog blog = blogService.findBlog(bno);
+
+        model.addAttribute("blog",blog);
+
+        return "/admin/blog/modify";
+    }
 }

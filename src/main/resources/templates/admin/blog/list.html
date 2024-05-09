@@ -19,6 +19,7 @@
             text-align: center;
         }
 
+
         nav {
             background-color: #444;
             color: #fff;
@@ -30,6 +31,15 @@
             color: #fff;
             text-decoration: none;
             padding: 10px 20px;
+            transition: background-color 0.3s; /* 호버 효과를 부드럽게*/
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        nav a.active {
+            background-color: #666; /* 클릭된 항목의 배경색 */
         }
 
         section {
@@ -52,17 +62,6 @@
             height: auto;
         }
 
-        .deleteBtn {
-            position: absolute;
-            top: 30px;
-            right: 50px;
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
         footer {
             background-color: #333;
             color: #fff;
@@ -72,21 +71,110 @@
             bottom: 0;
             width: 100%;
         }
+
+        #space_feel {
+            padding-top: 50px; /* 위쪽에 20px의 여백 추가 */
+            padding-bottom: 50px; /* 아래쪽에 20px의 여백 추가 */
+        }
+
+        .deleteBtn {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            background-color: #E5EAEE;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .writeBtn {
+            background-color: #bbb; /* 회색 계통의 배경색 */
+            color: #fff; /* 흰색 텍스트 */
+            border: none; /* 테두리 없음 */
+            padding: 10px 20px; /* 내부 여백 설정 */
+            border-radius: 5px; /* 버튼 모서리를 둥글게 */
+            cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+        }
+
+        /* 버튼에 호버 효과 추가 */
+        .writeBtn:hover {
+            background-color: #999; /* 호버시 조금 더 어두운 회색으로 변경 */
+        }
+
+        .paging {
+            text-align: center;
+            margin-top: 20px;
+            margin-left: 150px;
+        }
+
+        .paging a {
+            color: #666;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 0 2px;
+        }
+
+        .paging a:hover {
+            background-color: #ddd;
+        }
+
+        .paging a.current-page {
+            background-color: #888;
+            color: #fff;
+            border: 1px solid #888;
+        }
+
+
     </style>
     <script>
         window.onload = function () {
 
             //글의 상세페이지로 넘어가기!
             document.querySelectorAll('.lotteon').forEach(section => {
-                section.addEventListener('click', function() {
-                    const bno = this.querySelector('.deleteBtn').getAttribute('data-bno');
+                section.addEventListener('click', async function () {
 
-                    alert('섹션을 클릭한 글의 bno:'+bno);
+                    if (event.target.classList.contains('deleteBtn')) {
+                        // x 버튼이 클릭된 경우
 
-                    window.location.href=`/lotteshop/admin/blogView/${bno}`;
+                        if (confirm("정말 삭제하시겠습니까?")) {
+
+                            const bno = event.target.getAttribute('data-bno');
+                            const cate = event.target.getAttribute('data-cate');
+
+                            console.log("cate값 : " + cate);
+
+                            const data = await fetchGet(`/lotteshop/admin/blogDel/${bno}`);
+
+                            if (data.result) {
+                                if (cate !== null) {
+                                    window.location.href = `/lotteshop/admin/blogList?cate=${cate}`;
+                                } else {
+                                    window.location.href = `/lotteshop/admin/blogList`;
+                                }
+                            } else {
+                                alert("삭제에 실패했습니다");
+                            }
+                        }
+
+                    } else {
+                        const bno = this.querySelector('.deleteBtn').getAttribute('data-bno');
+                        alert('섹션을 클릭한 글의 bno:' + bno);
+                        window.location.href = `/lotteshop/admin/blogView/${bno}`;
+                    }
 
                 });
             });
+
+
+        }
+
+        //글쓰기 페이지로 이동
+        function goWrite() {
+
+            window.location.href = `/lotteshop/admin/blogWrite`;
         }
 
         async function fetchGet(url) {
@@ -116,55 +204,61 @@
 </head>
 <body>
 <header>
-    <h1>Welcome to LotteON Blog</h1>
+    <h1><a th:href="@{/admin/blogList}"style="text-decoration: none;color: #ffffff">Welcome to LotteON Blog</a></h1>
 </header>
 
 <nav>
-    <a th:href="@{/admin/blogList}">LotteON</a>
-    <a href="#interview">Interview</a>
-    <a href="#recruit">Recruit</a>
-    <a href="#culture">Culture</a>
+    <a th:href="@{/admin/blogList(cate=lotteOn)}">LotteON</a>
+    <a th:href="@{/admin/blogList(cate=interview)}">Interview</a>
+    <a th:href="@{/admin/blogList(cate=recruit)}">Recruit</a>
+    <a th:href="@{/admin/blogList(cate=culture)}">Culture</a>
 </nav>
 
-<th:block th:each="blogs:${blog}">
-    <section class="lotteon">
-        <div>
-            <h2 th:text="${blogs.title}">LotteON</h2>
-            <button class="deleteBtn" th:attr="data-bno=${blogs.bno}">삭제</button>
+<th:block th:each="blogs:${blog.dtoList}" th:if="${blog.getSize()>0}">
+    <section class="lotteon" style="display: flex">
+        <div style="display: inline-block;padding: 30px">
+            <img th:if="${blogs.images} != null" th:src="@{/uploads/__${blogs.images}__}"
+                 th:alt="${blogs.bno}" style="width: 120px; height: 120px ">
         </div>
         <div class="post">
+            <h2 th:text="${blogs.title}">LotteON</h2>
+            <button class="deleteBtn" id="deleteBtn" th:data-cate="${blog.getCate()}"
+                    th:attr="data-bno=${blogs.bno}">X
+            </button>
+
             <h3 th:text="${blogs.oneLine}">Post Title</h3>
             <p th:text="${#strings.length(blogs.content) > 200 ? #strings.substring(blogs.content, 0, 200) + ' <생략..>' : blogs.content}"></p>
 
         </div>
     </section>
 </th:block>
-<!--
-
+<th:block th:if="${blog.dtoList.size()<=0}">
+    <p style="text-align: center;margin-left: 50px">게시글이 없습니다.</p>
+</th:block>
+<button class="writeBtn" id="writeBtn" style="float: right;margin-right: 20px" onclick="goWrite()">글쓰기</button>
 <div class="paging" style="text-align: center">
-                        <span class="prev" th:if="${reviewPage.prev}">
-                            <a class="pagination-link"
-                               th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1})}"><&nbsp;이전</a>
-                        </span>
-    <span class="num" th:each="num:${#numbers.sequence(reviewPage.start, reviewPage.end)}">
-                            <th:block th:if="${num == reviewPage.rpg}">
+        <span class="prev" th:if="${blog.prev}">
+        <a class="pagination-link" th:href="@{/admin/list(cate=${blog.getCate()}, pg=${blog.start - 1})}"><&nbsp;이전</a></span>
+    <span class="num" th:each="num:${#numbers.sequence(blog.start, blog.end)}">
+                            <th:block th:if="${num == blog.pg}">
                                  <a class="pagination-link"
-                                    th:href="@{/product/view( prodno =${reviewPage.getProdno()},rpg=${num})}">[[${num}]]</a>
+                                    th:href="@{/admin/blogList( prodno =${blog.getCate()},pg=${num})}">[[${num}]]</a>
                             </th:block>
 
-                            <th:block th:if="${num != reviewPage.rpg}">
+                            <th:block th:if="${num != blog.pg}">
                                  <a class="pagination-link"
-                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${num})}">[[${num}]]</a>
+                                    th:href="@{/admin/blogList(cate =${blog.getCate()}, pg=${num})}">[[${num}]]</a>
                             </th:block>
                         </span>
-    <span class="next" th:if="${reviewPage.next}">
+    <span class="next" th:if="${blog.next}">
                             <a class="pagination-link"
-                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${reviewPage.end+1} )}">다음&nbsp;></a>
+                               th:href="@{/admin/blogList(cate =${blog.getCate()}, pg=${blog.end+1} )}">다음&nbsp;></a>
                         </span>
 </div>
--->
-<footer>
-    <p>&copy; 2024 LotteON Blog</p>
-</footer>
+<div id="space_feel">
+
+    <footer>
+        <p>&copy; 2024 LotteON Blog</p>
+    </footer>
 </body>
 </html>

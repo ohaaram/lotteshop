@@ -19,6 +19,10 @@
             text-align: center;
         }
 
+        h1{
+            cursor: pointer;
+        }
+
         nav {
             background-color: #444;
             color: #fff;
@@ -79,55 +83,62 @@
             font-weight: bold;
         }
 
-
-        /* 이미지 업로드 버튼 스타일 */
-        #imgUpload {
-            display: block;
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 16px;
-            /*background-color: #E3E2E2;*/
-            color: #1e1e1e;
-            border: none;
-            cursor: pointer;
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            transition: background-color 0.3s; /* 호버 효과를 부드럽게*/
         }
 
-        /* 글쓰기 버튼 스타일 */
-        #writeBtn {
-            display: block;
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 16px;
-            margin-left: auto; /* 우측 정렬을 위한 속성 추가 */
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
+        nav a:hover {
+            background-color: #555;
+        }
+
+        nav a.active {
+            background-color: #666; /* 클릭된 항목의 배경색 */
+        }
+
+        .space_feel {
+            padding-top: 50px; /* 위쪽에 20px의 여백 추가 */
+            padding-bottom: 50px; /* 아래쪽에 20px의 여백 추가 */
         }
     </style>
+
+    <script>
+        function Modify(){
+
+            const modi = document.getElementById('modiBtn');
+
+            const bno = modi.getAttribute('data-bno');
+
+            console.log("bno : "+bno);
+
+            window.location.href=`/lotteshop/admin/blogModify?bno=`+bno;
+        }
+    </script>
 </head>
 <body>
 <header>
-    <h1>Welcome to My Blog</h1>
+    <h1><a th:href="@{/admin/blogList}"style="text-decoration: none;color: #ffffff">Welcome to LotteON Blog</a></h1>
 </header>
 
 <nav>
-    <a href="#lotteon">LotteON</a>
-    <a href="#interview">Interview</a>
-    <a href="#recruit">Recruit</a>
-    <a href="#culture">Culture</a>
+    <a th:href="@{/admin/blogList(cate=lotteOn)}">LotteON</a>
+    <a th:href="@{/admin/blogList(cate=interview)}">Interview</a>
+    <a th:href="@{/admin/blogList(cate=recruit)}">Recruit</a>
+    <a th:href="@{/admin/blogList(cate=culture)}">Culture</a>
 </nav>
 <section id="lotteon">
 
-        <h3 th:text="${blog.title}"></h3>
+        <h3 th:text="${blog.title}"><a th:href="@{/admin/blogList}"></a></h3>
         <input id="title" name ="title" type="text" readonly th:value="${blog.oneLine}">
         <div class="post">
             <p th:text="${blog.content}"></p>
-            <img th:if="${blog.images} != null" th:src="@{/uploads/__${blog.images}__}"
-                 th:alt="${blog.bno}" style="width: 120px; height: 120px ">
         </div>
 
 </section>
+<button id="modiBtn" th:data-bno="${blog.bno}" onclick="Modify()">수정하기</button>
+<div class="space_feel"></div>
 
 <footer>
     <p>&copy; 2024 My Blog</p>
