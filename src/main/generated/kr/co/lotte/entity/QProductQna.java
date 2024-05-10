@@ -33,7 +33,7 @@ public class QProductQna extends EntityPathBase<ProductQna> {
 
     public final StringPath status1 = createString("status1");
 
-    public final NumberPath<Integer> status2 = createNumber("status2", Integer.class);
+    public final StringPath status2 = createString("status2");
 
     public final StringPath uid = createString("uid");
 

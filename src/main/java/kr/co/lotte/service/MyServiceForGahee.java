@@ -44,11 +44,13 @@ public class MyServiceForGahee {
     private DownloadCouponRepository downloadCouponRepository;
     @Autowired
     private  MemberRepository memberRepository;
+    @Autowired
+    private CartsRepository cartsRepository;
 
     public List<Points> forPoint(String uid) {
         //최근 주문 내역
         //포인트 적립내역
-        return pointsRepository.findAllByUserId(uid);
+        return pointsRepository.findAllByUserIdOrderByPointDateDesc(uid);
         //상품평은 아람님께 부탁드리자..
         //문의내역은 상도님께
     }
@@ -202,4 +204,5 @@ public class MyServiceForGahee {
         session.setAttribute("homePoint", point);
         //문의내역 (나중에)
     }
+
 }

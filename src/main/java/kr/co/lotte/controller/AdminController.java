@@ -508,7 +508,6 @@ public class AdminController {
     }
 
     //블로그 글 정보 전송
-    @ResponseBody
     @PostMapping("/admin/blogWrite")
     public String blogRegister(BlogDTO blogDTO, HttpServletResponse response) throws IOException {
 
@@ -564,5 +563,18 @@ public class AdminController {
         model.addAttribute("blog",blog);
 
         return "/admin/blog/modify";
+    }
+
+    //블로그 글 수정한거 저장하기
+    @PostMapping("/admin/blogModify")
+    public String modiBlog(BlogDTO blogDTO){
+
+        log.info("여기는 adminController - modiBlog - BlogDTO : "+blogDTO.toString());
+
+        blogService.modifyBlog(blogDTO);
+
+        log.info("수정 완료!");
+
+        return "redirect:/admin/blogList";//여기서는 전체 글로 이동
     }
 }

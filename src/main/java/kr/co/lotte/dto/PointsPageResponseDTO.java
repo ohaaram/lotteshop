@@ -5,6 +5,7 @@ import kr.co.lotte.entity.Products;
 import kr.co.lotte.entity.SubProducts;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class PointsPageResponseDTO {
 
     private List<Points> dtoList;
     private int currentMonth;
-    private Date dateBegin;
-    private Date dateEnd;
+    private LocalDateTime dateBegin;
+    private LocalDateTime dateEnd;
     private String oneWeek;
     private String fifteen;
 
@@ -37,8 +38,12 @@ public class PointsPageResponseDTO {
         this.size = pageRequestDTO.getSize();
         this.total = total;
         this.dtoList = dtoList;
+
         this.fifteen=pageRequestDTO.getFifteen();
         this.oneWeek=pageRequestDTO.getOneWeek();
+        this.currentMonth = Integer.parseInt(pageRequestDTO.getCurrentMonth());
+        this.dateBegin = pageRequestDTO.getDateBegin();
+        this.dateEnd = pageRequestDTO.getDateEnd();
 
         this.startNo = total - ((pg - 1) * size);
         this.end = (int) (Math.ceil(this.pg / 10.0)) * 10;

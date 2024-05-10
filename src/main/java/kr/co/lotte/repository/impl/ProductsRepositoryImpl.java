@@ -237,6 +237,74 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Page<Products> searchAllProductsForSeller(MainProductsPageRequestDTO pageRequestDTO, Pageable pageable) {
+
+        String seller = pageRequestDTO.getSeller();
+
+        JPAQuery<Products> query = null;
+        OrderSpecifier<?> orderSpecifier;
+        String cate = pageRequestDTO.getCate();
+            query = jpaQueryFactory.select(qProducts)
+                    .from(qProducts)
+                    .where(qProducts.sellerUid.eq(seller));
+        // 동적으로 order by 절 추가
+        if (pageRequestDTO.getCate() != null && !pageRequestDTO.getCate().isEmpty()) {
+
+            log.info("cate값이 있을 때 동적으로 order by 절 추가 ");
+
+            switch (pageRequestDTO.getCate()) {
+                case "prodSold":
+                    log.info("많이 팔린 순");
+                    orderSpecifier = qProducts.prodSold.desc();//많이 팔린 순
+                    break;
+
+                case "lowPrice":
+                    log.info("가격이 낮은 순");
+                    orderSpecifier = qProducts.prodPrice.asc();//가격이 낮은 순
+                    break;
+
+                case "highPrice":
+                    log.info("가격이 높은 순");
+                    orderSpecifier = qProducts.prodPrice.desc();//가격이 높은 순
+                    break;
+
+
+                case "current":
+                    log.info("최근 등록순");
+                    orderSpecifier = qProducts.RegProdDate.desc();//최근 등록순
+                    break;
+
+                case "highAvg":
+                    log.info("평균이 높은 순");
+                    orderSpecifier = qProducts.avg.desc();//평균이 높은 순
+                    break;
+
+                case "highReview":
+                    log.info("리뷰가 많은 순");
+                    orderSpecifier = qProducts.reviews.size().desc();//리뷰가 많은 순
+                    break;
+
+                default:
+                    log.info("기본값 : 상품명 오름차순");
+                    orderSpecifier = qProducts.prodName.asc(); // 기본값: 상품명 오름차순
+                    break;
+            }
+            query = query.orderBy(orderSpecifier);
+        }
+
+
+        // offset, limit 적용 및 실행
+        QueryResults<Products> results = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<Products> content = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
 
     @Override
     public Page<Like> searchAllLike(ProductsPageRequestDTO pageRequestDTO, Pageable pageable, String uid) {

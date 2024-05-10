@@ -63,6 +63,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
         LocalDateTime dateBegin = requestDTO.getDateBegin();
         LocalDateTime dateEnd = requestDTO.getDateEnd();
       if(dateBegin!=null && dateEnd!=null){
+          log.info("설마여기?");
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
                   .where(qPoints.pointDate.between(dateBegin, dateEnd).and(qPoints.userId.eq(uid)))
@@ -70,7 +71,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();
-      }else if(requestDTO.getFifteen() != null){
+      }else if(requestDTO.getFifteen() != null && requestDTO.getFifteen() != ""){
           LocalDateTime fifteenDaysAgo = LocalDateTime.now().minus(15, ChronoUnit.DAYS);
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
@@ -79,7 +80,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
                   .offset(pageable.getOffset())
                   .limit(pageable.getPageSize())
                   .fetchResults();
-      }else if(requestDTO.getOneWeek() != null){
+      }else if(requestDTO.getOneWeek() != null && requestDTO.getOneWeek() != ""){
           LocalDateTime fifteenDaysAgo = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
           results = jpaQueryFactory.select(qPoints)
                   .from(qPoints)
@@ -98,7 +99,7 @@ public class PointsRepositoryImpl implements PointsRepositoryCustom {
                   .limit(pageable.getPageSize())
                   .fetchResults();
       }
-
+        requestDTO.setCurrentMonth(String.valueOf(currentMonth));
         List<Points> content = results.getResults();
       long total = results.getTotal();
 

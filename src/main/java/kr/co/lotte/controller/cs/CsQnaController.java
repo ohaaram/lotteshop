@@ -94,6 +94,11 @@ public class CsQnaController {
 
     @PostMapping("/product/view/qna")
     public ResponseEntity<String> productQnaWrite(@RequestBody ProductQna productQna){
+
+
+        log.info("들어오나요");
+
+        log.info("productQna : "+productQna);
         // 상품 문의 생성
         ProductQna savedProductQna = csQnaService.writeProdQna(productQna);
         if(savedProductQna != null){

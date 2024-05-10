@@ -378,10 +378,10 @@
                     </nav>
                     <nav>
                         <div class="org_price">
-                            <del th:text="${product.prodPrice}" id="ori_price">45,000</del>
-                            <span th:text="${product.prodDiscount}+'%'"></span>
+                            <del th:if="${product.prodDiscount>0}" th:text="${product.prodPrice}" id="ori_price">45,000</del>
+                            <span th:if="${product.prodDiscount>0}" th:text="${product.prodDiscount}+'%'"></span>
                         </div>
-                        <div class="dis_price">
+                        <div class="dis_price" >
                             <ins id="disCount"
                                  th:text="${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1, 0 )}">
                                 할인된 가격
@@ -389,7 +389,8 @@
                         </div>
                     </nav>
                     <nav>
-                        <span class="delivery">무료배송</span>
+                        <span class="delivery" th:if="${product.delivery==0}">무료배송</span>
+                        <span class="delivery" th:if="${product.delivery!=0}">배송비 : [[${product.delivery}]]</span>
                         <span>
                             <b class="arrival"
                                th:text="${#temporals.format(#temporals.createNow().plusDays(2), 'MM-dd')}"
@@ -804,17 +805,33 @@
                                 var inquiryCate = document.querySelector('.product-inquiry-select').value;
                                 var inquiryContent = document.querySelector('.qna-product-textarea').value;
                                 var isStatus2 = document.querySelector('input[type="checkbox"]').checked;
+                                try {
+                                    var userId = document.getElementById('questionId').value;
+                                }catch (e){
+                                    alert('로그인을 하세요.')
+                                    return;
+                                }
+                                var prodNo = [[${product.prodNo}]];
+
+                                console.log("inquiryCate" + inquiryCate);
+                                console.log("inquiryContent" + inquiryContent);
+                                console.log("isStatus2" + isStatus2);
+                                console.log("userId" +  userId );
+                                console.log("prodNo" + prodNo);
 
                                 // 상품 문의 데이터 객체 생성
                                 var qnaData = {
-                                    inquiryType: inquiryCate,
-                                    inquiryContent: inquiryContent,
-                                    isSecret: isStatus2
+                                    cate: inquiryCate,
+                                    content: inquiryContent,
+                                    status2: isStatus2,
+                                    uid: userId,
+                                    prodNo: prodNo
+
                                 };
 
                                 // AJAX 요청을 위한 설정
                                 var xhr = new XMLHttpRequest();
-                                xhr.open('POST', '/product/view/qna', true);
+                                xhr.open('POST', '/lotteshop/product/view/qna', true);
                                 xhr.setRequestHeader('Content-Type', 'application/json');
 
                                 // 서버 응답 처리
@@ -833,11 +850,7 @@
                                 // 서버로 데이터 전송
                                 xhr.send(JSON.stringify(qnaData));
                             });
-
-
                         }
-
-
                     </script>
 
                     <th:block th:if="${#authentication.principal != 'anonymousUser'}">
@@ -942,76 +955,31 @@
                 <table border="0">
                     <tr>
                         <td>상품번호</td>
-                        <td>10110125435</td>
+                        <td>[[${product.prodNo}]]</td>
                     </tr>
                     <tr>
                         <td>상품상태</td>
-                        <td>새상품</td>
+                        <td>[[${product.prodState}]]</td>
                     </tr>
                     <tr>
                         <td>부가세 면세여부</td>
-                        <td>과세상품</td>
+                        <td>[[${product.prodTax}]]</td>
                     </tr>
                     <tr>
                         <td>영수증발행</td>
-                        <td>발행가능 - 신용카드 전표, 온라인 현금영수증</td>
+                        <td>[[${product.prodReceipt}]]</td>
                     </tr>
                     <tr>
                         <td>사업자구분</td>
-                        <td>사업자 판매자</td>
+                        <td>[[${product.prodSa}]]</td>
                     </tr>
                     <tr>
                         <td>브랜드</td>
-                        <td>블루포스</td>
+                        <td>[[${product.manufacture}]]</td>
                     </tr>
                     <tr>
                         <td>원산지</td>
-                        <td>국내생산</td>
-                    </tr>
-                </table>
-                <table border="0">
-                    <tr>
-                        <td>제품소재</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>색상</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>치수</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>제조자/수입국</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>제조국</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>취급시 주의사항</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>제조연월</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>품질보증기준</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>A/S 책임자와 전화번호</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td>주문후 예상 배송기간</td>
-                        <td>상세정보 직접입력</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">구매, 교환, 반품, 배송, 설치 등과 관련하여 추가비용, 제한조건 등의 특이사항이 있는 경우</td>
+                        <td>[[${product.prodWonsan}]]</td>
                     </tr>
                 </table>
                 <p class="notice">
@@ -1191,15 +1159,18 @@
                     <li>
                         <div class="product-qna-info">
                             <span class="">상품정보</span>
-                            <span >::before
-                                "옵션":061 포피 코랄
+                            <span > :: [[${product.prodName}]]
                                 </span>
                         </div>
                         <div class="product-qna-content">
-                            <p>
-                                <span>비밀글입니다</span><br>
-                                <span>비밀글답변입니다</span>
-                            </p>
+                            <div>
+                                <p><strong>상품명</strong>:: [[${product.prodName}]]</p>
+                                <ul>
+                                    <li th:each="prodQnas, index : ${prodQna}" class="#" >
+                                        <a><span>Q.</span><a th:text="${prodQnas.content}"></a></a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                         <div></div>
                         <div></div>
@@ -1213,7 +1184,7 @@
                 <!-- 모달 내용 -->
                 <div class="qna-modal-content">
                     <h2 class="qna-modal-content-h2">
-                        <span class="qna-modal-content-title">문의하기</span>
+                        <span class="qna-modal-content-title" id = "qna-modal-content-title" >문의하기</span>
                     </h2>
                     <div class="qna-modal-btnWrap">
                         <div class="qna-modal-btnItem">
@@ -1239,39 +1210,72 @@
                     <h2 class="qna-modal-content-h2">
                         <span class="qna-modal-content-title">상품 문의</span>
                     </h2>
-                    <div class="product-info">
+                    <div class="qna-modal-product-info">
                         <span>
-                            <p> 상품 정보 불러오기</p>
+                            <p> 상품 정보 </p>
+                            <div class="qna-modal-thumb">
+                            <img th:src="@{/uploads/__${product.image2}__}" alt="t1"/>
+                            </div>
+                            <div class="qna-modal-price">
+                                <p>상품명</p>
+                                <h2 class="product-name">[[${product.prodName}]]</h2>
+                                <p>상품 가격</p>
+                                <th:block th:if="${product.prodDiscount != 0}">
+                                <div class="qna-modal-org_price">
+                                    <del>[[${product.prodPrice}]]</del>
+                                    <span>[[${product.prodDiscount}]]</span>
+                                </div>
+                                <div class="qna-modal-dis_price">
+                                    <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                        1,0 )}]]
+                                    </ins>
+                                    <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                                </div>
+                                </th:block>
+                            <th:block th:if="${product.prodDiscount == 0}">
+                                <div class="qna-modal-dis_price">
+                                    <ins>[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01,
+                                        1,0 )}]]
+                                    </ins>
+                                    <span class="free" th:if="${product.delivery == 0}">무료배송</span>
+                                </div>
+                            </th:block>
+                            </div>
                         </span>
                     </div>
                     <!-- 상품 문의 내용 입력 폼 -->
                     <div class="product-inquiry-form">
                         <div>
                         <span>
-                              <h2>문의유형</h2>
+                              <h2>>문의유형</h2>
                               <select class="product-inquiry-select" name="cate">
                                 <option value="#">문의유형 선택</option>
-                                <option value="#">상품정보</option>
-                                <option value="#">사이즈/용량</option>
-                                <option value="#">사용설명</option>
-                                <option value="#">디자인/색상</option>
-                                <option value="#">기타</option>
+                                <option value="info">상품정보</option>
+                                <option value="size">사이즈/용량</option>
+                                <option value="use">사용설명</option>
+                                <option value="color">디자인/색상</option>
+                                <option value="etc">기타</option>
                               </select>
                         </span>
                         </div>
                         <div>
                             <span>
-                                <h2>문의내용</h2>
+                                <h2>>문의내용</h2>
                                 <textarea name="content" class="qna-product-textarea" placeholder="최소 10자 이상 입력해 주세요. 연락처, 주민번호 등 개인정보 기입은 삼가주시기 바랍니다. 개인정보 포함 시 임의로 삭제될 수 있습니다."></textarea>
                             </span>
                         </div>
                         <div>
                             <p>비밀글 하실?</p><input name="status2" type="checkbox" />
+
+                            <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                            <input type="hidden" id="questionId" th:value="${#authentication.principal.user.uid}">
+                            </th:block>
+
                         </div>
                         <div class="qna-product-btnWrap">
                             <div class="qna-product-btnItem">
                                 <span>
-                                    <a class="qna-product-btnLink-cancle">취소</a>
+                                    <a class="qna-product-btnLink-cancel">취소</a>
                                 </span>
                             </div>
                             <div>

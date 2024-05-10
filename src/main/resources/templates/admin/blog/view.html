@@ -102,6 +102,24 @@
             padding-top: 50px; /* 위쪽에 20px의 여백 추가 */
             padding-bottom: 50px; /* 아래쪽에 20px의 여백 추가 */
         }
+
+        textarea{
+            text-decoration: none;
+            outline: none;
+        }
+        #modiBtn {
+            background-color: #808080; /* 그레이 계열 */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            float: right; /* 오른쪽으로 플로팅 */
+            margin-right: 20px; /* 오른쪽 여백 추가 */
+        }
+
+        #modiBtn:hover {
+            background-color: #555; /* 호버 효과 */
+        }
     </style>
 
     <script>
@@ -115,6 +133,23 @@
 
             window.location.href=`/lotteshop/admin/blogModify?bno=`+bno;
         }
+
+
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto'; // 높이를 자동으로 조절하기 위해 높이를 'auto'로 설정
+            textarea.style.height = textarea.scrollHeight + 'px'; // 내용에 따라 높이를 조절
+        }
+
+        // 페이지 로드 후 textarea의 높이를 조절
+        window.addEventListener('DOMContentLoaded', function () {
+            var textarea = document.getElementById('blogContent');
+            adjustTextareaHeight(textarea);
+
+            // textarea에 입력할 때마다 높이를 조절
+            document.getElementById('blogContent').addEventListener('input', function () {
+                adjustTextareaHeight(this);
+            });
+        });
     </script>
 </head>
 <body>
@@ -129,16 +164,17 @@
     <a th:href="@{/admin/blogList(cate=culture)}">Culture</a>
 </nav>
 <section id="lotteon">
-
-        <h3 th:text="${blog.title}"><a th:href="@{/admin/blogList}"></a></h3>
-        <input id="title" name ="title" type="text" readonly th:value="${blog.oneLine}">
-        <div class="post">
-            <p th:text="${blog.content}"></p>
-        </div>
+    <h3  th:text="${blog.title}"><a th:href="@{/admin/blogList}"></a></h3>
+    <input id="title" name ="title" type="text" readonly th:value="${blog.oneLine}">
+    <div class="post">
+        <textarea id="blogContent" style="width: 100%;border: none" th:text="${blog.content}" readonly></textarea>
+    </div>
 
 </section>
 <button id="modiBtn" th:data-bno="${blog.bno}" onclick="Modify()">수정하기</button>
 <div class="space_feel"></div>
+<div class="space_feel"></div>
+
 
 <footer>
     <p>&copy; 2024 My Blog</p>

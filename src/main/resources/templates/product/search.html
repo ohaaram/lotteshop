@@ -172,9 +172,9 @@
                         th:text="${searchResult.total}">20</span>&nbsp;건)</em></h3>
 
                 <form id="searchForm" th:action="@{/product/search}" onsubmit="return submitForm()">
-                    <input type="text" name="detail" id="detail" class="detail"/>
+                    <input type="text" name="detail" id="detail" class="detail" th:value="${searchResult.getDetail()}"/>
                     <input type="submit" id="btnSubmit" value="검색"/>
-                    <input type="hidden" name="keyword" th:value="${session.keyword}"/>
+                    <input type="hidden" name="keyword" th:value="${searchResult.keyword}"/>
                     <span>
                         <label><input type="checkbox" name="detailCheckbox" id="detailCheckbox" value="상품명">상품명</label>
                         <label><input type="checkbox" name="etcCheckbox" id="etcCheckbox" value="상품설명">상품설명</label>

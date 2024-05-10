@@ -14,6 +14,7 @@
             <if test="type=='sellerHp'">sellerHp=#{value}</if>
             <if test="type=='sellerFax'">sellerFax=#{value}</if>
             <if test="type=='sellerEmail'">sellerEmail=#{value}</if>
+            <if test="type=='sellerDHp'">sellerDHp=#{value}</if>
         </where>
     </select>
 

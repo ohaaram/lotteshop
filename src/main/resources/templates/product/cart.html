@@ -151,12 +151,13 @@
                                   </div>
                               </article>
                           </td>
-                          <td id="cartProdCount">[[${carts[index.index].cartProdCount}]]</td>
+                          <td >
+                              <input id="cartProdCount" th:data-no="${carts[index.index].cartNo}" style="width: 30px" type="number" min="1" th:value="${carts[index.index].cartProdCount}"></td>
                           <td id="cartProdPrice">[[${subProduct.prodPrice}]]</td>
                           <td id="cartProdDiscount">[[${subProduct.products.prodDiscount}]]</td>
                           <td id="cartProdPoint">[[${subProduct.products.point}]]</td>
                           <td id="cartProdDelivery">[[${subProduct.products.delivery}]]</td>
-                          <td>[[${#numbers.formatDecimal(subProduct.prodPrice * carts[index.index].cartProdCount * (100 - subProduct.products.prodDiscount) * 0.01 , 1, 0)}]]</td>
+                          <td id="totalPriceTempt">[[${#numbers.formatDecimal(subProduct.prodPrice * carts[index.index].cartProdCount * (100 - subProduct.products.prodDiscount) * 0.01 , 1, 0)}]]</td>
                           <td id="cartNo" style="display: none">[[${carts[index.index].cartNo }]]</td>
                       </tr>
                   </th:block>
@@ -199,6 +200,20 @@
                                     }
                                 });
                             });
+
+                            document.addEventListener("change" , async function (event) {
+                                const cartProdCount = document.querySelectorAll('#cartProdCount');
+                                for (const item of cartProdCount) {
+                                    if(event.target === item){
+                                        //이거시를 보내고 소계를 넣어주자
+                                        const result = await fetchGet('/lotteshop/product/modifyCount?count='+event.target.value+'&' +
+                                            'cartNo='+event.target.getAttribute('data-no'));
+                                        console.log(result.data)
+                                        item.closest('tr').querySelector('#totalPriceTempt').innerText=result.data;
+                                        calculationTotal();
+                                    }
+                                }
+                            })
 
                             const del = document.getElementById('del');
                             var cartLists = [];
@@ -254,7 +269,7 @@
                                 checkAll.forEach(function (item){
                                     if(item.checked){
                                         var closestRow = item.closest('tr');
-                                        var cartProdCount = closestRow.querySelector('#cartProdCount').textContent;
+                                        var cartProdCount = closestRow.querySelector('#cartProdCount').value;
                                         var cartProdPrice = closestRow.querySelector('#cartProdPrice').textContent;
                                         var cartProdDiscount = closestRow.querySelector('#cartProdDiscount').textContent;
                                         var cartProdPoint = closestRow.querySelector('#cartProdPoint').textContent;

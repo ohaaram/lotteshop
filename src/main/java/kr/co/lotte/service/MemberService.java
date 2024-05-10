@@ -123,7 +123,6 @@ public class MemberService {
         String encodedPass = passwordEncoder.encode(sellerDTO.getSellerPass());
 
         sellerDTO.setSellerPass(encodedPass);
-
         Seller seller = modelMapper.map(sellerDTO, Seller.class);
         sellerRepository.save(seller);
     }

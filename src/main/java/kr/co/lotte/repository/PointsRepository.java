@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface PointsRepository extends JpaRepository<Points, Integer> , PointsRepositoryCustom {
 
-    public List<Points> findAllByUserId(String userId);
+    public List<Points> findAllByUserIdOrderByPointDateDesc(String userId);
 
 
     public Points findByOrderNoAndState(int orderNo, String state);

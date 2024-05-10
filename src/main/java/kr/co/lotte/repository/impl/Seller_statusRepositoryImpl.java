@@ -32,7 +32,8 @@ public class Seller_statusRepositoryImpl implements SellerRepositoryCustom {
 
         long total = 0;
 
-        QueryResults<Tuple> result = jpaQueryFactory.select(qProducts.sellerUid, orderItems.itemNo.count(),orderItems.itemPrice.multiply(orderItems.itemCount).sum())
+        QueryResults<Tuple> result = jpaQueryFactory
+                .select(qProducts.sellerUid, orderItems.itemNo.count(),orderItems.itemPrice.multiply(orderItems.itemCount).sum())
                 .from(orderItems)
                 .join(subProducts)
                 .on(orderItems.prodNo.eq(subProducts.subProdNo))

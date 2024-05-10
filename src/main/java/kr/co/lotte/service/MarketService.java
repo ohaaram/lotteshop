@@ -33,6 +33,8 @@ public class MarketService {
     private  final  CouponRepository couponRepository;
     @Autowired
     private OrderItemsRepository orderItemsRepository;
+    @Autowired
+    private ProductsRepository productsRepository;
 
     // 장보기 글보기 페이지 - 장보기 게시글 출력
     public ProductsDTO selectProduct(int prodno) {
@@ -587,6 +589,21 @@ public class MarketService {
         orderItemsRepository.save(orderItems);
         Map <String , String > map = new HashMap<>();
         map.put("result", "succes");
+        return ResponseEntity.ok().body(map);
+    }
+
+    //장바구니 수량변경
+    public ResponseEntity modifyCount(int count, int no){
+        Map<String, Integer> map = new HashMap<>();
+        Carts carts = cartsRepository.findById(no).get();
+        carts.setCartProdCount(count);
+        cartsRepository.save(carts);
+
+        SubProducts subProducts = subProductsRepository.findById(carts.getProdNo()).get();
+        Products products = productsRepository.findById(subProducts.getProdNo()).get();
+        int price = (int) (subProducts.getProdPrice() * (100 - products.getProdDiscount()) * 0.01 *
+                carts.getCartProdCount());
+        map.put("data", price );
         return ResponseEntity.ok().body(map);
     }
 }

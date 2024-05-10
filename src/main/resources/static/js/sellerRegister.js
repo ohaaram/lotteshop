@@ -4,15 +4,14 @@
 let isUidOk = false;
 let isPassOk = false;
 let isNameOk = false;
-let isCeoOk  = false;
+let isCeoOk = false;
 let isEmailOk = false;
 let isHpOk = false;
 let isEmailCodeOk = false;
-let isCompanyOk   = false;
 let isBizRegNumOk = false;
-let isComRegNumOk = false;
-let isTelOk       = false;
-let isFaxOk       = false;
+let isTelOk = false;
+let isFaxOk = false;
+let isDNameOk = false;
 
 // 유효성 검사에 사용할 정규표현식
 const reUid = /^[a-z]+[a-z0-9]{4,19}$/g;
@@ -21,11 +20,9 @@ const reName = /^(?:\((주)\))?\s*[가-힣]{2,10}$/;
 const reCeo = /^[가-힣]{2,10}$/;
 const reEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
 const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
-const reCompany = /^\(주\)+[a-zA-Z가-힣0-9]{1,12}$/;
 const reBizRegNum = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/;
-const reComRegNum = /^[0-9]{4}-[가-힣]{2,6}-[0-9]{4,5}$/;
-const reTel       = /^(0[2-8][0-5]?)-?([1-9]{1}[0-9]{2,3})-?([0-9]{4})$/;
-const reFax       = /^\d{2,3}-\d{3,4}-\d{4}$/;
+const reTel = /^(0[2-8][0-5]?)-?([1-9]{1}[0-9]{2,3})-?([0-9]{4})$/;
+const reFax = /^\d{2,3}-\d{3,4}-\d{4}$/;
 
 window.onload = function () {
 
@@ -495,7 +492,6 @@ window.onload = function () {
     }
 
 
-
     //우편번호 검색
     function postcode() {
         new daum.Postcode({
@@ -527,51 +523,147 @@ window.onload = function () {
         postcode();
     }
 
-    // // 최종 유효성 검사 확인
-    // document.registerForm.onsubmit = function () {
-    //
-    //     if (!isUidOk) {
-    //         alert("아이디가 유효하지 않습니다.!");
-    //         return false;
-    //     }
-    //
-    //     if (!isPassOk) {
-    //         alert('비밀번호가 유효하지 않습니다.');
-    //         return false;
-    //     }
-    //
-    //     if (!isNameOk) {
-    //         alert('이름이 유효하지 않습니다.');
-    //         return false;
-    //     }
-    //
-    //     if (!isNickOk) {
-    //         alert('별명이 유효하지 않습니다.');
-    //         return false;
-    //     }
-    //
-    //     if (!isEmailOk) {
-    //         alert('이메일이 유효하지 않습니다.');
-    //         return false;
-    //     }
-    //
-    //     if (!isEmailCodeOk) {
-    //         alert('이메일 인증을 해주세요.');
-    //         return false;
-    //     }
-    //
-    //     if (!isHpOk) {
-    //         alert('휴대폰이 유효하지 않습니다.');
-    //         return false;
-    //     }
-    //
-    //     if (document.getElementById('inputZip').value === '') {
-    //         alert('주소를 입력해주세요');
-    //         return false;
-    //     }
-    //
-    //     // 폼 전송
-    //     return true;
-    // }
+    // 담당자 이름 유효성 검사
+    const resultSellerDName = document.getElementById('result_sellerDname');
+
+    document.registerForm.sellerDname.addEventListener('focusout', () => {
+        const value = document.registerForm.sellerDname.value;
+        const inputName = document.registerForm.sellerDname;
+
+        if (!value.match(reCeo)) {
+            inputName.classList.add('is-invalid');
+            resultSellerDName.classList.add('invalid-feedback');
+            resultSellerDName.innerText = '이름 형식이 맞지 않습니다.';
+            isDNameOk = false;
+        } else {
+            resultSellerDName.innerText = '';
+            isDNameOk = true;
+        }
+    });
+
+    //담당자 휴대폰번호 유효성 검사
+    const resultSellerDHp = document.getElementById('result_sellerDHp');
+
+    document.registerForm.sellerDHp.addEventListener('focusout', () => {
+        const type = document.registerForm.sellerDHp.dataset.type;
+        const input = document.registerForm[type];
+
+
+        // 정규식 검사
+        if (!input.value.match(reHp)) {
+            input.classList.add('is-invalid');
+            resultSellerDHp.classList.add('invalid-feedback');
+            resultSellerDHp.innerText = '전화번호 형식이 맞지 않습니다.';
+            isHpOk = false;
+            return;
+        }
+
+        async function fetchGet(url) {
+
+            console.log("fetchData1...1");
+
+            try {
+                console.log("fetchData1...2");
+                const response = await fetch(url);
+                console.log("here1");
+
+                if (!response.ok) {
+                    console.log("here2");
+                    throw new Error('response not ok');
+                }
+
+                const data = await response.json();
+                console.log("data1 : " + data);
+                return data;
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        setTimeout(async () => {
+            const data = await fetchGet(`/lotteshop/seller/check/${type}/${input.value}`);
+
+            if (data.result > 0) {
+                input.classList.add('is-invalid');
+
+                resultSellerDHp.classList.add('invalid-feedback');
+                resultSellerDHp.innerText = '이미 사용중인 휴대폰 번호 입니다.';
+                isHpOk = false;
+            } else {
+                input.classList.add('is-valid');
+
+                resultSellerDHp.classList.add('valid-feedback');
+                resultSellerDHp.innerText = '사용 가능한 휴대폰 번호 입니다.';
+                isHpOk = true;
+            }
+        }, 1000);
+    });
+
+    // 최종 유효성 검사 확인
+    document.registerForm.onsubmit = function () {
+
+        if (!isUidOk) {
+            alert("아이디가 유효하지 않습니다.!");
+            return false;
+        }
+
+        if (!isPassOk) {
+            alert('비밀번호가 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isNameOk) {
+            alert('회사명이 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isCeoOk) {
+            alert('대표자가 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isEmailOk) {
+            alert('이메일이 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isEmailCodeOk) {
+            alert('이메일 인증을 해주세요.');
+            return false;
+        }
+
+        if (!isHpOk) {
+            alert('전화번호가 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isBizRegNumOk) {
+            alert('사업자 번호가 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isTelOk) {
+            alert('휴대폰이 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isFaxOk) {
+            alert('팩스번호가 유효하지 않습니다.');
+            return false;
+        }
+
+        if (!isDNameOk) {
+            alert('담당자 이름이 유효하지 않습니다.');
+            return false;
+        }
+
+        if (document.getElementById('inputZip').value === '') {
+            alert('주소를 입력해주세요');
+            return false;
+        }
+
+        // 폼 전송
+        return true;
+    }
 }
 

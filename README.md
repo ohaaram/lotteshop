@@ -30,3 +30,7 @@
 0.1.6-SNAPSHOT : 쿠폰 완료, 약관 부분 완료, 리뷰 수정 완료, faq 다 됨
 
 0.1.7-SNAPSHOT : 관리자 약관 완료, hit 상품 처리, myHome 부분 완료 , product/complete 완료
+
+0.1.8-SNAPSHOT : 환불 사유, 구매 확정 수정, 회사 소개 admin page 수정 완료
+
+0.1.9-SNAPSHOT : 대부분의 기능 구현 완료, 미흡한 기능 보완 및 css 수정 예정

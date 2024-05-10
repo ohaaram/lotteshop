@@ -21,7 +21,7 @@ public class ProductQnaDTO {
     private String status1;
     private String cate;
     private String content;
-    private int status2;
+    private String status2;
     private String rdate;
 
 }

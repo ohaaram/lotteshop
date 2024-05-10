@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
 @Getter
 @Setter
@@ -12,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
+@DynamicInsert
 @Entity
 @Table(name = "seller")
 public class Seller {

@@ -1,0 +1,147 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/productLayout}">
+
+<div class="container" layout:fragment="content">
+
+        <script>
+            window.onload=async function () {
+                const likes = document.querySelectorAll('#like');
+                const unlikes = document.querySelectorAll('#unlike');
+
+                likes.forEach(function (like){
+                    like.onclick=async function (e) {
+                        try {
+                            const userId = document.getElementById('userId').value;
+                            const result = await fetchGet('/lotteshop/product/like?prodNo=' + like.getAttribute('data-prodNo') + '&userId=' + userId);
+                            if (result.data == 1) {
+                                like.innerText='❤️';
+                            } else {
+                                like.innerText='🤍';
+
+                            }
+                        } catch (e) {
+                            alert('로그인 후 이용해주세요');
+                        }
+
+                    }
+                })
+
+                unlikes.forEach(function (like){
+                    like.onclick=async function (e) {
+                        try {
+                            const userId = document.getElementById('userId').value;
+                            const result = await fetchGet('/lotteshop/product/like?prodNo=' + like.getAttribute('data-prodNo') + '&userId=' + userId);
+                            if (result.data == 1) {
+                                like.innerText = '❤️';
+                            } else {
+                                like.innerText = '🤍';
+
+                            }
+                        } catch (e) {
+                            alert('로그인 후 이용해주세요');
+                        }
+                    }
+                })
+
+            }
+
+        </script>
+
+    <main id="product">
+        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+            <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
+        </th:block>
+        <aside>
+            <div style="border: 1px solid red; width: 100%; height: 425px; text-align: center; ">
+                <h1 style="font-size: large; margin-top: 10px">[[${pageResponseDTO.dtoList.get(0).getSellerName()}]] 의 스토어</h1>
+            </div>
+        </aside>
+        <section class="list">
+            <!-- 제목, 페이지 네비게이션 -->
+            <th:block th:if="${view == 0}">
+            <nav>
+                <p>HOME > <span th:text="${pageResponseDTO.dtoList.get(0).getSellerName()}"></span>
+                </p>
+            </nav>
+                <ul class="sort">
+                    <li><a th:href="@{/product/list( cate='prodSold' , seller=${pageResponseDTO.getSeller()})}">판매많은순</a></li>
+                    <li><a th:href="@{/product/list(cate='lowPrice' ,seller=${pageResponseDTO.getSeller()})}">낮은가격순</a></li>
+                    <li><a th:href="@{/product/list(cate='highPrice' ,seller=${pageResponseDTO.getSeller()})}">높은가격순</a></li>
+                    <li><a th:href="@{/product/list( cate='highAvg', seller=${pageResponseDTO.getSeller()})}">평점높은순</a></li>
+                    <li><a th:href="@{/product/list(cate='highReview',seller=${pageResponseDTO.getSeller()})}">후기많은순</a></li>
+                    <li><a th:href="@{/product/list(cate='current',seller=${pageResponseDTO.getSeller()})}">최근등록순</a></li>
+                </ul>
+            <!-- 상품목록 -->
+            <table border="0">
+                <tr th:each="product , index:${pageResponseDTO.dtoList}">
+                    <td><a th:href="@{/product/view(prodno=${product.prodNo})}" class="thumb"><img th:src="@{/uploads/__${product.image1}__}" alt="상품이미지"/></a></td>
+                    <td>
+                       <a th:href="@{/product/view(prodno=${product.prodNo})}"> <h3 class="name">[[${product.prodName }]]
+                           <span style="color: red; border: 1px solid red" th:if="${product.hit >0}"> HIT</span></h3></a>
+                        <a href="#" class="desc">[[${product.etc}]]</a>
+                    </td>
+
+                    <th:block th:if="${product.prodDiscount != 0}">
+                        <td>
+                            <ul>
+                                <li><ins class="dis-price">[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins></li>
+                                <li>
+                                    <del class="org-price">[[${product.prodPrice}]]</del>
+                                    <span class="discount">[[${product.prodDiscount}]]</span>
+                                </li>
+                                <li> <span class="free" th:if="${product.delivery == 0}">무료배송</span></li>
+                                <li> <span class="free" th:if="${product.delivery != 0}"><i class="fa fa-truck"></i>  [[${product.delivery}]]</span></li>
+                                <li><span id="like" style="font-size: large" th:data-prodNo="${product.prodNo}" th:if="${product.getLikeState() != 0}">❤️</span></li>
+                                <li><span id="unlike" style="font-size: large" th:data-prodNo="${product.prodNo}" th:if="${product.getLikeState() == 0}">🤍</span></li>
+                            </ul>
+                        </td>
+                    </th:block>
+                    <th:block th:if="${product.prodDiscount == 0}">
+                        <td>
+                            <ul>
+                                <li><ins class="dis-price">[[${#numbers.formatDecimal(product.prodPrice * (100 - product.prodDiscount) * 0.01, 1,0 )}]]</ins></li>
+                                <li> <span class="free" th:if="${product.delivery == 0}">무료배송</span></li>
+                                <li> <span class="free" th:if="${product.delivery != 0}"><i class="fa fa-truck"></i>  [[${product.delivery}]]</span></li>
+                                <li><span id="like" style="font-size: large" th:data-prodNo="${product.prodNo}"  th:if="${product.getLikeState() != 0}">❤️</span></li>
+                                <li><span id="unlike" style="font-size: large"  th:data-prodNo="${product.prodNo}"  th:if="${product.getLikeState() == 0}">🤍</span></li>
+                            </ul>
+                        </td>
+                    </th:block>
+
+                    <td>
+                        <h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4>
+                        <h5 class="badge power">판매자등급</h5>
+                        <h6 class="rating star1">상품평</h6>
+                    </td>
+                </tr>
+
+            </table>
+
+            <!-- 상품목록 페이지번호 -->
+            <div class="paging">
+                        <span class="prev" th:if="${pageResponseDTO.prev}">
+                            <a th:href="@{/product/list(pg=${pageResponseDTO.start -1}  ,cate=${pageResponseDTO.cate}, seller=${pageResponseDTO.getSeller()})}"><&nbsp;이전</a>
+                        </span>
+                <span class="num" th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                            <th:block th:if="${num == pageResponseDTO.pg}">
+                                 <a th:href="@{/product/list( pg=${num}  ,cate=${pageResponseDTO.cate}, seller=${pageResponseDTO.getSeller()}
+                             )}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != pageResponseDTO.pg}">
+
+                                 <a th:href="@{/product/list( pg=${num} ,cate=${pageResponseDTO.cate}, seller=${pageResponseDTO.getSeller()})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                <span class="next" th:if="${pageResponseDTO.next}">
+                            <a th:href="@{/product/list( pg=${pageResponseDTO.end+1} ,cate=${pageResponseDTO.cate}, seller=${pageResponseDTO.getSeller()})}">다음&nbsp;></a>
+                        </span>
+            </div>
+            </th:block>
+        </section>
+    </main>
+
+</div>
+</html>

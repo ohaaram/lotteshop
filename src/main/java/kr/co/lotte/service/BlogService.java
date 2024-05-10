@@ -85,38 +85,40 @@ public class BlogService {
 
     //작성한 블로그글 저장
     public ResponseEntity<?> bRegister(BlogDTO blogDTO) {
-
+        Map<String, Object> map = new HashMap<>();
         try {
             Blog blog = modelMapper.map(blogDTO, Blog.class);
 
             MultipartFile img1 = blogDTO.getMultImage1();
+            if(img1.getOriginalFilename() != null && img1.getOriginalFilename() != "") {
+                BlogImgDTO uploadedImage = uploadReviewImage(img1);
 
-            BlogImgDTO uploadedImage = uploadReviewImage(img1);
+                if (uploadedImage != null) {
 
-            if (uploadedImage != null) {
+                    BlogImgDTO imageDTO = uploadedImage;
 
-                BlogImgDTO imageDTO = uploadedImage;
+                    blog.setImages(uploadedImage.getSName());
+                }
 
-                blog.setImages(uploadedImage.getSName());
+                Blog blog1 = blogRepository.save(blog);
+
+                BlogImgDTO ImgDTO = uploadedImage;
+                ImgDTO.setBno(blog1.getBno());
+                log.info("글 등록 번호임 : " + blog1.getBno());
+
+                BlogImg blogImg = modelMapper.map(ImgDTO, BlogImg.class);
+
+                blogImgRepository.save(blogImg);
+                blogImgRepository.flush();
+                map.put("data", blog1.getBno());//글 등록 번호
+                return ResponseEntity.ok().body(map);
+            }else{
+                Blog originBlog = blogRepository.findById(blog.getBno()).get();
+                blog.setImages(originBlog.getImages());
+                Blog blog1 = blogRepository.save(blog);
+                map.put("data", blog1.getBno());
+                return ResponseEntity.ok().body(map);
             }
-
-            Blog blog1 = blogRepository.save(blog);
-
-
-            BlogImgDTO ImgDTO = uploadedImage;
-            ImgDTO.setBno(blog1.getBno());
-
-            log.info("글 등록 번호임 : " + blog1.getBno());
-
-            BlogImg blogImg = modelMapper.map(ImgDTO, BlogImg.class);
-
-            blogImgRepository.save(blogImg);
-            blogImgRepository.flush();
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("data", blog1.getBno());//글 등록 번호
-
-            return ResponseEntity.ok().body(map);
         } catch (Exception e) {
             return ResponseEntity.ok().body(e.getMessage());
         }
@@ -147,7 +149,7 @@ public class BlogService {
                 java.io.File dest = new File(path, sName);
 
                 Thumbnails.of(file.getInputStream())
-                        .size(100, 100)//여기를 size에서 forceSize로 강제 사이즈 변환
+                        .size(330, 230)//여기를 size에서 forceSize로 강제 사이즈 변환
                         .toFile(dest);
 
 
@@ -225,4 +227,39 @@ public class BlogService {
 
     }
 
+    //수정하고 저장
+    @Transactional
+    public void modifyBlog(BlogDTO blogDTO){
+
+        log.info("수정하고 다시 저장 : "+blogDTO.getBno());
+        if(blogDTO.getMultImage1().getOriginalFilename() != null && blogDTO.getMultImage1().getOriginalFilename() !="" ){
+            //원래 있었던 이미지 먼저 삭제
+            try{
+                BlogImg blogImg = blogImgRepository.findByBno(blogDTO.getBno());
+
+                String deleImg = blogImg.getSName();//삭제 이미지 이름
+
+                log.info("삭제 이미지 이름 : "+deleImg);
+
+                if(deleImg.equals(blogDTO.getMultImage1())){}
+
+                delBlogImg(deleImg);//이미지 삭제
+
+                log.info("이미지 삭제 완료!");
+
+                blogImgRepository.deleteByBno(blogDTO.getBno());//이미지 테이블에서도 삭제
+
+                log.info("이미지테이블에서 삭제 완료!");
+            }catch (Exception e){
+                log.info(e.getMessage());
+            }
+        }
+
+
+        //새로 들어온 이미지를 리사이징 해서 저장
+        bRegister(blogDTO);
+
+        log.info("여기는 blogService - modifyBlog : 수정이 잘 되겠지?");
+
+    }
 }

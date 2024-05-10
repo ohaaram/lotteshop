@@ -87,6 +87,14 @@ public class MainService {
         }
         return lists;
     }
+    //판매자스토어
+    public MainProductsPageResponseDTO searchListProductsForSeller(MainProductsPageRequestDTO requestDTO) {
+        Pageable pageable = requestDTO.getPageable("no");
+        Page<Products> page = productsRepository.searchAllProductsForSeller(requestDTO, pageable);
+        List<Products> dtoList = page.getContent();
+        int total = (int) page.getTotalElements();
+        return new MainProductsPageResponseDTO(requestDTO, dtoList , total);
+    }
 
     //방문자수
     public void upDateVisitor(){

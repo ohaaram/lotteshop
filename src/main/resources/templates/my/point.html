@@ -130,19 +130,48 @@
                             <h3 style="text-align: center">내역이 없습니다.</h3>
                         </th:block>
                         <th:block th:if="${pageResponseDTO.dtoList.size()>0}">
-                        <p class="page">
-                            <a th:if="${pageResponseDTO.prev}" th:href="@{/my/point(pg=${pageResponseDTO.start -1})}" class="prev">이전</a>
-                            <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                                <th:block th:if="${num == pageResponseDTO.pg}">
-                                    <a th:href="@{/my/point( pg=${num })}" class="on">[[${num}]]</a>
-                                </th:block>
+                            <th:block th:if="${pageResponseDTO.dateBegin != null && pageResponseDTO.dateBegin != ''}">
+                                <p class="page">
 
-                                <th:block th:if="${num != pageResponseDTO.pg}">
-                                    <a th:href="@{/my/point( pg=${num })}" >[[${num}]]</a>
-                                </th:block>
+                                    <a th:if="${pageResponseDTO.prev}"
+                                       th:href="@{/my/point(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                                       class="prev">이전</a>
+                                    <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                        <th:block th:if="${num == pageResponseDTO.pg}">
+                                            <a th:href="@{/my/point( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                                               class="on">[[${num}]]</a>
+                                        </th:block>
+
+                                        <th:block th:if="${num != pageResponseDTO.pg}">
+                                            <a th:href="@{/my/point( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}">[[${num}]]</a>
+                                        </th:block>
+                                    </th:block>
+                                    <a th:if="${pageResponseDTO.next}"
+                                       th:href="@{/my/point( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen}, dateBegin=${pageResponseDTO.dateBegin}, dateEnd=${pageResponseDTO.dateEnd})}"
+                                       class="next">다음</a>
+                                </p>
                             </th:block>
-                            <a  th:if="${pageResponseDTO.next}" th:href="@{/my/point( pg=${pageResponseDTO.end+1})}" class="next">다음</a>
-                        </p>
+                            <th:block th:if="${pageResponseDTO.dateBegin == null || pageResponseDTO.dateBegin == ''}">
+                                <p class="page">
+
+                                    <a th:if="${pageResponseDTO.prev}"
+                                       th:href="@{/my/point(pg=${pageResponseDTO.start - 1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                                       class="prev">이전</a>
+                                    <th:block th:each="num:${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                                        <th:block th:if="${num == pageResponseDTO.pg}">
+                                            <a th:href="@{/my/point( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                                               class="on">[[${num}]]</a>
+                                        </th:block>
+
+                                        <th:block th:if="${num != pageResponseDTO.pg}">
+                                            <a th:href="@{/my/point( pg=${num } , currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}">[[${num}]]</a>
+                                        </th:block>
+                                    </th:block>
+                                    <a th:if="${pageResponseDTO.next}"
+                                       th:href="@{/my/point( pg=${pageResponseDTO.end+1}, currentMonth=${pageResponseDTO.currentMonth}, oneWeek=${pageResponseDTO.oneWeek}, fifteen=${pageResponseDTO.fifteen})}"
+                                       class="next">다음</a>
+                                </p>
+                            </th:block>
                         </th:block>
 
                     </article>                  

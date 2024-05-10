@@ -199,7 +199,7 @@
                         </th:block>
 
                         <td>
-                            <h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4>
+                            <a th:href="@{/product/list(seller=${product.sellerUid})}"><h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4></a>
                             <h5 class="badge power">판매자등급</h5>
                             <h6 class="rating star1">상품평</h6>
                         </td>
@@ -266,7 +266,7 @@
                     </th:block>
 
                     <td>
-                        <h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4>
+                        <a th:href="@{/product/list(seller=${product.sellerUid})}"><h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4></a>
                         <h5 class="badge power">판매자등급</h5>
                         <h6 class="rating star1">상품평</h6>
                     </td>
@@ -287,7 +287,7 @@
 
                             <th:block th:if="${num != pageResponseDTO.pg}">
 
-                                 <a th:href="@{/product/list( pg=${num} , cateName1 =${pageResponseDTO.getCateName1()} , cateName2 = ${pageResponseDTO.getCateName2() }, cateName3=${pageResponseDTO.getCateName3()},,cate=${pageResponseDTO.cate})}" >[[${num}]]</a>
+                                 <a th:href="@{/product/list( pg=${num} , cateName1 =${pageResponseDTO.getCateName1()} , cateName2 = ${pageResponseDTO.getCateName2() }, cateName3=${pageResponseDTO.getCateName3()},cate=${pageResponseDTO.cate})}" >[[${num}]]</a>
                             </th:block>
 
                         </span>

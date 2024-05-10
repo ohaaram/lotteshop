@@ -1637,7 +1637,7 @@
 .product-inquiry-select{
     width: 100%;
     border: 1px;
-    border-color: #0b8404w;
+    border-color: #0b8404;
     border-radius: 5px;
 }
 .qna-product-textarea{
@@ -1645,3 +1645,103 @@
     height: 150px;
     border-radius: 5px;
 }
+
+.qna-modal-product-info {
+    display: flex; /* 이미지와 상품 정보를 한 줄로 나란히 배치 */
+    align-items: center; /* 세로 방향 가운데 정렬 */
+}
+
+.qna-modal-product-info > span > p {
+    font-size: 24px;
+
+}
+
+.qna-modal-product-info .qna-modal-thumb {
+    margin-right: 20px; /* 이미지와 상품 정보 사이 간격 조정 */
+    display: inline-block;
+}
+.qna-modal-price{
+    display: inline-block;
+    flex: 1px;
+}
+.qna-modal-price .product-name {
+    margin-bottom: 120px;
+}
+
+.qna-modal-product-info h2 {
+    font-size: 20px; /* 상품명의 글씨 크기 조정 */
+}
+
+.qna-modal-product-info h2,
+.qna-modal-product-info .qna-modal-org_price del,
+.qna-modal-product-info .qna-modal-dis_price ins {
+    margin: 0; /* 기본적인 마진 제거 */
+
+
+}
+
+.qna-modal-product-info .qna-modal-org_price del,
+.qna-modal-product-info .qna-modal-dis_price ins {
+    font-size: 18px; /* 가격의 글씨 크기 조정 */
+}
+
+.product-inquiry-select {
+    width: 100%; /* 현재 부모 요소의 100%로 너비를 설정합니다. */
+    max-width: 300px; /* 최대 너비를 설정하여 너무 넓어지지 않도록 합니다. */
+    padding: 10px; /* 내부 여백을 조절합니다. */
+    font-size: 16px; /* 폰트 크기를 조절합니다. */
+    border: 1px solid #5F5D6A ;
+    box-sizing: border-box;
+}
+
+#productInquiryModal h2 {
+    font-size: 20px;
+}
+
+.qna-product-btnWrap{
+    display: flex; /* 아이템을 수평으로 정렬하기 위해 flexbox 사용 */
+    padding: 30px 22px 12px;
+    justify-content: space-around; /* 아이템을 동일한 간격으로 수평 정렬 */
+    margin: 0 -4px;
+    text-align: center;
+}
+
+.qna-product-btnItem{
+    display: inline-block;
+    width: auto; /* 컨텐츠 크기에 맞게 너비 조정 */
+    padding: 0 4px;
+    vertical-align: middle;
+}
+
+.qna-product-btnLink-cancel{
+    display: block;
+    width: 150px; /* 버튼 너비 설정 */
+    height: 40px;
+    margin-top: 0px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    letter-spacing: -.71px;
+}
+
+.qna-product-btnLink{
+    display: block;
+    width: 150px; /* 버튼 너비 설정 */
+    height: 40px;
+    margin-top: 0px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #FF6347;
+    color: #eeeeee;
+    text-align: center;
+    font-size: 16px;
+    line-height: 40px;
+    letter-spacing: -.71px;
+
+}
+

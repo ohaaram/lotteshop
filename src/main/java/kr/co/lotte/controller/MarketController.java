@@ -9,10 +9,7 @@ import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.CartsRepository;
 import kr.co.lotte.repository.OrderItemsRepository;
 import kr.co.lotte.security.MyUserDetails;
-import kr.co.lotte.service.MainService;
-import kr.co.lotte.service.MarketService;
-import kr.co.lotte.service.MemberService;
-import kr.co.lotte.service.ReviewService;
+import kr.co.lotte.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +30,7 @@ public class MarketController {
     private final MarketService marketService;
     private final MemberService memberService;
     private final ReviewService reviewService;
+    private final ProductQnaService productQnaService;
 
     @Autowired
     private final MainService mainService;
@@ -43,8 +41,8 @@ public class MarketController {
     @GetMapping("/product/list")
     public String list(Model model, MainProductsPageRequestDTO requestDTO, @AuthenticationPrincipal MyUserDetails userDetails) {
         int view = 0;
-        if(requestDTO.getBoard() == "" || requestDTO.getBoard() == null){
-            MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
+    if(requestDTO.getSeller() != "" && requestDTO.getSeller() != null){
+            MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProductsForSeller(requestDTO);
             List<Products> products = pageResponseDTO.getDtoList();
             try {
                 User user = userDetails.getUser();
@@ -58,7 +56,25 @@ public class MarketController {
             }
             model.addAttribute("view", view);
             model.addAttribute("pageResponseDTO", pageResponseDTO);
-        }else{
+            return "/product/list2";
+
+
+    }    else if(requestDTO.getBoard() == "" || requestDTO.getBoard() == null){
+        MainProductsPageResponseDTO pageResponseDTO = mainService.searchListProducts(requestDTO);
+        List<Products> products = pageResponseDTO.getDtoList();
+        try {
+            User user = userDetails.getUser();
+            List<Products> newProducts = mainService.hahaha(products, user.getUid());
+            pageResponseDTO.setDtoList(newProducts);
+        } catch (Exception e) {
+            for (Products p : products) {
+                p.setLikeState(0);
+            }
+            pageResponseDTO.setDtoList(products);
+        }
+        model.addAttribute("view", view);
+        model.addAttribute("pageResponseDTO", pageResponseDTO);}
+    else{
             view = 1;
             List<Products> products = mainService.searchListForCate(requestDTO.getBoard());
             try {
@@ -86,6 +102,9 @@ public class MarketController {
         int prodno = reviewPageRequestDTO.getProdno();
 
         log.info("prodno 값 : " + reviewPageRequestDTO.getProdno());
+
+        //qna 조회
+        model.addAttribute("prodQna", productQnaService.productQnas());
 
         //상품 조회
         ProductsDTO productsDTO = marketService.selectProduct(prodno);
@@ -351,6 +370,13 @@ public class MarketController {
     @GetMapping("/product/completeOrder")
     public ResponseEntity completeOrder(@RequestParam(name = "itemNo") int itemNo) {
         return marketService.completeOrder(itemNo);
+    }
+
+    //장바구니 수량변경
+    @GetMapping("/product/modifyCount")
+    public ResponseEntity modifyCount(@RequestParam(name = "count")int count, @RequestParam(name="cartNo") int cartNo ){
+        return marketService.modifyCount(count, cartNo);
+
     }
 
 }
