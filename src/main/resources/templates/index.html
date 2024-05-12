@@ -14,32 +14,31 @@
     <script src="https://kit.fontawesome.com/20962f3e4b.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-waiZp22aPvU8IIz6J8xIK/EECmgaN7//wpU8CJ8L/ak/1Y0s9e4t0JkkwzQjrvXy" crossorigin="anonymous">
+
     <script th:src="@{/js/index.js}"></script>
-    <style>
-        @import url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff');
-    </style>
+
 
     <script>
         var downCount = 0;
-        window.onload = function (){
-        $(function () {
 
-            $('#bannerTop .btnClose').click(function () {
-                $(this).closest('#bannerTop').removeClass('on');
-            });
-
-        });
 
         window.onload = function () {
+                $(function () {
+
+                    $('#bannerTop .btnClose').click(function () {
+                        $(this).closest('#bannerTop').removeClass('on');
+                    });
+
+                });
 
             const sliders = document.getElementsByClassName('sliderBanner');
             for (const slider of sliders) {
                 slider.onclick = function (e) {
 
+                    e.preventDefault();
+
                     const bannerNo = slider.getAttribute('data-bannerNo');
                     const link = slider.getAttribute('data-link');
-
 
                     console.log('bannerNo :' + bannerNo);
 
@@ -47,7 +46,7 @@
                         "bannerNo": bannerNo
                     }
 
-                    fetch("/lotteshop/main/index", {
+                    fetch("/lotteshop/main/banner/index", {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(jsonData)
@@ -56,8 +55,8 @@
                             if (!response.ok) {
                                 throw new Error('데이터 전송에 실패!');
                             } else {
-                                window.location.href = link;
-                            }
+                               window.location.href = link;
+                                                            }
                             return response.json();
                         })
                         .then(data => {
@@ -66,6 +65,43 @@
                         .catch(err => console.log(err))
                 }
             }
+
+            const MainBanner = document.getElementsByClassName('MainBanner')[0];
+
+            MainBanner.onclick = function (e){
+
+                e.preventDefault();
+
+                alert("클릭 했으");
+
+                const bannerNo = MainBanner.getAttribute('data-bannerNo');
+                const link = MainBanner.getAttribute('data-link');
+
+                console.log('bannerNo :' + bannerNo);
+
+                const jsonData = {
+                    "bannerNo": bannerNo
+                }
+
+                fetch("/lotteshop/main/banner/index", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(jsonData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('데이터 전송에 실패!');
+                        } else {
+                            window.location.href = link;
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(err => console.log(err))
+            }
+
         }
 
         //검색
@@ -98,6 +134,7 @@
             ////////////////////////////////////
         //////////////////btnTop, Home//////////////////
             ////////////////////////////////////
+
             $(document).ready(function () {
                 $(window).scroll(function () {
                     if ($(this).scrollTop() > 250) {
@@ -156,8 +193,6 @@
                     return false;
                 });
             });
-
-        }
 
     </script>
     <style>
@@ -229,24 +264,21 @@
 </head>
 <body>
 <!--메인 배너 시작-->
-<th:block th:if="${banner1 != null }">
+<th:block th:if="${banner1 != null and !banner1.isEmpty()}">
     <th:block th:each="banner : ${banner1}">
-        <div id="bannerTop" class="on"
-             th:style="${banner.status == 0 ? 'background-color: #0000;' : 'background-color: ' + banner.color + ';'}">
+        <div id="bannerTop" class="on">
             <article>
-                <!--<input type="hidden" th:value="${banner.bannerNo}">-->
-                <a th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                <a class="MainBanner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                    th:data-link="${banner.link}">
                     <img class="bannerImg" th:src="@{/uploads/__${banner.img_1200}__}"/>
-                </a>
-                <a th:if="${banner.status} == 0" th:href="@{/index}">
-                    <img th:src="@{/images/header_logo.png}"/>
                 </a>
                 <button class="btnClose">close</button>
             </article>
         </div>
     </th:block>
 </th:block>
+
+<th:block th:unless="${banner1 != null and !banner1.isEmpty()}"></th:block>
 
 <!--메인 배너 끝!-->
 
@@ -488,7 +520,7 @@
                 <ul>
                     <li th:each="banner : ${banner2}" th:if="${banner.status} == 1">
                         <a class="sliderBanner" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
-                           th:href="@{${banner.link}}">
+                          href="#"><!--th:href="@{${banner.link}}"-->
                             <img class="bannerImg" th:src="@{/uploads/__${banner.img_985}__}"/>
                         </a>
                     </li>

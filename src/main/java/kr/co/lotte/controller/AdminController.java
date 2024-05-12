@@ -115,11 +115,10 @@ public class AdminController {
     @GetMapping("/admin/config/banner")
     public String banner(Model model) {
 
-        List<BannerDTO> banner1 = adminService.findMAIN1("MAIN1");
-        List<BannerDTO> banner2 = adminService.findMAIN2("MAIN2");
-        List<BannerDTO> banner3 = adminService.findPRODUCT1("PRODUCT1");
-        List<BannerDTO> banner4 = adminService.findMEMBER1("MEMBER1");
-        List<BannerDTO> banner5 = adminService.findMY1("MY1");
+        List<BannerDTO> banner1 = adminService.findCateBanner("MAIN1");
+        List<BannerDTO> banner2 = adminService.findCateBanner("MAIN2");
+        List<BannerDTO> banner3 = adminService.findCateBanner("PRODUCT1");
+        List<BannerDTO> banner4 = adminService.findCateBanner("MY1");
 
         log.info("AdminController - banner : " + banner1.toString());
 
@@ -127,7 +126,6 @@ public class AdminController {
         model.addAttribute("banner2", banner2);
         model.addAttribute("banner3", banner3);
         model.addAttribute("banner4", banner4);
-        model.addAttribute("banner5", banner5);
 
         return "/admin/config/banner";
     }
@@ -333,25 +331,36 @@ public class AdminController {
     }
 
     @GetMapping("/banner/active")
-    public String bannerActive(@RequestParam("bannerNo") String bannerNo, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<?> bannerActive(@RequestParam("bannerNo") String bannerNo, RedirectAttributes redirectAttributes) {
 
         log.info("bannerNo : " + bannerNo);//배너번호 잘 넘어옴
 
+        Map<String, Object> result = new HashMap<>();
+
         BannerDTO bannerDTO = adminService.findById(bannerNo);//배너번호를 이용해서 설정하기 내용은 읽어오기!
 
-        log.info("status값 확인 : " + bannerDTO);//status 변경되었는지 확인하기
+        if(bannerDTO!=null){
+            log.info("status값 확인 : " + bannerDTO);//status 변경되었는지 확인하기
 
-        return "redirect:/admin/config/banner";
+            result.put("success", 1);
+            return ResponseEntity.ok().body(result);
 
+        }else{//
+            result.put("success", 0);
+            return ResponseEntity.ok().body(result);
+
+        }
     }
 
     @GetMapping("/banner/inactive")
-    public String bannerInactive(@RequestParam("bannerNo") String bannerNo) {
+    public ResponseEntity<?> bannerInactive(@RequestParam("bannerNo") String bannerNo) {
 
+        Map<String, Object> result = new HashMap<>();
 
         adminService.findByIdForDelete(bannerNo);//status 0으로 바꾸기
 
-        return "redirect:/admin/config/banner";
+        result.put("success", 1);
+        return ResponseEntity.ok().body(result);
     }
 
 

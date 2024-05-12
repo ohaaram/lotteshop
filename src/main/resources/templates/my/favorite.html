@@ -7,6 +7,51 @@
             <div class="ordered" layout:fragment="content">
                 <script>
                     window.onload=function (){
+
+                        //배너 조회수 올리기
+
+                        const Banner = document.getElementsByClassName('Banner')[0];
+
+                        Banner.onclick = function (e){
+
+                            e.preventDefault();
+
+
+                            const bannerNo = Banner.getAttribute('data-bannerNo');
+                            const link = Banner.getAttribute('data-link');
+
+                            console.log('bannerNo :' + bannerNo);
+
+                            const jsonData = {
+                                "bannerNo": bannerNo
+                            }
+
+                            fetch("/lotteshop/main/banner/index", {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(jsonData)
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('데이터 전송에 실패!');
+                                    } else {
+                                        window.location.href = link;
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log(data);
+                                })
+                                .catch(err => console.log(err))
+                        }
+
+
+
+
+
+
+
+
                             const all = document.getElementById('all');
                             const eachs = document.querySelectorAll('#checkEach');
                             const carts = document.querySelectorAll('#cart');
@@ -84,7 +129,23 @@
                 </ul>
 
                 <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+                    <!---배너시작-->
+                    <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
+                        <th:block th:each="banner : ${banner5}">
+                            <div class="on">
+                                <article>
+                                    <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                                       th:data-link="${banner.link}">
+                                        <img class="bannerImg" th:src="@{/uploads/__${banner.img_810}__}"/>
+                                    </a>
+                                </article>
+                            </div>
+                        </th:block>
+                    </th:block>
+
+                    <th:block th:unless="${banner5 != null and !banner5.isEmpty()}"></th:block>
+
+
                     <article>
                         <h3>나의 관심 상품</h3>
                             <div style="margin-top: 15px">

@@ -34,6 +34,7 @@
                 });
             });
 
+
             function deleteSelectedBanners() {
 
                 checkBoxes.forEach(check => {
@@ -68,6 +69,55 @@
             }
         }
 
+        function activateBanner(bannerNo) {
+
+            fetch(`/lotteshop/banner/active?bannerNo=${bannerNo}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('네트워크 오류');
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('배너가 성공적으로 활성화되었습니다.');
+                        window.location.href=`/lotteshop/admin/config/banner`;
+                    } else {
+                        alert('기간 범위에 포함되지 않습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('서버 오류가 발생하였습니다.');
+                });
+        }
+
+        function inactivateBanner(bannerNo) {
+
+            fetch(`/lotteshop/banner/inactive?bannerNo=${bannerNo}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('네트워크 오류');
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('배너가 비활성화되었습니다.');
+                        window.location.href=`/lotteshop/admin/config/banner`;
+                    } else {
+                        alert('배너 비활성화에 실패하였습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('서버 오류가 발생하였습니다.');
+                });
+        }
+
+
 
     </script>
 
@@ -82,8 +132,7 @@
             <li><a href="#tabs1">메인 상단 배너</a></li>
             <li><a href="#tabs2">메인 슬라이더 배너</a></li>
             <li><a href="#tabs3">상품 상세보기 배너</a></li>
-            <li><a href="#tabs4">회원 로그인 배너</a></li>
-            <li><a href="#tabs5">마이페이지 배너</a></li>
+            <li><a href="#tabs4">마이페이지 배너</a></li>
         </ul>
 
         <!-- 메인 상단 배너-->
@@ -105,6 +154,7 @@
                     <th>종료시간</th>
                     <th>조회</th>
                     <th>관리</th>
+                    <th>활성</th>
                 </tr>
 
                 <tr th:each=" bannerList :${banner1}">
@@ -126,9 +176,10 @@
                     <td th:text="${bannerList.t_end}">14:00</td>
                     <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
+                        <a href="#" th:onclick="'inactivateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="inactiveButton">[비활성]</a>
+                        <a href="#" th:onclick="'activateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="activeButton">[활성]</a>
                     </td>
+                    <td th:text="${bannerList.status=='1'? 'O' : 'X'}"></td>
                 </tr>
             </table>
             <input type="button" class="btnNegative" value="선택삭제"/>
@@ -155,6 +206,7 @@
                     <th>종료시간</th>
                     <th>조회</th>
                     <th>관리</th>
+                    <th>활성</th>
                 </tr>
                 <tr th:each=" bannerList :${banner2}">
                     <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
@@ -168,16 +220,17 @@
                             <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>메인 - 상단</td>
+                    <td>메인 - 슬라이더</td>
                     <td th:text="${bannerList.d_begin}">2023/01/01</td>
                     <td th:text="${bannerList.d_end}">2023/01/07</td>
                     <td th:text="${bannerList.t_begin}">13:00</td>
                     <td th:text="${bannerList.t_end}">14:00</td>
                     <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
+                        <a href="#" th:onclick="'inactivateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="inactiveButton">[비활성]</a>
+                        <a href="#" th:onclick="'activateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="activeButton">[활성]</a>
                     </td>
+                    <td th:text="${bannerList.status=='1'? 'O' : 'X'}"></td>
                 </tr>
             </table>
             <input type="button" class="btnNegative" value="선택삭제"/>
@@ -202,6 +255,7 @@
                     <th>종료시간</th>
                     <th>조회</th>
                     <th>관리</th>
+                    <th>활성</th>
                 </tr>
                 <tr th:each=" bannerList :${banner3}">
                     <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
@@ -215,72 +269,26 @@
                             <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>메인 - 상단</td>
+                    <td>상품-상세보기</td>
                     <td th:text="${bannerList.d_begin}">2023/01/01</td>
                     <td th:text="${bannerList.d_end}">2023/01/07</td>
                     <td th:text="${bannerList.t_begin}">13:00</td>
                     <td th:text="${bannerList.t_end}">14:00</td>
                     <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
+                        <a href="#" th:onclick="'inactivateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="inactiveButton">[비활성]</a>
+                        <a href="#" th:onclick="'activateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="activeButton">[활성]</a>
                     </td>
+                    <td th:text="${bannerList.status=='1'? 'O' : 'X'}"></td>
                 </tr>
             </table>
             <input type="button" class="btnNegative" value="선택삭제"/>
             <input type="button" class="btnPositive btnRegister" value="등록하기"/>
         </section>
 
-        <!-- 회원 로그인 배너-->
-        <section id="tabs4">
-            <h4>회원 로그인 배너</h4>
-            <p>
-                회원 로그인 폼 오른쪽에 노출되는 배너입니다.
-            </p>
-            <table>
-                <tr>
-                    <th><input type="checkbox" name="all"/></th>
-                    <th>배너번호</th>
-                    <th>이미지</th>
-                    <th>배너정보</th>
-                    <th>배너위치</th>
-                    <th>시작날짜</th>
-                    <th>종료날짜</th>
-                    <th>시작시간</th>
-                    <th>종료시간</th>
-                    <th>조회</th>
-                    <th>관리</th>
-                </tr>
-                <tr th:each=" bannerList :${banner4}">
-                    <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
-                    <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
-                    <td><img th:src="@{/uploads/__${bannerList.img_425}__}" class="thumb"></td>
-                    <td>
-                        <ul>
-                            <li class="name" th:text="${bannerList.name}">배너이름</li>
-                            <li class="size">크기 : 425 x 260</li>
-                            <li class="size" th:text="${bannerList.color}">배경색 : #e4dfdf</li>
-                            <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
-                        </ul>
-                    </td>
-                    <td>메인 - 상단</td>
-                    <td th:text="${bannerList.d_begin}">2023/01/01</td>
-                    <td th:text="${bannerList.d_end}">2023/01/07</td>
-                    <td th:text="${bannerList.t_begin}">13:00</td>
-                    <td th:text="${bannerList.t_end}">14:00</td>
-                    <td th:text="${bannerList.hit}">12</td>
-                    <td>
-                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
-                    </td>
-                </tr>
-            </table>
-            <input type="button" class="btnNegative" value="선택삭제"/>
-            <input type="button" class="btnPositive btnRegister" value="등록하기"/>
-        </section>
 
         <!-- 마이페이지 배너-->
-        <section id="tabs5">
+        <section id="tabs4">
             <h4>마이페이지 배너</h4>
             <p>
                 마이페이지 하위 모든 페이지에서 노출되는 배너입니다.
@@ -298,8 +306,9 @@
                     <th>종료시간</th>
                     <th>조회</th>
                     <th>관리</th>
+                    <th>활성</th>
                 </tr>
-                <tr th:each=" bannerList :${banner5}">
+                <tr th:each=" bannerList :${banner4}">
                     <td><input type="checkbox" name="배너번호" class="checkBoxes"/></td>
                     <td th:text="${bannerList.bannerNo}" class="bannerNo">201603292</td>
                     <td><img th:src="@{/uploads/__${bannerList.img_810}__}" class="thumb"></td>
@@ -311,22 +320,17 @@
                             <li class="link" th:text="${bannerList.link}"><a href="#">배너링크</a></li>
                         </ul>
                     </td>
-                    <td>메인 - 상단</td>
+                    <td>마이페이지</td>
                     <td th:text="${bannerList.d_begin}">2023/01/01</td>
                     <td th:text="${bannerList.d_end}">2023/01/07</td>
                     <td th:text="${bannerList.t_begin}">13:00</td>
                     <td th:text="${bannerList.t_end}">14:00</td>
                     <td th:text="${bannerList.hit}">12</td>
                     <td>
-                        <a th:href="@{'/banner/inactive?bannerNo='+${bannerList.bannerNo}}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo='+${bannerList.bannerNo}}" class="activeButton">[활성]</a>
-                        <!--
-                        <a th:href="@{'/banner/inactive?bannerNo=' + ${bannerList.bannerNo} + '&tabs=' + tabsValue}">[비활성]</a>
-                        <a th:href="@{'/banner/active?bannerNo=' + ${bannerList.bannerNo} + '&tabs=' + tabsValue}" class="activeButton">[활성]</a>
-                        -->
-
-
+                        <a href="#" th:onclick="'inactivateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="inactiveButton">[비활성]</a>
+                        <a href="#" th:onclick="'activateBanner(\'' + ${bannerList.bannerNo} + '\');'" class="activeButton">[활성]</a>
                     </td>
+                    <td th:text="${bannerList.status=='1'? 'O' : 'X'}"></td>
                 </tr>
 
             </table>
@@ -349,6 +353,8 @@
                 <article>
                     <h3>배너 정보입력</h3>
                     <form th:action="@{/banner/register}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="status" value="0">
+
                         <table border="0">
                             <tr>
                                 <td>배너이름</td>
@@ -388,7 +394,6 @@
                                         <option value="MAIN1">메인-상단</option>
                                         <option value="MAIN2">메인-슬라이더</option>
                                         <option value="PRODUCT1">상품-상세보기</option>
-                                        <option value="MEMBER1">회원-로그인</option>
                                         <option value="MY1">마이페이지</option>
                                     </select>
                                 </td>

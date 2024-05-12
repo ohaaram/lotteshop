@@ -9,7 +9,7 @@
         }
 
         #total_section > div > span:nth-child(1) {
-            font-size: 24px;
+            font-size: 30px;
             color: red;
             font-weight: bold;
         }
@@ -62,15 +62,13 @@
                 parentElement.addEventListener('click', function (event) {
                     const clickedElement = event.target;
 
-                    if (clickedElement.closest('.title_period')) {
-                        const rNo = clickedElement.dataset.r_no;
+                    const rNo = clickedElement.closest('.recruit').dataset.r_no;
 
-                        console.log("r_no 값:", rNo);
+                    console.log("r_no 값:", rNo);
 
-                        const destinationUrl = '/lotteshop/company/recruitContent' + '?r_no=' + rNo;
+                    const url = '/lotteshop/company/recruitContent?r_no=' + rNo;
 
-                        window.location.href = destinationUrl;
-                    }
+                    window.location.href = url;
                 });
             });
         }
@@ -97,9 +95,9 @@
                 <div class="space_feel"></div>
                 <div class="space_feel"></div>
                 <!--여기서 부터 채용에 대한 내용-->
-                <div class="recruit" th:each="lists : ${list}">
+                <div class="recruit" th:each="lists : ${list}" th:data-r_no="${lists.r_no}">
                     <div class="title_period">
-                        <h1 th:data-r_no="${lists.r_no}" th:text="${lists.r_title}">광고 플랫폼 기획</h1>
+                        <h1 th:text="${lists.r_title}">광고 플랫폼 기획</h1>
                         <div th:text="${lists.period}">상시채용</div>
                     </div>
                     <div class="etc">

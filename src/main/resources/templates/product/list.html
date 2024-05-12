@@ -3,6 +3,7 @@
       layout:decorate="~{/layout/productLayout}">
 
 <div class="container" layout:fragment="content">
+    <script src="https://kit.fontawesome.com/f98645e8a0.js" crossorigin="anonymous"></script>
 
         <script>
             window.onload=async function () {
@@ -200,8 +201,25 @@
 
                         <td>
                             <a th:href="@{/product/list(seller=${product.sellerUid})}"><h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4></a>
-                            <h5 class="badge power">판매자등급</h5>
-                            <h6 class="rating star1">상품평</h6>
+                            <div th:switch="${product.seller.grade}">
+                                <div th:case="베스트딜러" style="display: inline-block">
+                                    <span>👑</span>
+                                </div>
+                                <div th:case="*">
+                                    <span>🌱</span>
+                                </div>
+                            </div>
+                            <h5 th:text="${product.seller.grade}"style="display: inline-block"></h5>
+
+                            <!--<h5 class="badge power great">판매자등급</h5>이거 이미지 어떻게 할껀지 얘기하기-->
+                            <span th:each="starIndex : ${#numbers.sequence(1, product.avg)}"
+                                  th:if="${product.reviews.size()}>0"
+                                  style="padding-bottom: 10px">
+                                      <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                           class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                        </span>
                         </td>
                     </tr>
                 </table>
@@ -267,8 +285,25 @@
 
                     <td>
                         <a th:href="@{/product/list(seller=${product.sellerUid})}"><h4 class="seller"><i class="fas fa-home"></i>&nbsp;[[${product.sellerName}]]</h4></a>
-                        <h5 class="badge power">판매자등급</h5>
-                        <h6 class="rating star1">상품평</h6>
+                        <div th:switch="${product.seller.grade}" style="display: inline-block">
+                            <div th:case="베스트딜러">
+                                <span>👑</span>
+                            </div>
+                            <div th:case="*">
+                                <span>🌱</span>
+                            </div>
+                        </div>
+                        <h5 th:text="${product.seller.grade}" style="display: inline-block"></h5>
+
+
+                        <span th:each="starIndex : ${#numbers.sequence(1, product.avg)}"
+                              th:if="${product.reviews.size()}>0"
+                              style="padding-bottom: 10px">
+                                      <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor"
+                                           class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                        </span>
                     </td>
                 </tr>
 
@@ -298,6 +333,5 @@
             </th:block>
         </section>
     </main>
-
 </div>
 </html>

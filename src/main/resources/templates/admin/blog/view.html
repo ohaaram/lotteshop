@@ -73,7 +73,7 @@
         }
 
         /* 입력(input) 박스 스타일 */
-        #title {
+        #subTitle {
             width: 70%;
             border: none;
             outline: none;
@@ -81,6 +81,7 @@
             padding: 10px;
             margin-bottom: 10px;
             font-weight: bold;
+            text-align: center;
         }
 
         nav a {
@@ -106,6 +107,7 @@
         textarea{
             text-decoration: none;
             outline: none;
+            font-size: 15px;
         }
         #modiBtn {
             background-color: #808080; /* 그레이 계열 */
@@ -120,6 +122,7 @@
         #modiBtn:hover {
             background-color: #555; /* 호버 효과 */
         }
+
     </style>
 
     <script>
@@ -154,7 +157,7 @@
 </head>
 <body>
 <header>
-    <h1><a th:href="@{/admin/blogList}"style="text-decoration: none;color: #ffffff">Welcome to LotteON Blog</a></h1>
+    <h1><a th:href="@{/admin/blogList}" style="text-decoration: none;color: #ffffff">Welcome to LotteON Blog</a></h1>
 </header>
 
 <nav>
@@ -163,11 +166,12 @@
     <a th:href="@{/admin/blogList(cate=recruit)}">Recruit</a>
     <a th:href="@{/admin/blogList(cate=culture)}">Culture</a>
 </nav>
-<section id="lotteon">
-    <h3  th:text="${blog.title}"><a th:href="@{/admin/blogList}"></a></h3>
-    <input id="title" name ="title" type="text" readonly th:value="${blog.oneLine}">
+<section id="lotteon" style="text-align: center">
+    <h3 class="blog_title" th:text="${blog.title}"><a th:href="@{/admin/blogList}"></a></h3>
+    <input id="subTitle" name ="subTitle" type="text" readonly th:value="${blog.oneLine}">
+    <div class="space_feel"></div>
     <div class="post">
-        <textarea id="blogContent" style="width: 100%;border: none" th:text="${blog.content}" readonly></textarea>
+        <textarea id="blogContent" style="width: 60%;border: none" th:text="${blog.content}" readonly></textarea>
     </div>
 
 </section>

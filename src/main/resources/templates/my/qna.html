@@ -5,6 +5,51 @@
 
 
             <div class="qna" layout:fragment="content">
+
+                <script>
+
+                    window.onload = function (){
+
+                    //배너 조회수 올리기
+
+                    const Banner = document.getElementsByClassName('Banner')[0];
+
+                    Banner.onclick = function (e){
+
+                        e.preventDefault();
+
+
+                        const bannerNo = Banner.getAttribute('data-bannerNo');
+                        const link = Banner.getAttribute('data-link');
+
+                        console.log('bannerNo :' + bannerNo);
+
+                        const jsonData = {
+                            "bannerNo": bannerNo
+                        }
+
+                        fetch("/lotteshop/main/banner/index", {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(jsonData)
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('데이터 전송에 실패!');
+                                } else {
+                                    window.location.href = link;
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log(data);
+                            })
+                            .catch(err => console.log(err))
+                    }
+                    }
+
+
+                </script>
                 <ul>
                     <span class="menu_else"></span>
                     <li ><a th:href="@{/my/order}">전체주문내역</a></li>
@@ -17,7 +62,21 @@
                 </ul>
 
                 <section>
-                    <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+                    <!---배너시작-->
+                    <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
+                        <th:block th:each="banner : ${banner5}">
+                            <div class="on">
+                                <article>
+                                    <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                                       th:data-link="${banner.link}">
+                                        <img class="bannerImg" th:src="@{/uploads/__${banner.img_810}__}"/>
+                                    </a>
+                                </article>
+                            </div>
+                        </th:block>
+                    </th:block>
+
+                    <th:block th:unless="${banner5 != null and !banner5.isEmpty()}"></th:block>
                     <article>
                         <h3>문의하기</h3>
 
@@ -25,7 +84,7 @@
                             <tr>
                                 <th>번호</th>
                                 <th>문의채널</th>
-                                <th>문의유형</th>                                
+                                <th>문의유형</th>
                                 <th>제목</th>
                                 <th>작성일</th>
                                 <th>상태</th>
@@ -33,15 +92,15 @@
                             <tr>
                                 <td class="no">5</td>
                                 <td class="channel">고객센터</td>
-                                <td class="type">주문/결제</td>                                
+                                <td class="type">주문/결제</td>
                                 <td class="tit"><a th:href="@{#}">신용카드 결제 중 오류가 난 경우 어떻게 하나요?</a></td>
                                 <td class="date">2024-12-12</td>
                                 <td class="status"><span class="notAnswerYet">검토중</span></td>
-                            </tr>                            
+                            </tr>
                             <tr>
                                 <td class="no">4</td>
                                 <td class="channel">고객센터</td>
-                                <td class="type">주문/결제</td>                                
+                                <td class="type">주문/결제</td>
                                 <td class="tit"><a th:href="@{#}">신용카드 결제 중 오류가 난 경우 어떻게 하나요?</a></td>
                                 <td class="date">2024-12-12</td>
                                 <td class="status"><span class="answered">답변완료</span></td>
@@ -71,7 +130,7 @@
                             <tr>
                                 <td class="no">3</td>
                                 <td class="channel">판매자게시판</td>
-                                <td class="type">배송</td>                                
+                                <td class="type">배송</td>
                                 <td class="tit">
                                     <ul>
                                         <li class="prodName"><a th:href="@{#}">상품명</a></li>
@@ -186,6 +245,6 @@
                 </section>
 
             </div>
-        </div>        
+        </div>
 
 </html>

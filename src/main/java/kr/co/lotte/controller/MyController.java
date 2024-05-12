@@ -1,12 +1,14 @@
 package kr.co.lotte.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.dto.ReviewDTO;
 import kr.co.lotte.dto.UserDTO;
 import kr.co.lotte.dto.UserUpdateDTO;
 import kr.co.lotte.entity.Review;
 import kr.co.lotte.entity.User;
 import kr.co.lotte.repository.MemberRepository;
+import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class MyController {
 
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final AdminService adminService;
 
 
     //회원정보 변경 폼 (GET)
@@ -45,6 +48,12 @@ public class MyController {
         User user = findUser.get();
         log.info("user={}", user);
         model.addAttribute("user", user);
+
+
+        //배너 출력
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
 
         return "/my/info";
     }

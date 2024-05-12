@@ -72,7 +72,7 @@ public class MyControllerForGahee {
         model.addAttribute("reviews", reviews);
 
         //배너 출력
-        List<BannerDTO> banner5 = adminService.findMY1("MY1");
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
         log.info("banner5: {}", banner5);
         model.addAttribute("banner5", banner5);
 
@@ -98,6 +98,12 @@ public class MyControllerForGahee {
         model.addAttribute("products",myServiceForGahee.searchProducts(orderItems));
 
         model.addAttribute("pageResponseDTO", pageResponseDTO);
+
+        //배너
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
+
         return "/my/order";
     }
 
@@ -106,6 +112,11 @@ public class MyControllerForGahee {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         String uid = userDetails.getUser().getUid();
         model.addAttribute("pageResponseDTO", myServiceForGahee.searPoints(requestDTO,uid));
+
+        //배너 출력
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
 
 
         return "/my/point";
@@ -117,6 +128,13 @@ public class MyControllerForGahee {
         ProductsPageResponseDTO pageResponseDTO = myServiceForGahee.searchLikes(requestDTO, uid);
         model.addAttribute("pageResponseDTO", pageResponseDTO);
         model.addAttribute("productList" , myServiceForGahee.searchProductsLike(pageResponseDTO.getDtoListLikes()));
+
+        //배너
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
+
+
         return "/my/favorite";
     }
 
@@ -138,7 +156,13 @@ public class MyControllerForGahee {
     }
 
     @GetMapping("/my/qna")
-    public String myQna() {
+    public String myQna(Model model) {
+
+        //배너 출력
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
+
         return "/my/qna";
     }
 
@@ -146,6 +170,7 @@ public class MyControllerForGahee {
     @GetMapping("/product/coupon")
     public String coupon(Model model){
         model.addAttribute("coupons", myServiceForGahee.findFutureCoupons());
+
         return "/product/coupon";
     }
 

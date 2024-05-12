@@ -2,10 +2,12 @@ package kr.co.lotte.controller;
 
 import com.querydsl.core.Tuple;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.dto.ReviewDTO;
 import kr.co.lotte.dto.ReviewPageRequestDTO;
 import kr.co.lotte.dto.ReviewPageResponseDTO;
 import kr.co.lotte.entity.Review;
+import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MemberService;
 import kr.co.lotte.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class reviewController {
 
     private final ReviewService reviewService;
     private final MemberService memberService;
+    private final AdminService adminService;
 
     // 리뷰 쓰기 - Form 데이터 받아서 처리
     @PostMapping("/review")
@@ -71,6 +74,11 @@ public class reviewController {
         log.info("mycontroller - myreview - responseDTO={}", responseDTO);
 
         model.addAttribute("reviews", responseDTO);
+
+        //배너 출력
+        List<BannerDTO> banner5 = adminService.validateBanner("MY1");
+        log.info("banner5: {}", banner5);
+        model.addAttribute("banner5", banner5);
 
         return "/my/review";
     }

@@ -43,26 +43,27 @@ public class MainController {
         //hit상품 변경
         mainService.updateHit();
 
-        List<BannerDTO> banner1 = adminService.findMAIN1("MAIN1");
-        List<BannerDTO> banner2 = adminService.findMAIN2("MAIN2");
-        // List<BannerDTO> banner3 = adminService.findPRODUCT1("PRODUCT1");
+        List<BannerDTO> banner1 = adminService.validateBanner("MAIN1");
+        List<BannerDTO> banner2 = adminService.validateBanner("MAIN2");
         model.addAttribute("prodSolds", mainService.selectHitProducts());
 
         model.addAttribute("prodRecommend", mainService.selectRecomendProducts());
         model.addAttribute("prodRecent", mainService.selectRecentProducts());
         model.addAttribute("prodDiscount", mainService.selectDiscountProducts());
 
-       log.info("AdminController - banner : "+banner1.toString());
+       log.info("MainController - banner : "+banner1.toString());
 
         model.addAttribute("banner1", banner1);
         model.addAttribute("banner2", banner2);
-        //model.addAttribute("banner3", banner3);
+
 
         return "/index";
     }
 
-    @PostMapping("/main/index")
+    @PostMapping("/main/banner/index")
     public ResponseEntity<?> banner(@RequestBody Map<String, Object> map){
+        
+        log.info("banner가 컨트롤러에 안들어오네");
 
         String bannerNO = (String)map.get("bannerNo");
 

@@ -77,26 +77,26 @@ public class AdminService {
     private TermsMapper termsMapper;
 
     //mainPage 띄우자
-    public  Map<String , Integer> Formain(){
-        Map<String , Integer> map = new HashMap<>();
+    public Map<String, Integer> Formain() {
+        Map<String, Integer> map = new HashMap<>();
         //주문업무
-        int ready=0;
+        int ready = 0;
         int delivery = 0;
         int delete = 0;
-        int allDelete =0;
+        int allDelete = 0;
 
         List<OrderItems> totalOrders = ordersItemRepository.findAll();
         //주문건수
-        int count =totalOrders.size();
-        for(OrderItems orderItems : totalOrders){
-            if(orderItems.getOrderState().equals("주문 대기")){
+        int count = totalOrders.size();
+        for (OrderItems orderItems : totalOrders) {
+            if (orderItems.getOrderState().equals("주문 대기")) {
                 ready++;
-            }else if(orderItems.getOrderState().equals("배송 준비")){
-                delivery ++;
+            } else if (orderItems.getOrderState().equals("배송 준비")) {
+                delivery++;
 
-            }else if(orderItems.getOrderState().equals("주문 취소")){
+            } else if (orderItems.getOrderState().equals("주문 취소")) {
                 delete++;
-            }else if(orderItems.getOrderState().equals("환불")){
+            } else if (orderItems.getOrderState().equals("환불")) {
                 allDelete++;
             }
         }
@@ -106,9 +106,9 @@ public class AdminService {
 
 
         List<Orders> orders = ordersRepository.findAll();
-        for (Orders orders1 : orders){
-            total+= orders1.getOrderTotalPrice();
-            }
+        for (Orders orders1 : orders) {
+            total += orders1.getOrderTotalPrice();
+        }
 
         //회원가입
         int users = memberRepository.findAll().size();
@@ -132,19 +132,19 @@ public class AdminService {
         map.put("count", count);
         map.put("total", total);
         map.put("user", users);
-        map.put("ready",ready);
-        map.put("delivery",delivery);
-        map.put("delete",delete);
-        map.put("allDelete",allDelete);
-        map.put("visitors",visitors);
+        map.put("ready", ready);
+        map.put("delivery", delivery);
+        map.put("delete", delete);
+        map.put("allDelete", allDelete);
+        map.put("visitors", visitors);
 
 
         return map;
     }
 
     //판매자 스토어용
-    public  Map<String , Integer>  forManager(String storUid){
-        Map<String , Integer> map = new HashMap<>();
+    public Map<String, Integer> forManager(String storUid) {
+        Map<String, Integer> map = new HashMap<>();
 
         List<OrderItems> totalOrders = ordersItemRepository.findAll();
         //주문건수
@@ -153,31 +153,30 @@ public class AdminService {
         int total = 0;
 
         //주문업무
-        int ready=0;
+        int ready = 0;
         int delivery = 0;
         int delete = 0;
-        int allDelete =0;
+        int allDelete = 0;
 
-        for(OrderItems orderItems : totalOrders){
+        for (OrderItems orderItems : totalOrders) {
 
-            if(orderItems.getOrderState().equals("주문 대기")){
+            if (orderItems.getOrderState().equals("주문 대기")) {
                 ready++;
-            }else if(orderItems.getOrderState().equals("배송 준비")){
-                delivery ++;
-            }else if(orderItems.getOrderState().equals("주문 취소")){
+            } else if (orderItems.getOrderState().equals("배송 준비")) {
+                delivery++;
+            } else if (orderItems.getOrderState().equals("주문 취소")) {
                 delete++;
-            }else if(orderItems.getOrderState().equals("환불")){
+            } else if (orderItems.getOrderState().equals("환불")) {
                 allDelete++;
             }
 
-            int prodNo =subProductsRepository.findById(orderItems.getProdNo()).get().getProdNo();
-            if(productsRepository.findById(prodNo).get().getSellerUid().equals(storUid)){
+            int prodNo = subProductsRepository.findById(orderItems.getProdNo()).get().getProdNo();
+            if (productsRepository.findById(prodNo).get().getSellerUid().equals(storUid)) {
                 Orders orders = ordersRepository.findById(orderItems.getOrderNo()).get();
                 total += orders.getOrderTotalPrice();
                 count++;
             }
         }
-
 
 
         //회원가입
@@ -193,12 +192,12 @@ public class AdminService {
         map.put("count", count);
         map.put("total", total);
         map.put("user", users);
-        map.put("ready",ready);
-        map.put("delivery",delivery);
-        map.put("delete",delete);
-        map.put("allDelete",allDelete);
+        map.put("ready", ready);
+        map.put("delivery", delivery);
+        map.put("delete", delete);
+        map.put("allDelete", allDelete);
 
-        map.put("visitors",visitors);
+        map.put("visitors", visitors);
         return map;
     }
 
@@ -285,18 +284,18 @@ public class AdminService {
 
     }
 
-    public ResponseEntity productModify(ProductsDTO productsDTO)  {
-        Products products =modelMapper.map(productsDTO, Products.class);
+    public ResponseEntity productModify(ProductsDTO productsDTO) {
+        Products products = modelMapper.map(productsDTO, Products.class);
         Products old = productsRepository.findById(products.getProdNo()).get();
         MultipartFile image3 = productsDTO.getMultImage3();
         MultipartFile image4 = productsDTO.getMultImage4();
 
-        if(image3.getOriginalFilename() == null || image3.getOriginalFilename() == ""){
+        if (image3.getOriginalFilename() == null || image3.getOriginalFilename() == "") {
             log.info("here...");
             products.setImage1(old.getImage1());
             products.setImage2(old.getImage2());
             products.setImage3(old.getImage3());
-        }else{
+        } else {
             try {
                 List<ProdImageDTO> lists = fileModifyOne(image3);
                 for (int i = 0; i < lists.size(); i++) {
@@ -309,18 +308,18 @@ public class AdminService {
                         products.setImage3(imageDTO.getSName());
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
 
-        if(image4.getOriginalFilename() == null || image4.getOriginalFilename() == ""){
+        if (image4.getOriginalFilename() == null || image4.getOriginalFilename() == "") {
             products.setImage4(old.getImage4());
-        }else{
+        } else {
             try {
-             ProdImageDTO image = fileModifyTwo(image4);
+                ProdImageDTO image = fileModifyTwo(image4);
                 products.setImage4(image.getSName());
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
@@ -351,49 +350,49 @@ public class AdminService {
         List<ProdImageDTO> imageDTOS = new ArrayList<>();
 
         MultipartFile mf = files;
-          String oName = mf.getOriginalFilename();
-         String ext = oName.substring(oName.lastIndexOf(".")); // 확장자
-           String sName = UUID.randomUUID().toString() + ext;
-         File file = new File(path, sName);
-                        Thumbnails.of(mf.getInputStream())
-                                .size(190, 190) // 썸네일 크기 지정
-                                .toFile(file);
+        String oName = mf.getOriginalFilename();
+        String ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+        String sName = UUID.randomUUID().toString() + ext;
+        File file = new File(path, sName);
+        Thumbnails.of(mf.getInputStream())
+                .size(190, 190) // 썸네일 크기 지정
+                .toFile(file);
 
-                        ProdImageDTO prodImageDTO = ProdImageDTO.builder()
-                                .oName(oName)
-                                .sName(sName)
-                                .build();
+        ProdImageDTO prodImageDTO = ProdImageDTO.builder()
+                .oName(oName)
+                .sName(sName)
+                .build();
 
-                        oName = mf.getOriginalFilename();
-                        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
-                        sName = UUID.randomUUID().toString() + ext;
-                        file = new File(path, sName);
-                        Thumbnails.of(mf.getInputStream())
-                                .size(230, 230) // 썸네일 크기 지정
-                                .toFile(file);
+        oName = mf.getOriginalFilename();
+        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+        sName = UUID.randomUUID().toString() + ext;
+        file = new File(path, sName);
+        Thumbnails.of(mf.getInputStream())
+                .size(230, 230) // 썸네일 크기 지정
+                .toFile(file);
 
-                        ProdImageDTO prodImageDTO2 = ProdImageDTO.builder()
-                                .oName(oName)
-                                .sName(sName)
-                                .build();
+        ProdImageDTO prodImageDTO2 = ProdImageDTO.builder()
+                .oName(oName)
+                .sName(sName)
+                .build();
 
 
-                        oName = mf.getOriginalFilename();
-                        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
-                        sName = UUID.randomUUID().toString() + ext;
-                        file = new File(path, sName);
-                        Thumbnails.of(mf.getInputStream())
-                                .size(456, 456) // 썸네일 크기 지정
-                                .toFile(file);
+        oName = mf.getOriginalFilename();
+        ext = oName.substring(oName.lastIndexOf(".")); // 확장자
+        sName = UUID.randomUUID().toString() + ext;
+        file = new File(path, sName);
+        Thumbnails.of(mf.getInputStream())
+                .size(456, 456) // 썸네일 크기 지정
+                .toFile(file);
 
-                        ProdImageDTO prodImageDTO3 = ProdImageDTO.builder()
-                                .oName(oName)
-                                .sName(sName)
-                                .build();
+        ProdImageDTO prodImageDTO3 = ProdImageDTO.builder()
+                .oName(oName)
+                .sName(sName)
+                .build();
 
-                        imageDTOS.add(prodImageDTO);
-                        imageDTOS.add(prodImageDTO2);
-                        imageDTOS.add(prodImageDTO3);
+        imageDTOS.add(prodImageDTO);
+        imageDTOS.add(prodImageDTO2);
+        imageDTOS.add(prodImageDTO3);
         return imageDTOS;
     }
 
@@ -408,7 +407,7 @@ public class AdminService {
         String path = new File(fileUploadPath).getAbsolutePath();
 
         // 이미지 정보 리턴을 위한 리스트
-        MultipartFile mf=files;
+        MultipartFile mf = files;
         String oName = mf.getOriginalFilename();
         String ext = oName.substring(oName.lastIndexOf(".")); // 확장자
         String sName = UUID.randomUUID().toString() + ext;
@@ -424,7 +423,7 @@ public class AdminService {
                 .sName(sName)
                 .build();
 
-        return  prodImageDTO ;
+        return prodImageDTO;
     }
 
     public List<ProdImageDTO> fileUpload(List<MultipartFile> files) {
@@ -443,10 +442,9 @@ public class AdminService {
         log.info("fileUploadPath..1 : " + path);
         for (int i = 0; i < files.size(); i++) {
             MultipartFile mf = files.get(i);
-            if(mf.getOriginalFilename() ==null || mf.getOriginalFilename() == "")
-            {
+            if (mf.getOriginalFilename() == null || mf.getOriginalFilename() == "") {
 
-            }else {
+            } else {
                 try {
 
                     if (i == 0) {
@@ -520,7 +518,8 @@ public class AdminService {
                 } catch (IOException e) {
                     log.error("Failed to upload file: " + e.getMessage());
                 }
-            };
+            }
+            ;
 
 
         }
@@ -565,7 +564,7 @@ public class AdminService {
                     SubProducts ss = tuple.get(1, SubProducts.class);
                     ss.setProducts(products);
 
-                    log.info("여기는 판매자 전용 adminService - searchProductsForManager : "+ ss.getProducts());
+                    log.info("여기는 판매자 전용 adminService - searchProductsForManager : " + ss.getProducts());
 
                     return ss;
                 }).toList();
@@ -693,10 +692,10 @@ public class AdminService {
             bannerImgRepository.save(bannerImg);
             bannerRepository.flush();
 
-        Map<String, Integer> map = new HashMap<>();
-        map.put("data", savedBanner.getBannerNo());
+            Map<String, Integer> map = new HashMap<>();
+            map.put("data", savedBanner.getBannerNo());
 
-        return ResponseEntity.ok().body(map);
+            return ResponseEntity.ok().body(map);
         } catch (Exception e) {
             return ResponseEntity.ok().body(e.getMessage());
         }
@@ -769,50 +768,65 @@ public class AdminService {
         return null; // 업로드 실패 시 null 반환
     }
 
-    //tab1에 대한 내용들
-    public List<BannerDTO> findMAIN1(String main) {
+    //카테고리별 배너 찾기
+    public List<BannerDTO> findCateBanner(String main) {
 
         List<Banner> banners = bannerRepository.findByPosition(main);
+
         return banners.stream()
                 .map(banner -> modelMapper.map(banner, BannerDTO.class))
                 .collect(Collectors.toList());
     }
 
-    //tab2에 대한 내용들
-    public List<BannerDTO> findMAIN2(String main) {
+    //배너 유효성 검사를 위한
+    public List<BannerDTO> validateBanner(String main) {
 
         List<Banner> banners = bannerRepository.findByPosition(main);
-        return banners.stream()
-                .map(banner -> modelMapper.map(banner, BannerDTO.class))
-                .collect(Collectors.toList());
+        List<BannerDTO> validatedBanners = new ArrayList<>();
+
+        for (Banner banner : banners) {
+            // 배너의 status가 1인 경우의 배너 번호(단 한개만 존재가능)
+            if (banner.getStatus().equals("1")) {
+                int bannerNo = banner.getBannerNo();
+                validatedBanners.add(validate(bannerNo));
+            }
+        }
+
+        return validatedBanners;
     }
 
-    //tab3에 대한 내용들
-    public List<BannerDTO> findPRODUCT1(String main) {
 
-        List<Banner> banners = bannerRepository.findByPosition(main);
-        return banners.stream()
-                .map(banner -> modelMapper.map(banner, BannerDTO.class))
-                .collect(Collectors.toList());
+
+    private BannerDTO validate(int  bannerNo) {//들어온 배너번호의 유효성을 검사
+
+        Optional<Banner> optBanner = bannerRepository.findById(bannerNo);
+
+        BannerDTO bannerDTO = modelMapper.map(optBanner,BannerDTO.class);
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDate startDate = LocalDate.parse(bannerDTO.getD_begin());
+        LocalDate endDate = LocalDate.parse(bannerDTO.getD_end());
+        LocalTime startTime = LocalTime.parse(bannerDTO.getT_begin());
+        LocalTime endTime = LocalTime.parse(bannerDTO.getT_end());
+
+        LocalDateTime startDateTime = LocalDateTime.of(startDate, startTime);
+        LocalDateTime endDateTime = LocalDateTime.of(endDate, endTime);
+
+
+        if (currentDateTime.isEqual(startDateTime) ||
+                (currentDateTime.isAfter(startDateTime) && currentDateTime.isBefore(endDateTime))) {
+            bannerDTO.setStatus("1");
+            Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+            bannerRepository.save(banner2);
+            return bannerDTO;
+        } else {
+            bannerDTO.setStatus("0");
+            Banner banner2 = modelMapper.map(bannerDTO, Banner.class);
+            bannerRepository.save(banner2);
+            return null;
+        }
     }
 
-    //tab4에 대한 내용들
-    public List<BannerDTO> findMEMBER1(String main) {
-
-        List<Banner> banners = bannerRepository.findByPosition(main);
-        return banners.stream()
-                .map(banner -> modelMapper.map(banner, BannerDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    //tab5에 대한 내용들
-    public List<BannerDTO> findMY1(String main) {
-
-        List<Banner> banners = bannerRepository.findByPosition(main);
-        return banners.stream()
-                .map(banner -> modelMapper.map(banner, BannerDTO.class))
-                .collect(Collectors.toList());
-    }
 
     //삭제버튼에 대한 내용
     @Transactional
@@ -828,7 +842,7 @@ public class AdminService {
     }
 
 
-    //배너의 유효성 검사(시간, 날짜 등)->검사 후 유효하다면 status를 1로 저장해줌
+    //배너의 유효성 검사(시간, 날짜 등)->검사 후 유효하다면 status를 1로 저장해줌(DB서치)
     public BannerDTO findById(String bno) {
 
         int bNo = Integer.parseInt(bno);
@@ -867,7 +881,7 @@ public class AdminService {
         log.info("startDateTime : " + startDateTime);
         log.info("endDateTime : " + endDateTime);
 
-        if (!position.equals("MAIN2") && count < 1) {
+        if (!position.equals("MAIN2") && count < 1) {//슬라이더 배너(MAIN2)가 아니고, 활성화 중인 배너가 없으면
 
             // 현재 날짜와 시간이 배너의 기간에 포함되어 있는지 확인
             if (currentDateTime.isEqual(startDateTime) ||
@@ -985,27 +999,27 @@ public class AdminService {
     //주문현황
     public OrdersPageResponseDTO searchOrdersForManager(OrdersPageRequestDTO requestDTO, String uid) throws ParseException {
         Pageable pageable = requestDTO.getPageable("no");
-        Page<OrderItems> page = ordersRepository.searchAllOrdersForManager(requestDTO,pageable,uid);
+        Page<OrderItems> page = ordersRepository.searchAllOrdersForManager(requestDTO, pageable, uid);
         List<OrderItems> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
-        return new OrdersPageResponseDTO(requestDTO,total, dtoList);
+        return new OrdersPageResponseDTO(requestDTO, total, dtoList);
     }
 
     //주문현황
     public OrdersPageResponseDTO searchOrdersForAdmin(OrdersPageRequestDTO requestDTO) throws ParseException {
         Pageable pageable = requestDTO.getPageable("no");
-        Page<OrderItems> page = ordersRepository.searchAllOrdersForAdmin(requestDTO , pageable);
+        Page<OrderItems> page = ordersRepository.searchAllOrdersForAdmin(requestDTO, pageable);
         List<OrderItems> dtoList = page.getContent();
         int total = (int) page.getTotalElements();
         return new OrdersPageResponseDTO(requestDTO, total, dtoList);
     }
 
     //주문현황 별 상품 정보 출력
-    public List<SubProducts> searchProductsForOrder(List<OrderItems> orderItems){
+    public List<SubProducts> searchProductsForOrder(List<OrderItems> orderItems) {
         List<SubProducts> list = new ArrayList<>();
 
-        for(OrderItems order : orderItems){
-            SubProducts subProducts =subProductsRepository.findById(order.getProdNo()).get();
+        for (OrderItems order : orderItems) {
+            SubProducts subProducts = subProductsRepository.findById(order.getProdNo()).get();
             subProducts.setProdName(productsRepository.findById(subProducts.getProdNo()).get().getProdName());
             list.add(subProducts);
         }
@@ -1013,43 +1027,42 @@ public class AdminService {
     }
 
     //주문상세 출력
-    public Orders forOrderDetail(int orderNo){
+    public Orders forOrderDetail(int orderNo) {
         return ordersRepository.findById(orderNo).get();
     }
 
 
-
     //판매현황 출력
-    public StatusPageResponseDTO seller_status(CsFaqPageRequestDTO pageRequestDTO){
+    public StatusPageResponseDTO seller_status(CsFaqPageRequestDTO pageRequestDTO) {
 
 
         Pageable pageable = pageRequestDTO.getPageable("status_id");
 
-       Page<Tuple> pageSeller_Status = seller_statusRepository.seller_status(pageRequestDTO ,pageable);
+        Page<Tuple> pageSeller_Status = seller_statusRepository.seller_status(pageRequestDTO, pageable);
 
-       List<Seller_statusDTO> dtoList = pageSeller_Status.getContent().stream()
-               .map(tuple -> {
+        List<Seller_statusDTO> dtoList = pageSeller_Status.getContent().stream()
+                .map(tuple -> {
 
-                   log.info("tuple : " + tuple);
+                    log.info("tuple : " + tuple);
 
-                   Seller_statusDTO dto = new Seller_statusDTO();
-                   dto.setSellerUid((String) tuple.get(0,String.class)); // 첫 번째 요소는 문자열로 캐스팅하여 id에 설정
-                   dto.setOrderCount(tuple.get(1,Long.class)); // 두 번째 요소는 정수로 캐스팅하여 status에 설정
-                   dto.setTotalPrice(tuple.get(2,Integer.class));
+                    Seller_statusDTO dto = new Seller_statusDTO();
+                    dto.setSellerUid((String) tuple.get(0, String.class)); // 첫 번째 요소는 문자열로 캐스팅하여 id에 설정
+                    dto.setOrderCount(tuple.get(1, Long.class)); // 두 번째 요소는 정수로 캐스팅하여 status에 설정
+                    dto.setTotalPrice(tuple.get(2, Integer.class));
 
-                   log.info("service - page - sellerDTO : " + dto);
+                    log.info("service - page - sellerDTO : " + dto);
 
-                   return dto;
-               })
-               .toList();
+                    return dto;
+                })
+                .toList();
 
-       int total = (int) pageSeller_Status.getTotalElements();
+        int total = (int) pageSeller_Status.getTotalElements();
 
-       return StatusPageResponseDTO.builder()
-               .pageRequestDTO(pageRequestDTO)
-               .dtoList(dtoList)
-               .total(total)
-               .build();
+        return StatusPageResponseDTO.builder()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(dtoList)
+                .total(total)
+                .build();
     }
 
     //판매자 아이디를 이용해 판매자 정보 출력
@@ -1063,61 +1076,61 @@ public class AdminService {
     }
 
     //주문상태변경
-    public ResponseEntity changeOrderState(int orderNo){
-        Map<String , String> map = new HashMap<>();
+    public ResponseEntity changeOrderState(int orderNo) {
+        Map<String, String> map = new HashMap<>();
         //주문대기이면 배송준비로
         OrderItems orders = ordersItemRepository.findById(orderNo).get();
-        if(orders.getOrderState().equals("주문 대기")){
+        if (orders.getOrderState().equals("주문 대기")) {
             orders.setOrderState("배송 준비");
-        }else if(orders.getOrderState().equals("배송 준비")){
+        } else if (orders.getOrderState().equals("배송 준비")) {
             orders.setOrderState("배송 중");
         }
-        map.put("data","1");
+        map.put("data", "1");
 
-        return  ResponseEntity.ok().body(map);
+        return ResponseEntity.ok().body(map);
     }
 
-    public ResponseEntity changeOrderStates(List<Integer> itemNos){
-        Map<String , String> map = new HashMap<>();
+    public ResponseEntity changeOrderStates(List<Integer> itemNos) {
+        Map<String, String> map = new HashMap<>();
         //주문대기이면 배송준비로
-        for(int orderNo : itemNos){
+        for (int orderNo : itemNos) {
             OrderItems orders = ordersItemRepository.findById(orderNo).get();
-            if(orders.getOrderState().equals("주문 대기")){
+            if (orders.getOrderState().equals("주문 대기")) {
                 orders.setOrderState("배송 준비");
-            }else if(orders.getOrderState().equals("배송 준비")){
+            } else if (orders.getOrderState().equals("배송 준비")) {
                 orders.setOrderState("배송 중");
             }
         }
 
-        map.put("data","1");
+        map.put("data", "1");
 
-        return  ResponseEntity.ok().body(map);
+        return ResponseEntity.ok().body(map);
     }
 
     //우리 매출현황을 해 보아요~ 이거는 pagination이 필요없다네~
-    public List<String> forDays(String state){
-       List<String> days = new ArrayList<>();
-        if(state.equals("week")){
+    public List<String> forDays(String state) {
+        List<String> days = new ArrayList<>();
+        if (state.equals("week")) {
             LocalDate currentDate = LocalDate.now();
-            for (int i = 6 ; i >= 0; i--) {
+            for (int i = 6; i >= 0; i--) {
                 LocalDate date = currentDate.minusDays(i);
                 DayOfWeek dayOfWeek = date.getDayOfWeek();
                 String dayName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
                 days.add(dayName);
             }
 
-            }else if(state.equals("month")){
-                //현재 날짜를 가져오고
-                LocalDate currentDate = LocalDate.now();
+        } else if (state.equals("month")) {
+            //현재 날짜를 가져오고
+            LocalDate currentDate = LocalDate.now();
 
-                // 한 달 전의 날짜를 계산
-                LocalDate oneMonthAgo = currentDate.minusMonths(1);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
-                for (LocalDate date = oneMonthAgo; date.compareTo(currentDate) <= 0; date = date.plusDays(1)){
-                    log.info(formatter.format(date).toString() + "이거!");
-                    days.add(formatter.format(date));
-                }
-            }else if(state.equals("year")){
+            // 한 달 전의 날짜를 계산
+            LocalDate oneMonthAgo = currentDate.minusMonths(1);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
+            for (LocalDate date = oneMonthAgo; date.compareTo(currentDate) <= 0; date = date.plusDays(1)) {
+                log.info(formatter.format(date).toString() + "이거!");
+                days.add(formatter.format(date));
+            }
+        } else if (state.equals("year")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM");
 
             LocalDate currentDate = LocalDate.now();
@@ -1128,17 +1141,17 @@ public class AdminService {
             }
         }
         return days;
-        }
+    }
 
 
-    public Map<String , List<Integer>> saleForAdmin (String state) {
-        Map<String , List<Integer>> map = new HashMap<>();
+    public Map<String, List<Integer>> saleForAdmin(String state) {
+        Map<String, List<Integer>> map = new HashMap<>();
         //매출건수를 어떻게 조회하지?
         //일주일 별
-        if(state.equals("week")){
+        if (state.equals("week")) {
             //주문건수
             List<Integer> listWeek = ordersRepository.searchOrdersWeekForAdmin();
-            
+
             //매출액
             List<Integer> weekPrice = ordersRepository.searchPriceWeekForAdmin();
 
@@ -1147,7 +1160,7 @@ public class AdminService {
 
         }
         //한 달
-        if(state.equals("month")){
+        if (state.equals("month")) {
             List<Integer> listMonth = ordersRepository.searchOrdersMonthForAdmin();
             //매출액
             List<Integer> monthPrice = ordersRepository.searchPriceMonthForAdmin();
@@ -1157,7 +1170,7 @@ public class AdminService {
         }
 
         //월 별
-        if(state.equals("year")){
+        if (state.equals("year")) {
             List<Integer> listYear = ordersRepository.searchOrdersYearForAdmin();
             //매출액
             List<Integer> yearPrice = ordersRepository.searchPriceYearForAdmin();
@@ -1167,14 +1180,14 @@ public class AdminService {
             map.put("price", yearPrice);
         }
         return map;
-        
+
     }
 
-    public Map<String , List<Integer>> saleForManager(String state, String uid){
-        Map<String , List<Integer>> map = new HashMap<>();
+    public Map<String, List<Integer>> saleForManager(String state, String uid) {
+        Map<String, List<Integer>> map = new HashMap<>();
         //매출건수를 어떻게 조회하지?
         //일주일 별
-        if(state.equals("week")){
+        if (state.equals("week")) {
             //주문건수
             List<Integer> listWeek = ordersRepository.searchOrdersWeekForManager(uid);
 
@@ -1186,7 +1199,7 @@ public class AdminService {
 
         }
         //한 달
-        if(state.equals("month")){
+        if (state.equals("month")) {
             List<Integer> listMonth = ordersRepository.searchOrdersMonthForManager(uid);
             //매출액
             List<Integer> monthPrice = ordersRepository.searchPriceMonthForManager(uid);
@@ -1196,7 +1209,7 @@ public class AdminService {
         }
 
         //월 별
-        if(state.equals("year")){
+        if (state.equals("year")) {
             List<Integer> listYear = ordersRepository.searchOrdersYearForManager(uid);
             //매출액
             List<Integer> yearPrice = ordersRepository.searchPriceYearForManager(uid);
@@ -1205,9 +1218,9 @@ public class AdminService {
         }
         return map;
     }
-    
+
     //seller이면 true를 반환
-    public Boolean findBySeller(String uid){
+    public Boolean findBySeller(String uid) {
 
         // 판매자 검색
         Optional<Seller> seller = sellerRepository.findById(uid);
@@ -1216,10 +1229,10 @@ public class AdminService {
     }
 
     //옵션수정
-    public ResponseEntity modifyOptions(List<SubProductsDTO> subProductsDTOS){
+    public ResponseEntity modifyOptions(List<SubProductsDTO> subProductsDTOS) {
         Map<String, String> map = new HashMap<>();
 
-        for(SubProductsDTO subProductsDTO : subProductsDTOS){
+        for (SubProductsDTO subProductsDTO : subProductsDTOS) {
             SubProducts old = subProductsRepository.findById(subProductsDTO.getSubProdNo()).get();
             old.setProdStock(subProductsDTO.getProdStock());
             old.setProdPrice(subProductsDTO.getProdPrice());

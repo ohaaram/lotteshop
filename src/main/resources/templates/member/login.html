@@ -73,42 +73,6 @@
         }
 
 
-        // 클릭 이벤트 처리 함수
-        function preventClick(event, element) {
-            event.preventDefault(); // 기본 동작 중지
-            console.log(event);
-            console.log(element.getAttribute('data-bannerNo'));//이렇게 함수에 bannerNo를 담아서 옴
-            console.log(element.getAttribute('data-link'));//link주소도 받아와짐
-
-            const bannerNo = element.getAttribute('data-bannerNo');
-            const link = element.getAttribute('data-link');
-
-
-            const jsonData = {
-                "bannerNo": bannerNo,
-                "link": link
-            }
-
-            fetch("/lotteshop/main/index", {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(jsonData)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('데이터 전송에 실패!');
-                    } else {
-                        window.location.href = link;
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(err => console.log(err))
-        }
-
-
     </script>
 
 
@@ -153,12 +117,7 @@
 <!--                <img class="naver_img" th:src="@{/member/images/naver.png}" alt="로그인">-->
 <!--            </a>-->
         </div>
-        <th:block th:each="banner : ${banner4}">
-            <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}"
-               onclick="preventClick(event ,this)" th:href="@{${banner.link}}">
-                <img th:src="@{/uploads/__${banner.img_425}__}" alt="1만원 할인 쿠폰 받기">
-            </a>
-        </th:block>
+
     </form>
     <img th:src="@{/member/images/member_certifi_logo.gif}" alt="banner">
 </div>

@@ -10,8 +10,8 @@
         }
 
         #introduce {
-            width: 100%; /* 원하는 너비로 설정하세요 */
-            height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
+            width: 100%;
+            height: auto;
         }
 
         #first_context {
@@ -25,7 +25,7 @@
 
         #div_total_wrap {
             display: flex;
-            align-items: center; /* 세로 정렬 설정 */
+            align-items: center;
             width: 1000px;
             margin-bottom: 30px;
             margin-top: 20px;
@@ -228,23 +228,30 @@
             margin-right: 50px;
         }
 
-
-        /* fadeInUp 애니메이션 정의 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 100%, 0);
-            }
-            to {
-                opacity: 1;
-                transform: none;
-            }
+        .elementor-element.elementor-element-e44ae05 {
+            position: absolute;
+            bottom: 0;
+            left: 20px; /* 시작 위치를 왼쪽에서 조금 떨어지게 조정합니다. */
+            text-align: left;
+            animation: moveUp 1.5s forwards, fadeInUp 1.5s forwards; /* 위로 올라오는 애니메이션과 fadeInUp 애니메이션을 적용합니다. */
         }
 
-        /* 애니메이션 클래스에 fadeInUp 적용 */
-        .fadeInUp {
-            animation-name: fadeInUp;
-            animation-duration: 2s;
+        .elementor-element.elementor-element-e44ae05 p {
+            font-size: 150px;
+            font-weight: bold;
+            color: white;
+        }
+
+        @keyframes moveUp {
+            from {
+
+                left: 250px;
+                bottom: -100px;
+            }
+            to {
+                left: 250px;
+                bottom: 50px;
+            }
         }
 
 
@@ -255,19 +262,19 @@
             <div style="position: relative;">
                 <img id="introduce" th:src="@{/company/images/lotte_culture.png}">
                 <!-- 애니메이션 -->
-                <div class="elementor-element elementor-element-e44ae05 elementor-widget elementor-widget-text-editor animated fadeInUp"
+                <div class="elementor-element elementor-element-e44ae05"
                      data-id="e44ae05" data-element_type="widget"
                      data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}"
                      data-widget_type="text-editor.default"
                      style="position: absolute; bottom: 0; left: 0;">
                     <div class="elementor-widget-container">
-                        <p style="font-size: x-large; font-weight: bold; color: white;">대기업의 안정성과 스타트업의 혁신성을 함께,<br>롯데ON에서 우리는 성장하고 있어요.&nbsp;</p>
+                        <p style="font-size: xx-large; font-weight: bold; color: white;">대기업의 안정성과 스타트업의 혁신성을 함께,<br>롯데ON에서 우리는 성장하고 있어요.&nbsp;</p>
                     </div>
                 </div>
             </div>
             <!---->
 
-            <div class="container">
+            <div class="container" style="padding-left: 150px">
                 <p id="first_context">
                     <br>
                     <br>

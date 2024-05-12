@@ -90,6 +90,7 @@
             border: none;
             outline: none;
             padding: 10px;
+            font-size: 15px;
         }
 
         #content {
@@ -123,7 +124,32 @@
             border: none;
             cursor: pointer;
         }
+
+        .space_feel {
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
     </style>
+
+    <script>
+        // textarea의 내용에 따라 높이를 자동으로 조절하는 함수
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto'; // 높이를 자동으로 조절하기 위해 높이를 'auto'로 설정
+            textarea.style.height = textarea.scrollHeight + 'px'; // 내용에 따라 높이를 조절
+        }
+
+        // 페이지 로드 후 textarea의 높이를 조절
+        window.addEventListener('DOMContentLoaded', function () {
+            var textarea = document.getElementById('content');
+            adjustTextareaHeight(textarea);
+
+            // textarea에 입력할 때마다 높이를 조절
+            document.getElementById('content').addEventListener('input', function () {
+                adjustTextareaHeight(this);
+            });
+        });
+
+    </script>
 </head>
 <body>
 <header>
@@ -146,14 +172,16 @@
             <option value="culture">Culture</option>
         </select>
         <input id="title" name ="title" type="text" placeholder="여기에 제목을 입력해주세요">
-        <input id="oneLine" name="oneLine" type="text" placeholder="부제목을 입력해주세요">
+        <input id="oneLine" name="oneLine" type="text" style="width: 100%" placeholder="부제목을 입력해주세요">
         <div class="post">
-            <textarea id="content" name="content" placeholder="내용을 입력해주세요" style="width: 100%;height: auto;overflow: hidden; resize: vertical;"></textarea>
+            <textarea id="content" name="content" placeholder="내용을 입력해주세요" style="width: 90%;height: auto;overflow: hidden; resize: vertical;"></textarea>
         </div>
         <input type="file" id="imgUpload" name="multImage1" accept="image/*">
         <button id="writeBtn">글쓰기</button>
     </form>
 </section>
+<div class="space_feel"></div>
+<div class="space_feel"></div>
 
 <footer>
     <p>&copy; 2024 My Blog</p>

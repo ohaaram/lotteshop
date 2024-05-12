@@ -139,7 +139,7 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
     }
 
     @Override
-    public Page<Products> searchAllProductsForList(MainProductsPageRequestDTO pageRequestDTO, Pageable pageable) {
+    public Page<Tuple> searchAllProductsForList(MainProductsPageRequestDTO pageRequestDTO, Pageable pageable) {
 
         String cateName1 = pageRequestDTO.getCateName1();
         String cateName2 = pageRequestDTO.getCateName2();
@@ -149,34 +149,44 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         String keyword = pageRequestDTO.getKeyword();
 
 
-        JPAQuery<Products> query = null;
+        JPAQuery<Tuple> query = null;
         OrderSpecifier<?> orderSpecifier;
 
         if (cateName1 != null && cateName2 != null && cateName3 != null && cateName1 != "" && cateName2 != "" && cateName3 != "") {
-            query = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts,qSeller)
                     .from(qProducts)
+                    .join(qSeller)
+                    .on(qProducts.sellerUid.eq(qSeller.sellerUid))
                     .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2).and(qProducts.cateName3.eq(cateName3))));
 
         } else if (cateName1 != null && cateName2 != null && cateName1 != "" && cateName2 != "") {
-            query = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts,qSeller)
                     .from(qProducts)
+                    .join(qSeller)
+                    .on(qProducts.sellerUid.eq(qSeller.sellerUid))
                     .where(qProducts.cateName1.eq(cateName1).and(qProducts.cateName2.eq(cateName2)));
 
 
 
         } else if (cateName1 != null && cateName1 != "") {
-            query = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts,qSeller)
                     .from(qProducts)
+                    .join(qSeller)
+                    .on(qProducts.sellerUid.eq(qSeller.sellerUid))
                     .where(qProducts.cateName1.eq(cateName1));
 
 
         }else if(keyword!=null && keyword!=""){//키워드가 들어오면 키워드로 상품 검색 실시
-            query = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts,qSeller)
                     .from(qProducts)
+                    .join(qSeller)
+                    .on(qProducts.sellerUid.eq(qSeller.sellerUid))
                     .where(qProducts.prodName.contains(keyword));
 
         }else {
-            query = jpaQueryFactory.select(qProducts)
+            query = jpaQueryFactory.select(qProducts,qSeller)
+                    .join(qSeller)
+                    .on(qProducts.sellerUid.eq(qSeller.sellerUid))
                     .from(qProducts);
         }
 
@@ -226,13 +236,13 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
         }
 
         // offset, limit 적용 및 실행
-        QueryResults<Products> results = query
+        QueryResults<Tuple> results = query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
 
-        List<Products> content = results.getResults();
+        List<Tuple> content = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
     }

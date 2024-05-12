@@ -45,9 +45,6 @@ public class MemberController {
             session.setAttribute("previousUrl", previousUrl);
         }
 
-        List<BannerDTO> banner4 = adminService.findMEMBER1("MEMBER1");
-        model.addAttribute("banner4", banner4);
-
         return "/member/login";
     }
 

@@ -166,107 +166,45 @@
                                 });
                             });
                         });
-                    }
-                    // 클릭 이벤트 처리 함수
-                    function preventClick(event, element) {
-                        event.preventDefault(); // 기본 동작 중지
-                        console.log(event);
-                        console.log(element.getAttribute('data-bannerNo'));//이렇게 함수에 bannerNo를 담아서 옴
-                        console.log(element.getAttribute('data-link'));//link주소도 받아와짐
 
-                        const bannerNo = element.getAttribute('data-bannerNo');
-                        const link = element.getAttribute('data-link');
+                        //배너 조회수 올리기
+                        const Banner = document.getElementsByClassName('Banner')[0];
 
+                        Banner.onclick = function (e){
 
-                        const jsonData = {
-                            "bannerNo":bannerNo,
-                            "link":link
-                        }
+                            e.preventDefault();
 
-                        fetch("/lotteshop/main/index",{
-                            method:'POST',
-                            headers:{'Content-Type': 'application/json'},
-                            body:JSON.stringify(jsonData)
-                        })
-                            .then(response=>{
-                                if(!response.ok){
-                                    throw new Error('데이터 전송에 실패!');
-                                }else{
-                                    window.location.href=link;
-                                }
-                                return response.json();
+                            alert("클릭 했으");
+
+                            const bannerNo = Banner.getAttribute('data-bannerNo');
+                            const link = Banner.getAttribute('data-link');
+
+                            console.log('bannerNo :' + bannerNo);
+
+                            const jsonData = {
+                                "bannerNo": bannerNo
+                            }
+
+                            fetch("/lotteshop/main/banner/index", {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(jsonData)
                             })
-                            .then(data =>{
-                                console.log(data);
-                            })
-                            .catch(err=>console.log(err))
-                    }
-
-                    /*리뷰 창 띄우기 시작*/
-                    document.querySelectorAll('.review').forEach(function (link) {
-                        link.addEventListener('click', function (event) {
-                            const prodno = link.getAttribute("data-prodno");
-                            const uid = link.getAttribute("data-uid");
-                            const prodname = link.getAttribute("data-prodname");
-
-                            console.log(prodno); // prodno 값 확인
-                            console.log(uid);
-                            console.log(prodname);
-
-                            event.preventDefault();
-                            openModal(uid,prodno,prodname);
-
-                        });
-
-                    });
-
-                    // 사용자가 모달 바깥을 클릭하면 모달이 닫히도록 설정
-                    window.onclick = function(event) {
-                        var modal = document.getElementById('reviewModal');
-                        var close = document.getElementById('close_btn');
-
-                        if (event.target === modal || event.target===close) {
-                            closeModal();
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('데이터 전송에 실패!');
+                                    } else {
+                                        window.location.href = link;
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log(data);
+                                })
+                                .catch(err => console.log(err))
                         }
                     }
 
-
-                    //모달 띄우기
-                    async function openModal(uid,prodno,prodname) {
-                        document.getElementById('reviewModal').style.display = 'block';
-                        setModalContent(uid,prodno,prodname);
-                    }
-
-                    // 모달 닫기
-                    function closeModal() {
-                        document.getElementById('reviewModal').style.display = 'none';
-                    }
-
-                    // 모달 창이 열릴 때 사용자에게 보여줄 정보 설정
-                    function setModalContent(uid,prodno,prodname) {
-                        document.getElementById('uid').value = uid;
-                        document.getElementById('prodno').value = prodno;
-                        document.getElementById('prodname').value = prodname;
-
-                    }
-
-                    //리뷰에 별 색상 스타일
-                    const stars = document.querySelectorAll('.star');
-                    const ratingInput = document.getElementById('rating');
-
-                    stars.forEach(function(star) {
-                        star.addEventListener('click', function() {
-                            const ratingValue = parseInt(star.getAttribute('data-rating'));
-                            ratingInput.value = ratingValue;
-                            stars.forEach(function(s, index) {
-                                if (index < ratingValue) {
-                                    s.classList.add('active');
-                                } else {
-                                    s.classList.remove('active');
-                                }
-                            });
-                        });
-                    });
 
                 </script>
 
@@ -393,11 +331,24 @@
                 </ul>
 
                 <section>
-                    <th:block th:each="banner :${banner5}">
-                        <a th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}" th:data-link="${banner.link}" th:onclick="'preventClick(event ,this)'" th:href="@{${banner.link}}">
-                            <img th:src="@{/uploads/__${banner.img_810}__}" alt="패션, 타운 하나로 끝" class="banner">
-                        </a>
+                    <!--배너 시작-->
+                    <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
+                        <th:block th:each="banner : ${banner5}">
+                            <div id="bannerTop" class="on">
+                                <article>
+                                    <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                                       th:data-link="${banner.link}">
+                                        <img class="bannerImg" th:src="@{/uploads/__${banner.img_810}__}"/>
+                                    </a>
+                                </article>
+                            </div>
+                        </th:block>
                     </th:block>
+
+                    <th:block th:unless="${banner5 != null and !banner5.isEmpty()}"></th:block>
+                    <!--배너 끝!--->
+
+
                     <article class="latest">
                         <h3>최근주문내역</h3>
                         <a th:href="@{/my/order}" class="more">더보기</a>
@@ -460,6 +411,7 @@
                             <tr>
                                 <th>번호</th>
                                 <th>상품명</th>
+                                <th>옵션</th>
                                 <th>내용</th>
                                 <th>평점</th>
                                 <th>작성일</th>
@@ -467,27 +419,21 @@
                             <tr th:each="review, iterStat : ${reviews}" th:if="${reviews.size()}>0">
                                 <td th:text="${iterStat.count}">1</td><!--인덱스 가져와서 인덱스 번호찍기-->
                                 <td th:text="${review.getProdname()}">상품명</td>
-                                <td class="content"
+                                <td th:text="${review.getProdoption()}">옵션</td>
+                                                                <td class="content"
                                     th:text="${#strings.length(review.getComment()) > 10 ? #strings.substring(review.getComment(), 0, 10) + '...' : review.getComment()} ">
                                     배송이 빠릅니다. 잘 사용하겠습니다.
                                 </td>
                                 <td class="score">
                                     <h5>
-                                        <img th:if="${review.getScore()} == 1 " th:src="@{/review/review_star1.png}"
-                                             alt="oneStar"
-                                             style="max-width: 80px; height: auto;">
-                                        <img th:if="${review.getScore()} == 2 " th:src="@{/review/review_star2.png}"
-                                             alt="oneStar"
-                                             style="max-width: 80px; height: auto;">
-                                        <img th:if="${review.getScore()} == 3 " th:src="@{/review/review_star3.png}"
-                                             alt="oneStar"
-                                             style="max-width: 80px; height: auto;">
-                                        <img th:if="${review.getScore()} == 4 " th:src="@{/review/review_star4.png}"
-                                             alt="oneStar"
-                                             style="max-width: 80px; height: auto;">
-                                        <img th:if="${review.getScore()} == 5 " th:src="@{/review/review_star5.png}"
-                                             alt="oneStar"
-                                             style="max-width: 80px; height: auto;"></h5>
+                                        <span th:each="starIndex : ${#numbers.sequence(1, review.getScore())}"
+                                              style="padding-bottom: 10px">
+                           <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+</svg>
+                        </span>
+                                    </h5>
                                 </td>
                                 <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
                             </tr>
@@ -504,7 +450,7 @@
                             <tr>
                                 <th>번호</th>
                                 <th>문의채널</th>
-                                <th>문의유형</th>                                
+                                <th>문의유형</th>
                                 <th>제목</th>
                                 <th>작성일</th>
                                 <th>상태</th>
@@ -512,7 +458,7 @@
                             <tr>
                                 <td>5</td>
                                 <td>고객센터</td>
-                                <td>주문/결제</td>                                
+                                <td>주문/결제</td>
                                 <td>신용카드 결제 중 오류가 난 경우 어떻게 하나요?</td>
                                 <td>2024-12-12</td>
                                 <td><span class="notAnswerYet">검토중</span></td>
@@ -520,7 +466,7 @@
                             <tr>
                                 <td>4</td>
                                 <td>고객센터</td>
-                                <td>주문/결제</td>                                
+                                <td>주문/결제</td>
                                 <td>신용카드 결제 중 오류가 난 경우 어떻게 하나요?</td>
                                 <td>2024-12-12</td>
                                 <td><span class="answered">답변완료</span></td>
@@ -528,7 +474,7 @@
                             <tr>
                                 <td>3</td>
                                 <td>판매자게시판</td>
-                                <td>배송</td>                                
+                                <td>배송</td>
                                 <td>배송기간이 보통 얼마나 걸리나요?</td>
                                 <td>2024-12-12</td>
                                 <td><span class="answered">답변완료</span></td>
@@ -734,6 +680,6 @@
             </div>
 
 
-    </div>    
+    </div>
 </body>
 </html>

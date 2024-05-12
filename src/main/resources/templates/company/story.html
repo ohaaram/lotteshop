@@ -10,12 +10,12 @@
         }
 
         .container > h2 {
-            font-size: 40px;
+            font-size: 50px;
             font-weight: bold;
         }
 
         .container > p {
-            font-size: 20px;
+            font-size: 25px;
             font-weight: bold;
             color: grey;
 
@@ -31,8 +31,10 @@
         }
 
         .nav a {
-            font-size: medium;
+            font-size: large;
             font-weight: bold;
+            color : grey;
+
         }
 
         .nav-item .active a {
@@ -75,14 +77,15 @@
                 <!--카드-->
                 <div class="space_feel"></div>
                 <div class="row">
-                    <div th:each="cards : ${card}" class="col-md-4 mb-4">
-                        <div class="card" style="width: 351px;height: 429px">
+                    <div th:each="cards : ${card}" class="col-md-4 mb-5">
+                        <div class="card" style="width: 351px;height: 429px;border: none">
                             <img th:src="@{/uploads/__${cards.images}__}" class="card-img-top" alt="블로그이미지"
-                                 style="height: 50%">
+                                 style="height: 60%">
                             <div class="card-body">
-                                <p class="card-title" style="font-size: 17px;font-weight: bold"
+                                <p class="card-title" style="font-size: 25px;font-weight: bold"
                                    th:text="${cards.title}">여기에 제목이 들어감</p>
-                                <p class="card-text" th:text="${cards.oneLine}">치열한 배송전쟁에서 익일배송으로 승부수!</p>
+                                <br>
+                                <p class="card-text" th:text="${cards.oneLine}" style="font-size: 15px;color: grey">치열한 배송전쟁에서 익일배송으로 승부수!</p>
                             </div>
                         </div>
                     </div>

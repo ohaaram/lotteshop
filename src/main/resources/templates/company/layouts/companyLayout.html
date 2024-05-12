@@ -30,16 +30,23 @@
     #logo .nav-link {
         color: #333;
         text-decoration: none;
-        font-size: small;
+        font-size: 17px;
     }
 
     #logo #img {
+        width: 200px;
+        height: 100px;
 
-        margin-top: -103px;
+        margin-top: -50px;
     }
 
     #menubar .nav-link:hover {
-        text-decoration: underline;
+        color: red;
+    }
+
+    #f_menu .menu-link:hover{
+        color: cornflowerblue;
+
     }
 
     /*헤더 끝*/
@@ -128,9 +135,7 @@
                     <a th:href="@{/member/register.html}">회원가입</a>
                     <a th:href="@{/my/info}">마이페이지</a>
                     <a th:href="@{#}"
-                    ><i class="fa fa-shopping-cart" aria-hidden="true"></i
-                    >&nbsp;장바구니</a
-                    >
+                    ><i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;장바구니</a>
                 </p>
             </div>
         </div>
@@ -139,22 +144,22 @@
                 <a th:href="@{/index}"><img th:src="@{/company/images/c_Logo.png}" id="img" alt="로고"/></a>
             </div>
             <div>
-                <ul class="nav justify-content-end" id="menubar">
+                <ul class="nav justify-content-end" id="menubar" style="display: flex;float: right">
                     <li class="nav-home">
-                        <a class="nav-link active" aria-current="page" th:href="@{/company/index}" style="color: black; font-weight:bold;">HOME</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/index}">HOME</a>
                     </li>
                     <li class="nav-culture">
-                        <a class="nav-link active" aria-current="page" th:href="@{/company/culture}" style="color: black; font-weight:bold;">기업문화</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/culture}">기업문화</a>
                     </li>
                     <li class="nav-story">
-                        <a class="nav-link active" aria-current="page" th:href="@{/company/story}" style="color: black; font-weight:bold;">소식과
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/story}">소식과
                             이야기</a>
                     </li>
                     <li class="nav-recruit">
-                        <a class="nav-link active" aria-current="page" th:href="@{/company/recruit}" style="color: black; font-weight:bold;">채용</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/recruit}">채용</a>
                     </li>
                     <li class="nav-media">
-                        <a class="nav-link active" aria-current="page" th:href="@{/company/media}" style="color: black; font-weight:bold;">미디어</a>
+                        <a class="nav-link active" aria-current="page" th:href="@{/company/media}">미디어</a>
                     </li>
                 </ul>
             </div>
@@ -170,10 +175,10 @@
         <div id="f_total">
             <div id="one_section"><!--두개를 일직선으로 세우기 위해 묶은 묶음-->
                 <div id="f_menu">
-                    <a th:href="@{/company/index}">HOME</a>
-                    <a th:href="@{/company/culture}">기업문화</a>
-                    <a th:href="@{/company/story}">소식과 이야기</a>
-                    <a th:href="@{/company/recruit}">채용</a>
+                    <a class="menu-link" th:href="@{/company/index}">HOME</a>
+                    <a class="menu-link" th:href="@{/company/culture}">기업문화</a>
+                    <a class="menu-link" th:href="@{/company/story}">소식과 이야기</a>
+                    <a class="menu-link" th:href="@{/company/recruit}">채용</a>
                 </div>
                 <div id="f_email">
                     <p style="font-size:large; font-weight: bold; color: #2e8de5">peoplevalue@lotte.net</p>

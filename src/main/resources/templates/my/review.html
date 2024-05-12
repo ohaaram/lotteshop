@@ -4,9 +4,48 @@
       layout:decorate="~{/my/layout/myLayout.html}">
 
 <div class="review" layout:fragment="content">
-    <!-- <script src="https://kit.fontawesome.com/f98645e8a0.js" crossorigin="anonymous"></script> 추가-->
+<script>
 
-    <script src="https://kit.fontawesome.com/20962f3e4b.js" crossorigin="anonymous"></script>
+    window.onload = function (){
+
+        //배너 조회수 올리기
+
+        const Banner = document.getElementsByClassName('Banner')[0];
+
+        Banner.onclick = function (e){
+
+            e.preventDefault();
+
+
+            const bannerNo = Banner.getAttribute('data-bannerNo');
+            const link = Banner.getAttribute('data-link');
+
+            console.log('bannerNo :' + bannerNo);
+
+            const jsonData = {
+                "bannerNo": bannerNo
+            }
+
+            fetch("/lotteshop/main/banner/index", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(jsonData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('데이터 전송에 실패!');
+                    } else {
+                        window.location.href = link;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(err => console.log(err))
+        }
+    }
+</script>
     <ul>
         <span class="menu_else"></span>
         <li><a th:href="@{/my/order}">전체주문내역</a></li>
@@ -20,7 +59,21 @@
 
 
     <section>
-        <a th:href="@{#}"><img th:src="@{/my/images/my_banner1.jpg}" alt="패션, 타운 하나로 끝" class="banner"></a>
+        <!---배너시작-->
+        <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
+            <th:block th:each="banner : ${banner5}">
+                <div class="on">
+                    <article>
+                        <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                           th:data-link="${banner.link}">
+                            <img class="bannerImg" th:src="@{/uploads/__${banner.img_810}__}"/>
+                        </a>
+                    </article>
+                </div>
+            </th:block>
+        </th:block>
+
+        <th:block th:unless="${banner5 != null and !banner5.isEmpty()}"></th:block>
         <article>
             <h3>나의리뷰</h3>
 
@@ -28,6 +81,7 @@
                 <tr>
                     <th>번호</th>
                     <th>상품명</th>
+                    <th>옵션</th>
                     <th>내용</th>
                     <th>평점</th>
                     <th>작성일</th>
@@ -36,7 +90,8 @@
                     <td class="no" th:text="${index.count}">5</td>
                     <td class="prodName">
                         <a th:href="@{/product/view(prodno=${review.nproduct.getProdNo()})}"
-                           th:text="${review.getProdoption()}">상품명</a></td>
+                           th:text="${review.getProdname()}">상품명</a></td>
+                    <td class="prodOption" th:text="${review.getProdoption()}">상품 옵션</td>
                     <td class="content"
                         th:text="${#strings.length(review.getComment()) > 10 ? #strings.substring(review.getComment(), 0, 10) + '...' : review.getComment()} ">
                         배송이 빠릅니다. 잘 사용하겠습니다.

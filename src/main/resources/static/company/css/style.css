@@ -41,7 +41,7 @@ header > div {
 
 header > .top {
   height: 35px;
-  border-bottom: 1px solid #e9e9e9;
+
 }
 
 header > .top > div {
@@ -67,7 +67,6 @@ header > .top > div a:hover {
 }
 header > .logo {
   height: 115px;
-  border-bottom: 2px solid #ef2a23;
 }
 header > .logo > div {
   position: relative;
@@ -111,7 +110,7 @@ footer > ul {
   height: 39px;
   margin: 0 auto;
   padding: 15px 0;
-  border-bottom: 1px solid #e9e9e9;
+
   box-sizing: border-box;
   text-align: center;
 }
