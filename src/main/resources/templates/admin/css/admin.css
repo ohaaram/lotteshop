@@ -17,7 +17,7 @@ a {text-decoration: none; color: #111;}
 header {
     width: 100%;
     height: 120px;
-    background: url('../images/admin_bg_header.jpg') repeat-x;
+    background-color: #240750;
 }
 
 header > div {
@@ -183,7 +183,7 @@ main table span {
 footer {
     width: 100%;
     height: 60px;
-    background: #0d3a46;
+    background: #240750;
 }
 
 footer > div {

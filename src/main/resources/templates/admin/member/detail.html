@@ -7,8 +7,9 @@
   <nav>
     <h3>유저 상세</h3>
   </nav>
+
   <article>
-    <form th:action="@{/member/modify}" method="post" name="userDetailForm">
+    <form th:action="@{/member/modify}" method="post" name="userDetailForm" id="memeGa">
       <table border="0">
         <tr>
           <td>아이디</td>
@@ -86,6 +87,8 @@
         </tr>
       </table>
       <p>
+        <br>
+        <br>
         <a th:href="@{/admin/member/list}" class="btnCancel">뒤로가기</a>
         <!-- <input type="submit" id="btnSubmit" value="수정완료"/> -->
       </p>

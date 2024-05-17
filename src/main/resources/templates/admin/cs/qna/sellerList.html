@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+<style>
+    .faq-list-checkbox{
+        width: 20px;
+    }
+</style>
+<section id="admin-cs-faq" layout:fragment="content">
+    <script>
+        window.onload = function() {
+            const all = document.getElementById('all');
+            const checkAll = document.querySelectorAll('.check');
+
+            // 전체 선택
+            all.onclick = function () {
+                checkAll.forEach(function (item) {
+                    item.checked = all.checked;
+                });
+            };
+
+            // 선택 삭제
+            const selectDelete = document.getElementById('selectDelete');
+            selectDelete.onclick = async function (e) {
+                e.preventDefault();
+
+                var selectedNoList = [];
+
+                checkAll.forEach(function (item) {
+                    if (item.checked) {
+                        selectedNoList.push(parseInt(item.value));
+                    }
+                });
+
+                if (selectedNoList.length === 0) {
+                    alert('선택된 상품이 없습니다.');
+                } else {
+                    if (confirm('삭제 하시겠습니까!?')) {
+                        const jsonData = {list: selectedNoList}
+                        const result = await fetchGet('/lotteshop/admin/cs//delete', jsonData);
+                        console.log(result.result);
+                    }
+                    location.reload();
+                }
+            };
+        }
+
+    </script>
+    <nav>
+        <h3>Q&A 보기</h3>
+        <p>
+            HOME > 고객센터 > <strong>FAQ 관리</strong>
+        </p>
+    </nav>
+
+    <section>
+        <div>
+            <form id="deleteSelectedForm" th:action="@{/admin/cs/qna/delete/selectDelete}" method="post">
+                <input type="hidden" id="selectedNoList" name="selectedNoList" />
+
+            </form>
+
+            <div>
+                <table class="cs-qna-faq-list" border="0">
+                    <tr>
+                        <th><input type="checkbox" name="all" id="all"></th>
+                        <th>유형</th>
+                        <th>내용</th>
+                        <th>관리</th>
+                        <th>상태</th>
+                    </tr>
+                    <tr th:each="prodQna, index : ${adminProdQna.dtoList4}">
+                        <td class="faq-list-checkbox">
+                            <input type="checkbox" name="selectedNoList" class="check" th:value="${prodQna.no}" />
+                        </td>
+
+                        <td th:if="${prodQna.cate == 'size'}" style="white-space: nowrap">[사이즈]</td>
+                        <td th:if="${prodQna.cate == 'info'}" style="white-space: nowrap">[상품정보]</td>
+                        <td th:if="${prodQna.cate == 'use'}" style="white-space: nowrap">[사용설명]</td>
+                        <td th:if="${prodQna.cate == 'color'}" style="white-space: nowrap">[디자인/색상]</td>
+                        <td th:if="${prodQna.cate == 'etc'}" style="white-space: nowrap">[기타]</td>
+                        <td th:text="${prodQna.content}"></td>
+                        <td>
+                            <a th:href="@{/admin/cs/qna/reply(no=${prodQna.no})}">[답변]</a>
+                            <a th:href="@{/admin/cs/qna/delete/{no}(no=${prodQna.no})}" onclick="return confirm('삭제하시겠습니까?')">[삭제]</a>
+                        </td>
+                        <td>
+                            <th:block th:if="${prodQna.status1 == '답변 대기중'}">
+                                <p style="font-size: 16px; color: #0D3A46"  th:text="${prodQna.status1}"></p>
+                            </th:block>
+                            <th:block th:if="${prodQna.status1 != '답변 대기중'}">
+                                <p  style="font-size: 16px; color: #4CAF50 "  th:text="${prodQna.status1}"></p>
+                            </th:block>
+                        </td>
+                    </tr>
+                </table>
+                <div class="paging">
+                        <span class="prev" th:if="${adminProdQna.prev}">
+                            <a th:href="@{/admin/cs/faq/sellerList(pg=${adminProdQna.start -1}, cate=${adminProdQna.getCate()})}"><&nbsp;이전</a>
+                        </span>
+                    <span class="num" th:each="num:${#numbers.sequence(adminProdQna.start, adminProdQna.end)}">
+                            <th:block th:if="${num == adminProdQna.pg}">
+                                 <a th:href="@{/admin/cs/faq/sellerList( pg=${num} , cate=${adminProdQna.getCate()})}" class="on">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != adminProdQna.pg}">
+                                 <a th:href="@{/admin/cs/faq/sellerList( pg=${num} , cate=${adminProdQna.getCate()})}" >[[${num}]]</a>
+                            </th:block>
+
+                        </span>
+                    <span class="next" th:if="${adminProdQna.next}">
+                            <a th:href="@{/admin/cs/faq/sellerList( pg=${adminProdQna.end+1} , cate=${adminProdQna.getCate()} )}">다음&nbsp;></a>
+                        </span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+</section>
+</html>

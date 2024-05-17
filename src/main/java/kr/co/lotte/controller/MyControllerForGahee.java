@@ -1,19 +1,22 @@
 package kr.co.lotte.controller;
 
+import jakarta.mail.Session;
 import jakarta.servlet.http.HttpSession;
 import kr.co.lotte.dto.*;
-import kr.co.lotte.entity.OrderItems;
-import kr.co.lotte.entity.Orders;
-import kr.co.lotte.entity.Review;
-import kr.co.lotte.entity.User;
+import kr.co.lotte.entity.*;
+import kr.co.lotte.repository.ProductsRepository;
+import kr.co.lotte.repository.cs.CsQnaRepository;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MyServiceForGahee;
+import kr.co.lotte.service.ProductQnaService;
 import kr.co.lotte.service.ReviewService;
+import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -34,6 +37,9 @@ public class MyControllerForGahee {
     private final AdminService adminService;
     private final ReviewService reviewService;
     private final MyServiceForGahee myServiceForGahee;
+    private final CsQnaService csQnaService;
+    private final ProductQnaService productQnaService;
+    private final ProductsRepository productsRepository;
 
     @GetMapping("/my/coupon")
     public String myCoupon(Model model , Authentication authentication , @RequestParam(name = "state", required = false) String states) {
@@ -50,12 +56,11 @@ public class MyControllerForGahee {
 
 
     @GetMapping("/my/home")
-    public String myHome(Model model , Authentication authentication , HttpSession session) {
+    public String myHome(Model model , Authentication authentication , HttpSession session, CsFaqPageRequestDTO requestDTO) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         String uid = userDetails.getUser().getUid();
         //포인트 넣어주고
         model.addAttribute("points", myServiceForGahee.forPoint(uid));
-
 
         //최근 주문 내역
         List<Orders> orders = myServiceForGahee.searchOrdersForHome(uid);
@@ -70,6 +75,17 @@ public class MyControllerForGahee {
         List<Review> reviews= reviewService.find_five(uid);
         log.info("reviews : "+reviews);
         model.addAttribute("reviews", reviews);
+
+        //문의 내역 출력
+        CsFaqPageResponseDTO pageResponseDTO = null;
+        if(requestDTO.getGroup() == null || requestDTO.getGroup() == "") {
+            requestDTO.setGroup("qna");
+            pageResponseDTO = csQnaService.getQnaCate1andCate2(requestDTO, uid);
+        }else{
+            requestDTO.setGroup("product");
+            pageResponseDTO = productQnaService.getProdQnaCate(requestDTO,uid);
+        }
+        model.addAttribute("adminCsQna", pageResponseDTO);
 
         //배너 출력
         List<BannerDTO> banner5 = adminService.validateBanner("MY1");
@@ -156,8 +172,21 @@ public class MyControllerForGahee {
     }
 
     @GetMapping("/my/qna")
-    public String myQna(Model model) {
+    public String myQna(Model model, CsQnaDTO csQnaDTO, ProductQnaDTO productQnaDTO, CsFaqPageRequestDTO requestDTO, Authentication authentication ) {
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        String uid = userDetails.getUser().getUid();
 
+        // 나의 문의 출력
+        CsFaqPageResponseDTO pageResponseDTO =null;
+        if(requestDTO.getGroup() == null || requestDTO.getGroup() == "" || requestDTO.getGroup().equals("qna")) {
+            requestDTO.setGroup("qna");
+         pageResponseDTO = csQnaService.getQnaCate1andCate2(requestDTO, uid);
+       }else{
+            requestDTO.setGroup("product");
+          pageResponseDTO = productQnaService.getProdQnaCate(requestDTO ,uid);
+       }
+        model.addAttribute("adminCsQna", pageResponseDTO);
+        
         //배너 출력
         List<BannerDTO> banner5 = adminService.validateBanner("MY1");
         log.info("banner5: {}", banner5);
@@ -166,6 +195,15 @@ public class MyControllerForGahee {
         return "/my/qna";
     }
 
+    @GetMapping("/my/answer")
+    public ResponseEntity answer(@RequestParam(name = "no")int no){
+        return  productQnaService.getProdQna(no);
+    }
+
+    @GetMapping("/my/answer2")
+    public ResponseEntity answer2(@RequestParam(name = "no")int no){
+        return  productQnaService.getProdQna2(no);
+    }
 
     @GetMapping("/product/coupon")
     public String coupon(Model model){

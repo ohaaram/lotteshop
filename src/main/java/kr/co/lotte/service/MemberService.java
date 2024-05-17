@@ -280,14 +280,67 @@ public class MemberService {
     //세개의 값을 이용해서 사용자 탐색
     public int findMember(String email, String name, String hp) {
 
+        log.info("memberService - findMember - email : "+ email);
+        log.info("memberService - findMember - name : "+ name);
+        log.info("memberService - findMember - hp : "+ hp);
+
         int count1 = memberMapper.findMember1(email, name, hp);//일반유저에서 검색
         int count2 = memberMapper.findMember2(email, name, hp);//판매자에서 검색
 
+        log.info("count1 : "+count1);
+        log.info("count2 : "+count2);
+
         int count = count1 + count2;//검색 결과가 하나라도 있으면 가입이 되어있는 것
+
+        log.info("총 count : "+count);
 
         return count;
     }
 
+
+    public void sendEmailForSeller(String receiver) {
+        log.info("sender={}", sender);
+
+        //MimeMessage 생성
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        String title = "lotteON 승인";
+        String content = "축하드립니다!!! 판매자 권한이 승인되었습니다!";
+
+        try {
+            message.setSubject(title);
+            message.setFrom(new InternetAddress(sender, "보내는 사람", "UTF-8"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(receiver));
+            message.setSubject(title);
+            message.setContent(content, "text/html;charset=UTF-8");
+
+            javaMailSender.send(message);
+
+        } catch (Exception e) {
+            log.error("error={}", e.getMessage());
+        }
+    }
+
+    public int findUserForDel(String uid){
+
+        UserDTO userDTO = memberMapper.findUser(uid);
+
+        userDTO.setRole("None");
+        userDTO.setStatus(0);
+
+        User user = modelMapper.map(userDTO, User.class);
+
+        if(user!=null) {
+
+            memberRepository.save(user);
+
+            return 1;//값이 바뀌면 1
+
+        }else{
+
+            return 0;//아니면 0
+        }
+    }
 
 }
 

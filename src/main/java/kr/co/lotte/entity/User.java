@@ -35,6 +35,8 @@ public class User {
     private String provider;
     private String grade;
     private String gender;
+    private int status;
+
     @CreationTimestamp
     private LocalDateTime regDate;
     private LocalDateTime leaveDate;

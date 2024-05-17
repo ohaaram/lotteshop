@@ -19,6 +19,8 @@
                     <th><span class="essential">*</span>아이디</th>
                     <td><input type="text" name="sellerUid" placeholder="아이디를 입력"
                                required/>
+                        <input type="hidden" value="TEMP" name="role"/>
+                        <input type="hidden" value="딜러" name="grade"/>
                         <button type="button"  id="btnCheckUid" data-type="sellerUid">아이디 중복체크</button>
                         <div id="result_uid" class="deprecation-block"></div>
                         <span class="msgSId">&nbsp;&nbsp;영문, 숫자로4~12자까지 설정해 주세요.</span>

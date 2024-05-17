@@ -101,7 +101,7 @@ public class MarketController {
 
     //상품 상세페이지 조회
     @GetMapping("/product/view")
-    public String view(Model model, ReviewPageRequestDTO reviewPageRequestDTO) {
+    public String view(Model model, ReviewPageRequestDTO reviewPageRequestDTO , CsFaqPageRequestDTO csFaqPageRequestDTO) {
 
         int prodno = reviewPageRequestDTO.getProdno();
 
@@ -113,10 +113,13 @@ public class MarketController {
         model.addAttribute("banner3", banner3);
 
         //qna 조회
-        model.addAttribute("prodQna", productQnaService.productQnas());
+        model.addAttribute("prodQna", productQnaService.productQnas(csFaqPageRequestDTO , prodno));
 
         //상품 조회
         ProductsDTO productsDTO = marketService.selectProduct(prodno);
+        //그거 저장
+        marketService.updateProductSearchCount(prodno);
+
 
         //subProducts에서 prodno로 조회, color과 size의 리스트를 들고 온다
         List<SubProducts> Options = marketService.findAllByProdNo(prodno);
@@ -326,6 +329,7 @@ public class MarketController {
     public String search(String cate, String keyword, ProductsPageRequestDTO requestDTO, Model model, HttpSession session) {
 
         log.info("cate : " + cate);
+        marketService.updateKeyword(keyword);
 
         ProductsPageResponseDTO searchResult = mainService.searchForProduct(requestDTO);
 

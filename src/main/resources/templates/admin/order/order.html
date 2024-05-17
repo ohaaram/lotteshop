@@ -119,6 +119,22 @@
                         background-color: #f2f2f2;
                     }
 
+                    /*날짜 선택하는 것 밑에 있는 버튼들*/
+                    #statusFilters a{
+                        display: inline-block;
+                        padding: 10px 20px;
+                        background-color: lightgrey;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        text-align: center;
+
+                    }
+                    #statusFilters a:hover {
+                        background-color: gray;
+                    }
+
+
                 </style>
                 <script>
                     window.onload = function (e) {
@@ -241,12 +257,12 @@
                     <button class="btnConfirm" type="submit">조회하기</button>
                 </form>
                 <div id="statusFilters">
-                    <a th:href="@{/admin/orderList(state='주문 대기')}" style="border: 1px solid gray" >주문 대기</a>
-                    <a th:href="@{/admin/orderList(state='배송 준비')}" style="border: 1px solid gray">배송 준비</a>
-                    <a th:href="@{/admin/orderList(state='배송 중')}" style="border: 1px solid gray">배송 중</a>
-                    <a th:href="@{/admin/orderList(state='주문 취소')}" style="border: 1px solid gray">주문 취소</a>
-                    <a th:href="@{/admin/orderList(state='환불')}" style="border: 1px solid gray" >환불</a>
-                    <a th:href="@{/admin/orderList(state='모든')}" style="border: 1px solid gray">모든 주문 상품</a>
+                    <a th:href="@{/admin/orderList(state='주문 대기')}"  >주문 대기</a>
+                    <a th:href="@{/admin/orderList(state='배송 준비')}" >배송 준비</a>
+                    <a th:href="@{/admin/orderList(state='배송 중')}" >배송 중</a>
+                    <a th:href="@{/admin/orderList(state='주문 취소')}" >주문 취소</a>
+                    <a th:href="@{/admin/orderList(state='환불')}"  >환불</a>
+                    <a th:href="@{/admin/orderList(state='모든')}" >모든 주문 상품</a>
                 </div>
                 <table border="0">
 

@@ -116,7 +116,7 @@ public class CsFaqController {
         List<List<CsFaqDTO>> dtoLists = csFaqService.getFaqArticles(cate1);
         log.info("dtoLists.size() : " + dtoLists.size());
         model.addAttribute("dtoLists", dtoLists);
-        return "list";
+        return "/cs/faq/user";
     }
 
     // cs.faq.view 출력

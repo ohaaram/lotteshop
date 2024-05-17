@@ -87,4 +87,24 @@ public class MyController {
     }
 
 
+    //회원 탈퇴
+    @GetMapping("/my/delUser/{uid}")
+    public ResponseEntity<?> delUser(@PathVariable("uid")String uid){
+        //status 0으로 변환 및 권한 None으로 변경
+
+        log.info("uid={}", uid);
+
+        int result = memberService.findUserForDel(uid);//회원아이디로 회원데이터 불러오기
+
+        Map<String, String> map1 = new HashMap<>();
+
+        if(result==1){
+            map1.put("result", "success");
+        }else{
+            map1.put("result", "fail");
+        }
+
+        return ResponseEntity.ok().body(map1);
+    }
+
 }

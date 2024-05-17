@@ -20,7 +20,7 @@
                             </td>
                             <td>
                                 <strong>주문금액(원)</strong>
-                                <span>[[${total}]]</span>
+                                <span>[[${#numbers.formatInteger(total,1,'COMMA')}]]</span>
                             </td>
                             <td>
                                 <strong>회원가입(명)</strong>
@@ -31,8 +31,9 @@
                                 <span>[[${visitor}]]</span>
                             </td>
                             <td>
-                                <strong>신규게시물(건)</strong>
-                                <span>100</span>
+                                <strong>Q&A(건)</strong>
+                                <span>[[${totalArticle}]]</span>
+
                             </td>
                         </tr>
                     </table>
@@ -68,26 +69,12 @@
                     <div>
                         <h4>고객문의</h4>
                         <article>
-                            <p>
-                                <span>[문의] 상품이 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 안녕하세요. 주문자 입니다. 구매한 상품에 문제가 있어서 이렇게 문의글을 남깁니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>
-                            <p>
-                                <span>[문의] 상품이 1개 잘못 왔습니다.</span>
-                                <span>20-07-08 12:23</span>
-                            </p>                                                                
+                            <ul>
+                                <li style="font-size: 20px; color: #343434;" th:each="prodQna, index : ${prodQna}" th:if="${index.index} &lt; 5">
+                                    <a th:text="${prodQna.content}"></a>
+                                    <span style="float: right" class="date" th:text="${#strings.substring(prodQna.rdate,0,10)}"></span>
+                                </li>
+                            </ul>
                         </article>
                     </div>
                 </div>

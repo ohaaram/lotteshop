@@ -21,7 +21,7 @@
         <!---배너시작-->
         <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
             <th:block th:each="banner : ${banner5}">
-                <div class="on">
+                <div id="bannerTop" class="on" th:style="'background-color:' + ${banner.color}">
                     <article>
                         <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                            th:data-link="${banner.link}">
@@ -111,13 +111,7 @@
                                 </li>
                             </ul>
                         </td>
-                        <!--  <td class="status">[[${order.orderState}]]</td>
-                         <td class="confirm">
-                             <a th:href="@{#}" class="receive">수취확인</a>
-                             <a th:href="@{#}" class="review">상품평</a>
-                             <a th:href="@{#}" class="refund">반품신청</a>
-                             <a th:href="@{#}" class="exchange">교환신청</a>
-                         </td>-->
+
 
                     </tr>
                 </th:block>
@@ -127,12 +121,8 @@
                 <div class="modal-content">
                     <span id="close_order" class="close_btn">&times;</span>
                     <h3>주문 취소 환불</h3>
-                    <form th:action="@{#}" id="reviewForm" method="post">
-                        <input type="hidden" id="prodno" name="prodNo"/>
-                        <input type="hidden" id="prodname" name="prodname"/>
-                        <input type="hidden" id="uid" name="uid"/>
-                        <input type="hidden" id="orderno" name="orderno"/>
-                        <input type="hidden" id="itemno" name="itemno"/>
+                    <form th:action="@{#}"  method="post">
+
 
                         <div class="form-group">
                             <label for="reviewTitle">내역 </label>

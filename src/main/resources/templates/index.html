@@ -18,11 +18,33 @@
     <script th:src="@{/js/index.js}"></script>
 
 
-    <script>
+    <script th:inline="javascript">
         var downCount = 0;
+        function showPopularSearches() {
+            var searchs = [[${searches}]]
+            var container = document.getElementById("popularSearches");
+            var delay = 2000; // 각 검색어가 나타나는 시간 간격 (2초)
+
+            // searchs 배열을 순회하며 검색어를 하나씩 출력
+            for (var i = 0; i < searchs.length; i++) {
+                // 각 순위별로 setTimeout을 사용하여 출력 시간을 조절
+                setTimeout(function(index) {
+                    container.innerHTML = (index + 1) + ". " + searchs[index] + "<br>";
+                }, delay * i, i);
+
+            }
+        }
 
 
-        window.onload = function () {
+        window.onload = function (){
+            const btnPoint = document.getElementById('btnPoint');
+            btnPoint.onclick=function (e){
+                    document.location.href='/lotteshop/main/event';
+            };
+
+            showPopularSearches();
+            setInterval(showPopularSearches, 20000);
+
                 $(function () {
 
                     $('#bannerTop .btnClose').click(function () {
@@ -71,8 +93,6 @@
             MainBanner.onclick = function (e){
 
                 e.preventDefault();
-
-                alert("클릭 했으");
 
                 const bannerNo = MainBanner.getAttribute('data-bannerNo');
                 const link = MainBanner.getAttribute('data-link');
@@ -244,6 +264,21 @@
             z-index: 164;
         }
 
+        #btnPoint{
+            display: inline;
+            position: fixed;
+            right: 14px;
+            bottom: 100px;
+            border-radius: 0px;
+            width: 48px;
+            font-size: 56px;
+            color: #FF6347;
+            text-align: center;
+            line-height: 1;
+            padding: 8px 0px 12px;
+            z-index: 164;
+        }
+
         #btnTop{
             display: inline;
             position: fixed;
@@ -266,7 +301,7 @@
 <!--메인 배너 시작-->
 <th:block th:if="${banner1 != null and !banner1.isEmpty()}">
     <th:block th:each="banner : ${banner1}">
-        <div id="bannerTop" class="on">
+        <div id="bannerTop" class="on" th:style="'background-color:' + ${banner.color}">
             <article>
                 <a class="MainBanner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                    th:data-link="${banner.link}">
@@ -316,14 +351,15 @@
         </div>
         <div class="logo">
             <div>
-
                 <a th:href="@{/}"><img src="./images/header_logo.png" alt="로고"/></a>
-
-
-                <form id=searchForm th:action="@{/product/search}" onsubmit="return submitForm()">
+                <form id="searchForm" th:action="@{/product/search}" onsubmit="return submitForm()">
                     <input type="text" name="keyword" id="searchInput"/>
                     <button><i class="fa fa-search"></i></button>
                 </form>
+                <div >
+                    <div id="popularSearches" style="display: inline-block; border: 1px solid #8d8d8d; padding: 5px; width: 300px; " >
+                    </div>
+                </div>
             </div>
         </div>
         <div class="menu">
@@ -705,6 +741,11 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-up-square-fill" viewBox="0 0 16 16">
                 <path d="M2 16a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2zm6.5-4.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 1 0"/>
             </svg>
+        </a>
+        <br>
+        <br>
+        <a  id="btnPoint" >
+            <img style="width: 32px; height: 32px" th:src="@{/images/coin.png}" alt="포인트 적립 이벤트"/>
         </a>
     </aside>
 </div>

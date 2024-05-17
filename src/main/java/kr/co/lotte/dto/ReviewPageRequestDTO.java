@@ -20,7 +20,7 @@ public class ReviewPageRequestDTO {
     private int rpg = 1;
 
     @Builder.Default
-    private int size = 3;
+    private int size = 5;
 
     private int prodno;
 

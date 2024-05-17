@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface CsQnaRepository extends JpaRepository<CsQna, Integer> {
     List<CsQna> findAll();
-
+    List<CsQna> findAllByWriter(String writer);
 }

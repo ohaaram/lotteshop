@@ -7,6 +7,35 @@
                     a {
                         color: #424242;
                     }
+
+                    #oneWeek{
+                        display: inline-block;
+                        padding: 5px 15px;
+                        background-color: lightgrey;
+                        color: white;
+                    }
+                    #oneWeek:hover{
+                        background-color: grey;
+                    }
+                    #oneMonth{
+                        display: inline-block;
+                        padding: 5px 15px;
+                        background-color: lightgrey;
+                        color: white;
+                    }
+                    #oneMonth:hover{
+                        background-color: grey;
+                    }
+                    #oneYear{
+                        display: inline-block;
+                        padding: 5px 15px;
+                        background-color: lightgrey;
+                        color: white;
+                    }
+                    #oneYear:hover{
+                        background-color: grey;
+                    }
+
                 </style>
                 <nav>
                     <h3>기본환경정보</h3>
@@ -15,9 +44,9 @@
                     </p>
                 </nav>
 
-                <a th:href="@{/admin/sale(state='week')}" style="border: 1px solid gray" >일주일</a>
-                <a th:href="@{/admin/sale(state='month')}" style="border: 1px solid gray">한 달</a>
-                <a th:href="@{/admin/sale(state='year')}" style="border: 1px solid gray">월 별(1년)</a>
+                <a id = "oneWeek" th:href="@{/admin/sale(state='week')}" >일주일</a>
+                <a id="oneMonth" th:href="@{/admin/sale(state='month')}" >한 달</a>
+                <a id="oneYear" th:href="@{/admin/sale(state='year')}" >월 별(1년)</a>
                 <br>
                 <br>
                 <div class="container " style=" display: flex; justify-content: center ; max-width: 75%; height: auto; border: 1px solid #8d8d8d" >

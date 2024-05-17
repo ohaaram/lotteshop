@@ -27,7 +27,9 @@ public class MyUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
+        if(!"None".equals(user.getRole())) {
             authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        }
         return authorities;
     }
 
@@ -64,7 +66,7 @@ public class MyUserDetails implements UserDetails {
     public boolean isEnabled() {
         // 계정 활성화 여부 (true: 활성화, false: 비활성화)
         // 회원 탈퇴시 비활성화 시켜야함
-        return true;
+        return !"None".equals(user.getRole());
     }
 
 }

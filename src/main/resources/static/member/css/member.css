@@ -322,6 +322,34 @@ header {
   font-weight: 500;
 }
 
+#member > .register button {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #4CAF50; /* 배경색 */
+  color: white; /* 글자색 */
+  font-family: Arial, sans-serif; /* 글꼴 */
+  font-size: 13px; /* 글자 크기 */
+  border: none; /* 테두리 없음 */
+  border-radius: 5px; /* 둥근 테두리 */
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+}
+
+#member > .registerSeller button {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #4CAF50; /* 배경색 */
+  color: white; /* 글자색 */
+  font-family: Arial, sans-serif; /* 글꼴 */
+  font-size: 13px; /* 글자 크기 */
+  border: none; /* 테두리 없음 */
+  border-radius: 5px; /* 둥근 테두리 */
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+}
+
 #member > .register table th {
   width: 200px;
   padding: 20px 20px;
@@ -376,11 +404,12 @@ header {
   background: #ef3f43;
   color: #fff;
   font-size: 20px;
+  font-family: Arial, sans-serif; /* 글꼴 */
   padding: 10px 72px;
   margin: 40px auto;
   border: 0;
   outline: 0;
-  border-radius: 2px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -473,11 +502,12 @@ header {
   background: #ef3f43;
   color: #fff;
   font-size: 20px;
+  font-family: Arial, sans-serif; /* 글꼴 */
   padding: 10px 72px;
   margin: 40px auto;
   border: 0;
   outline: 0;
-  border-radius: 2px;
+  border-radius: 5px;
   cursor: pointer;
 }
 

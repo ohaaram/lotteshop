@@ -13,6 +13,8 @@ import kr.co.lotte.security.MyManagerDetails;
 import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.BlogService;
+import kr.co.lotte.service.MemberService;
+import kr.co.lotte.service.ProductQnaService;
 import kr.co.lotte.service.cs.CsNoticeService;
 import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
@@ -48,18 +50,20 @@ public class AdminController {
     private AdminService adminService;
     private final CsNoticeService csNoticeService;
     private final CsQnaService csQnaService;
+    private final ProductQnaService productQnaService;
     private final BlogService blogService;
+    @Autowired
+    private MemberService memberService;
 
     @GetMapping(value = {"/admin/index", "/admin"})
-    public String adminIndex(Authentication authentication, Model model) {
+    public String adminIndex(Authentication authentication, Model model, HttpSession session) {
 
-        model.addAttribute("csNotice", csNoticeService.noticeList());
-        model.addAttribute("csQna", csQnaService.qnaList());
+
 
         try {
             //여기는 관리자
             MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-            Map<String, Integer> map = adminService.Formain();
+            Map<String, Integer> map = adminService.Formain(session);
             int count = map.get("count");
             int total = map.get("total");
             int user = map.get("user");
@@ -79,6 +83,11 @@ public class AdminController {
             model.addAttribute("delete", delete);
             model.addAttribute("allDelete", allDelete);
             model.addAttribute("visitor", visitor);
+
+            model.addAttribute("csNotice", csNoticeService.noticeList());
+            model.addAttribute("csQna", csQnaService.qnaList());
+
+
             return "/admin/index";
 
         } catch (Exception e) {
@@ -91,6 +100,9 @@ public class AdminController {
             int count = map.get("count");
             int total = map.get("total");
             int user = map.get("user");
+            int totalArticle = map.get("totalArticle");
+
+            model.addAttribute("totalArticle", totalArticle);
             model.addAttribute("count", count);
             model.addAttribute("total", total);
             model.addAttribute("user", user);
@@ -106,11 +118,17 @@ public class AdminController {
             model.addAttribute("delete", delete);
             model.addAttribute("allDelete", allDelete);
             model.addAttribute("visitor", visitor);
+
+
+            model.addAttribute("prodQna", productQnaService.prodSellerQna(uid));
+
+
             return "/admin/index2";
         }
 
     }
-
+    ///판매자 FAQ 수정 (판매자 상품 문의만 뜨도록(where.qFQA.equl(seller.uid(selluid)) + 답변)
+    //상품상세보기 리뷰 (해당 상품만 뜨도록 여기는 where조건을 equal.prodNo(.../))
     //config
     @GetMapping("/admin/config/banner")
     public String banner(Model model) {
@@ -337,18 +355,18 @@ public class AdminController {
 
         Map<String, Object> result = new HashMap<>();
 
-        BannerDTO bannerDTO = adminService.findById(bannerNo);//배너번호를 이용해서 설정하기 내용은 읽어오기!
+        try {
 
-        if(bannerDTO!=null){
-            log.info("status값 확인 : " + bannerDTO);//status 변경되었는지 확인하기
+            BannerDTO banner = adminService.findById(bannerNo);//배너번호를 이용해서 설정하기 내용은 읽어오기!
 
-            result.put("success", 1);
-            return ResponseEntity.ok().body(result);
+            return ResponseEntity.ok(banner);
 
-        }else{//
-            result.put("success", 0);
-            return ResponseEntity.ok().body(result);
+        } catch (AdminService.SomeException e) {
+            // SomeException 예외 발생 시 처리
 
+            log.info(e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -406,12 +424,47 @@ public class AdminController {
 
         pageResponseDTO = adminService.seller_status(pageRequestDTO);
 
+        List<Seller> sellerList =  adminService.waitingSellers();
+
+        model.addAttribute("sellerList",sellerList);
+
         model.addAttribute("pageResponseDTO", pageResponseDTO);
+
+        log.info("판매자 리스트(temp) : "+sellerList);
 
         log.info("adminController - seller_status : " + pageResponseDTO.toString());
 
 
         return "/admin/seller/seller_status";
+    }
+
+    //판매자 상태 바꾸기(TEMP->MANAGER)
+    @GetMapping("/admin/sellerTrans")
+    public ResponseEntity<?> trans(String sellerUid){
+
+        Seller seller = adminService.changeRole(sellerUid);
+
+        Map<String, String> result = new HashMap<>();
+
+        String email = seller.getSellerEmail();
+
+        log.info("AdminController - trans - email : " + email);
+
+        if(seller!=null){
+
+            result.put("result", "1");
+
+            //이메일 보내기
+           memberService.sendEmailForSeller(email);
+
+            return ResponseEntity.ok().body(result);
+
+        }else{
+
+            result.put("result", "0");
+            return ResponseEntity.ok().body(result);
+
+        }
     }
 
     //판매자 모달창에 띄울 정보들

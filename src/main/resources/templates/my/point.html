@@ -20,7 +20,7 @@
                     <!---배너시작-->
                     <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
                         <th:block th:each="banner : ${banner5}">
-                            <div class="on">
+                            <div id="bannerTop" class="on" th:style="'background-color:' + ${banner.color}">
                                 <article>
                                     <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                                        th:data-link="${banner.link}">
@@ -90,7 +90,6 @@
                                     Banner.onclick = function (e){
 
                                         e.preventDefault();
-
 
                                         const bannerNo = Banner.getAttribute('data-bannerNo');
                                         const link = Banner.getAttribute('data-link');

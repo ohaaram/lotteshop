@@ -5,6 +5,8 @@ import kr.co.lotte.dto.BannerDTO;
 import kr.co.lotte.dto.ProductsPageRequestDTO;
 import kr.co.lotte.entity.Banner;
 import kr.co.lotte.entity.Products;
+import kr.co.lotte.entity.User;
+import kr.co.lotte.security.MyUserDetails;
 import kr.co.lotte.service.AdminService;
 import kr.co.lotte.service.MainService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
 
@@ -42,6 +46,8 @@ public class MainController {
         mainService.CouponStateUpdate();
         //hit상품 변경
         mainService.updateHit();
+
+        model.addAttribute("searches", mainService.findHotKeyword());
 
         List<BannerDTO> banner1 = adminService.validateBanner("MAIN1");
         List<BannerDTO> banner2 = adminService.validateBanner("MAIN2");
@@ -78,4 +84,17 @@ public class MainController {
         return ResponseEntity.ok().body(result);
     }
 
+    @GetMapping("/main/event")
+    public String event(Model model){
+        return "/product/event";
+    }
+
+    @ResponseBody
+    @GetMapping("/main/reward")
+    public ResponseEntity reward(Authentication authentication){
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        User user = myUserDetails.getUser();
+        String uid= user.getUid();
+        return mainService.getReward(uid);
+    }
 }

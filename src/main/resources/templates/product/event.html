@@ -1,0 +1,165 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/productLayout}">
+
+<div class="container" layout:fragment="content">
+
+
+    <main id="product">
+        <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+            <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
+        </th:block>
+        <aside>
+            <!-- 카테고리 -->
+            <ul class="category">
+                <li><i class="fa fa-bars" aria-hidden="true"></i>카테고리</li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='의류/패션')}"><i class="fas fa-tshirt"></i>의류/패션<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류')}" >남성의류</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='상의')}">상의</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='하의')}">하의</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='남성의류' , cateName3='신발')}">신발</a>
+                            </ol>
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류')}">여성의류</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '상의')}">상의</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '하의')}">하의</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '잡화(가방,지갑,벨트)')}">잡화(가방,지갑,벨트)</a>
+                                <li><a th:href="@{/product/list(cateName1='의류/패션' , cateName2='여성의류' , cateName3= '신발')}">신발</a>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='가전')}"><i class="fas fa-laptop"></i>가전<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전')}">생활가전</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='세탁기/세탁기용품')}">세탁기/세탁기용품</a>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='청소기')}">청소기</a>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='에어컨')}">에어컨</a>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='생활가전' ,cateName3='냉장고')}">냉장고</a>
+                            </ol>
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전')}">TV/영상가전</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='가전', cateName2='TV/영상가전', cateName3='TV')}">TV</a>
+                                <li><a th:href="@{/product/list(cateName1='가전',cateName2='TV/영상가전', cateName3='영상플레이어')}">영상플레이어</a>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    <a th:href="@{/product/list(cateName1='식품')}"><i class="fas fa-utensils"></i>식품<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물')}">농/축산물</a>
+
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">정육/계란</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">쌀/잡곡/견과</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">과일</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='농/축산물', cateName3='정육/계란')}">채소</a>
+                            </ol>
+
+                        </li>
+                        <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물')}">수산/건어물</a>
+
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='생선')}">생선</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='김/해조류')}">김/해조류</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='전복/굴/조개류')}">전복/굴/조개류</a>
+                                <li><a th:href="@{/product/list(cateName1='식품', cateName2='수산/건어물', cateName3='오징어/낙지/쭈꾸미')}">오징어/낙지/쭈꾸미</a>
+                            </ol>
+                        </li>
+                    </ol>
+                <li>
+
+
+                    <a th:href="@{/product/list(cateName1='반려동물')}"><i class="fas fa-home"></i>반려동물<i
+                            class="fas fa-angle-right"></i></a>
+                    <ol>
+                        <li>
+                            <a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지')}">강아지</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='사료/영양제')}">사료/영양제</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='간식')}">간식</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='배변용품')}">배변용품</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='강아지', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
+                            </ol>
+                        </li>
+                        <li>
+                            <a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이')}">고양이</a>
+                            <ol>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='사료/영양제')}">사료/영양제</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='간식')}">간식</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='배변용품')}">배변용품</a></li>
+                                <li><a th:href="@{/product/list(cateName1='반려동물', cateName2='고양이', cateName3='장난감/훈련용품')}">장난감/훈련용품</a></li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+        </aside>
+        <script>
+            window.onload=function (){
+                const reward = document.getElementById('reward');
+
+                reward.onclick=async function (e) {
+                    e.preventDefault();
+                    try {
+                        const user = document.getElementById('user').value;
+                        const result = await fetchGet('/lotteshop/main/reward');
+                        if(result.data === "1"){
+                            alert('적립되었습니다.')
+                        }else{
+                            alert('오늘 이미 받으셨습니다.')
+                        }
+                    } catch (e) {
+                        alert('로그인 후 이용해주세요');
+                    }
+                }
+
+                setTimeout(function() {
+                    reward.style.display='';
+                }, 10000); // 10초를 밀리초 단위로 설정합니다.
+
+            }
+        </script>
+        <section class="view">
+
+            <!-- 제목, 페이지 네비게이션 -->
+            <nav>
+                <h1>매일 광고를 보면 100 point 적립!</h1>
+                <p>
+                    HOME > <span>이벤트</span>
+                </p>
+            </nav>
+            <br>
+            <div style="border: 1px solid #efeeee; background-color: #f1f0f0">
+                <p style="margin-top: 10px; margin-left: 5px">광고보기 포인트는 아이디 당 1일 한 번만 적립됩니다. (10초 후 포인트 받기 가능)</p>
+                <!-- 광고보기 박스-->
+                <div style="text-align: center;">
+                    <br>
+                    <br>
+                    <iframe id="play" allow="autoplay" width="640" height="360" src="https://www.youtube.com/embed/Waz8rfdvVsY?autoplay=1&controls=0&mute=1&rel=0" frameborder="0" allowfullscreen></iframe>
+                    <br>
+                <input  id="reward" style="margin-top: 30px; font-size: x-large; display: none" type="button" value="포인트 받기">
+                </div>
+                <br>
+                <br>
+            </div>
+            <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                <input type="hidden" id="user" th:value="${#authentication.principal.user.uid}">
+            </th:block>
+        </section>
+    </main>
+
+</div>
+</html>

@@ -14,7 +14,6 @@ import java.util.Optional;
 public interface CsFaqRepository extends JpaRepository<CsFaq, Integer> , CsRepositoryCustom {
 
     Page<CsFaq> findAll(Pageable pageable);
-
     List<CsFaq> findByCate1(String cate1);
     Page<CsFaq> findByCate1AndCate2(String cate1, String cate2, Pageable pageable);
     CsFaq findFirstByCate2(String cate2);

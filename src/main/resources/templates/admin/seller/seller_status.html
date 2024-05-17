@@ -5,19 +5,20 @@
 <section id="admin-index" layout:fragment="content">
     <style>
 
-        body {
+        #admin-index body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
         }
 
-        table {
-            width: 100%;
+        #admin-index table {
+            width: 70%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
         th, td {
+
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
@@ -83,9 +84,15 @@
         .close_btn:hover {
             color: #555;
         }
-        .paging{
+
+        .paging {
             text-align: center;
         }
+
+        #approval{
+            border: none;
+        }
+
     </style>
 
 
@@ -102,12 +109,37 @@
                 });
             });
 
+            //승인버튼 클릭시, temp->Manager로 판매자로 승격
+            document.querySelectorAll('.approval').forEach(function (button) {
+                button.addEventListener('click', async function (event) {
+
+                    event.preventDefault();
+                    //sellerUid 넘겨주기!
+                    const sellerUid = event.target.getAttribute('data-sellerNo');
+
+                    console.log("sellerNo : " + sellerUid);//sellerID 잘 나옴
+
+                    const data = await fetchGet(`/lotteshop/admin/sellerTrans?sellerUid=${sellerUid}`);
+
+                    console.log(data.result);
+
+                    if (data.result == "1") {
+
+                        alert("판매자 권한이 변환되었습니다.");
+
+                        window.location.href = `/lotteshop/admin/seller/seller_status`;
+
+                    } else {
+                        alert("판매자 권한 변경에 실패했습니다");
+                    }
+                })
+            })
 
             // 사용자가 모달 바깥을 클릭하면 모달이 닫히도록 설정
-            window.onclick = function(event) {
+            window.onclick = function (event) {
                 var modal = document.getElementById('myModal');
                 var btn = document.getElementsByClassName('close_btn')[0];
-                if (event.target === modal || event.target===btn) {
+                if (event.target === modal || event.target === btn) {
                     closeModal();
                 }
             }
@@ -164,6 +196,34 @@
 
     </script>
     <main>
+
+
+        <h1>권한 설정</h1>
+
+        <table>
+            <tr>
+                <th>아이디</th>
+                <th>회사명</th>
+                <th>사업자번호</th>
+                <th>전화번호</th>
+                <th>관리</th>
+            </tr>
+            <tr th:each="sellers : ${sellerList}" th:if="${sellerList}!=null">
+                <td th:text="${sellers.sellerUid}">아이디</td>
+                <td th:text="${sellers.sellerName}">회사명</td>
+                <td th:text="${sellers.sellerSaNumber}">사업자번호</td>
+                <td th:text="${sellers.sellerDHp}">전화번호</td>
+                <td id="approvalContainer">
+                    <button id="approval" class="approval" th:data-sellerNo="${sellers.sellerUid}">승인</button>
+                </td>
+            </tr>
+            <tr th:if="${sellerList == null or #lists.isEmpty(sellerList)}">
+                <td colspan="5">
+                    <span style="text-align: center">판매자가 없습니다.</span>
+                </td>
+            </tr>
+        </table>
+        <br><br>
         <h1>판매자 현황</h1>
         <table>
             <tr>
@@ -172,34 +232,32 @@
                 <th>매출 현황</th>
                 <th>관리</th>
             </tr>
-            <div>
-
-            </div>
-
-
-            <tr th:each="status:${pageResponseDTO.dtoList}">
+            <tr th:each="status : ${pageResponseDTO.dtoList}" th:if="${status.role == 'MANAGER'}">
                 <td th:text="${status.sellerUid}">판매자1</td>
                 <td th:text="${status.orderCount}">100</td>
-                <td th:text="${status.totalPrice}">$10,000</td>
+                <td th:text="${#numbers.formatInteger(status.totalPrice,1,'COMMA')}">$10,000</td>
                 <td>
                     <a class="sellerInfo" href="#" th:data-sellerUid="${status.sellerUid}">상세히 보기</a>
                 </td>
             </tr>
         </table>
-
-        <p class="paging">
-            <th:block th:if="${pageResponseDTO.prev}">
+        <br>
+        <div class="paging">
+            <span class="prev" th:if="${pageResponseDTO.prev}">
                 <a th:href="@{/admin/seller/seller_status(pg=${pageResponseDTO.start - 1})}">이전</a>
-
-            </th:block>
-            <th:block th:each="n : ${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
-                <a th:href="@{/admin/seller/seller_status(pg=${n})}" th:text="${n}"></a>
-
-            </th:block>
-            <th:block th:if="${pageResponseDTO.next}">
+            </span>
+            <span class="num" th:each="n : ${#numbers.sequence(pageResponseDTO.start, pageResponseDTO.end)}">
+                <th:block th:if="${n == pageResponseDTO.getRpg()}">
+                      <a th:href="@{/admin/seller/seller_status(pg=${n})}" class="on" th:text="${n}"></a>
+                </th:block>
+                <th:block th:if="${n != pageResponseDTO.getRpg()}">
+                      <a th:href="@{/admin/seller/seller_status(pg=${n})}"  th:text="${n}"></a>
+                </th:block>
+            </span>
+            <span class="next" th:if="${pageResponseDTO.next}">
                 <a th:href="@{/admin/seller/seller_status(pg=${pageResponseDTO.end + 1})}">다음</a>
-            </th:block>
-        </p>
+            </span>
+        </div>
 
         <!-- 모달 팝업 -->
         <div id="myModal" class="modal">
@@ -212,7 +270,7 @@
                 <p>사업자번호: <span id="sellerSaNumber"></span></p>
                 <p>대표전화 : <span id="companyHp"></span></p>
                 <p>이 메 일 : <span id="companyEmail"></span></p>
-                <p>주   소  : <span id="companyAddr"></span></p>
+                <p>주 소 : <span id="companyAddr"></span></p>
             </div>
         </div>
         <!--모달 팝업 끝!-->

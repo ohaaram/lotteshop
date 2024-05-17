@@ -4,6 +4,7 @@ package kr.co.lotte.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -36,5 +37,10 @@ public class Seller {
     private String role;
     private String grade;
 
+    @Transient
+    private Long orderCount;//판매자 마다 상품을 몇개 팔았는지
+
+    @Transient
+    private Integer totalPrice;//총 판매금액
 
 }

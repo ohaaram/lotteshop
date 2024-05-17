@@ -1,6 +1,7 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 import jakarta.transaction.Transactional;
 import kr.co.lotte.dto.*;
@@ -13,12 +14,15 @@ import org.apache.ibatis.annotations.SelectKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,6 +39,23 @@ public class MainService {
     private CouponRepository couponRepository;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private MemberRepository memberRepository;
+
+
+    @Autowired
+    private RewardRepository rewardRepository;
+    //reward적립
+
+    @Autowired
+    private PointsRepository pointsRepository;
+
+    @Autowired
+    private KeywordRepository keywordRepository;
+
+    public List<String> findHotKeyword(){
+        return keywordRepository.findFirst10ByOrderByCountDesc().stream().map(e -> e.getKeyword()).toList();
+    }
 
     //히트상품 변경
     public void updateHit(){
@@ -90,6 +111,10 @@ public class MainService {
 
         return new MainProductsPageResponseDTO(requestDTO, dtoList, total);
     }
+
+    @Autowired
+    private  SellerRepository sellerRepository;
+
     //종류별로 정렬
     public List<Products> searchListForCate(String cate){
         List<Products> lists = new ArrayList<>();
@@ -101,6 +126,9 @@ public class MainService {
             lists = productsRepository.findFirst8ByOrderByProdNoDesc();
         }else {
             lists = productsRepository.findFirst8ByDiscount();
+        }
+        for(Products p : lists){
+            p.setSeller(sellerRepository.findById(p.getSellerUid()).get());
         }
         return lists;
     }
@@ -188,5 +216,35 @@ public class MainService {
                 couponRepository.save(coupon);
             }
         }
+    }
+    @Transactional
+    public ResponseEntity getReward(String uid){
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = currentDate.format(formatter);
+        Map<String ,String> map = new HashMap<>();
+        try{
+            int just = rewardRepository.findByUidAndDate(uid, formattedDate).getNo();
+            map.put("data", "0");
+        }catch (Exception e){
+            Reward reward = new Reward();
+            reward.setUid(uid);
+            reward.setDate(formattedDate);
+            rewardRepository.save(reward);
+            
+            Points points = new Points();
+            points.setPoint(100);
+            points.setUserId(uid);
+            points.setPointDesc("광고보기");
+            points.setState("적립");
+            pointsRepository.save(points);
+
+            User user = memberRepository.findById(uid).get();
+            user.setTotalPoint(user.getTotalPoint()+100);
+            memberRepository.save(user);
+            map.put("data", "1");
+        }
+
+        return ResponseEntity.ok().body(map);
     }
 }

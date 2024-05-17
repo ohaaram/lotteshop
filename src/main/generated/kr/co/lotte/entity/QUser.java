@@ -51,6 +51,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath sms = createString("sms");
 
+    public final NumberPath<Integer> status = createNumber("status", Integer.class);
+
     public final NumberPath<Integer> totalPoint = createNumber("totalPoint", Integer.class);
 
     public final NumberPath<Integer> totalPrice = createNumber("totalPrice", Integer.class);

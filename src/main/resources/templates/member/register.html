@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-
-
 <html
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
         layout:decorate="~{/member/layout/memberLayout.html}">
@@ -8,6 +6,52 @@
 <div class="register" layout:fragment="content">
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script th:src="@{/js/memberRegister.js}"></script>
+
+
+
+    <style>
+        #btnCheckUid{
+            width: 100px;
+            height: 30px;
+            background-color: #2e8de5;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #btn_email{
+            width: 90px;
+            height: 25px;
+            background-color: #2e8de5;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #btnCheckEmailCode{
+            width: 90px;
+            height: 25px;
+            background-color: #2e8de5;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #findZip{
+            padding-bottom: 5px;
+            width: 90px;
+            height: 30px;
+            background-color: #2e8de5;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+
 
     <nav>
         <h1>일반 회원가입</h1>
@@ -20,6 +64,7 @@
                     <th><span class="essential">*</span>아이디</th>
                     <td><input type="text" name="uid" placeholder="아이디를 입력"
                                required/>
+                        <input type="hidden" name="status" value="1">
                         <button type="button" id="btnCheckUid" data-type="uid">아이디 중복체크</button>
                         <div id="result_uid" class="deprecation-block"></div>
                         <span class="msgId">영문, 숫자로 5~20자까지 설정해 주세요.</span>
@@ -76,7 +121,7 @@
                         <!--이메일 인증코드 검사-->
                         <div id="divEmailCode">
                             <input class="form-control" id="inputEmailCode" name="code" type="text"
-                                   placeholder="이메일 인증코드 입력" disabled/>
+                                   placeholder="이메일 인증코드 입력"/>
 
                             <button type="button" class="btnSubmit" id="btnCheckEmailCode"
                                     data-type="email">

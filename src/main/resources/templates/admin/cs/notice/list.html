@@ -3,7 +3,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/admin/layout/adminLayout.html}">
 
-<section id="admin-cs-notice" layout:fragment="content">
+
+<section id="admin-cs-faq" layout:fragment="content">
+
     <script>
         window.onload = function() {
             const all = document.getElementById('all');
@@ -33,14 +35,53 @@
                     alert('선택된 상품이 없습니다.');
                 }else{
                     if (confirm('삭제 하시겠습니까!?')){
-                        const jsonData = { list: selectedNoList}
-                        const result = await fetchGet('/lotteshop/admin/cs/notice/delete', jsonData);
-                        console.log(result.result);
+
+                        console.log("selectedNoList : "+selectedNoList);
+
+                        //const jsonData = { list: selectedNoList}
+                       // const result = await fetchGet('/lotteshop/admin/cs/notice/delete');
+                       // console.log(result.result);
                     }
-                    location.reload();
+                    //location.reload();
                 }
             };
+
+            function deleteSelectedBanners() {
+
+                checkBoxes.forEach(check => {
+                    if (check.checked) {
+                        const row = check.closest('tr');
+                        //const bannerNo = row.querySelector('[id="bannerNo"]').textContent;
+                        const bannerNoElement = row.querySelector('.bannerNo');
+                        const bannerNo = bannerNoElement.textContent;
+                        // 배너번호를 확인
+                        console.log('제발 찍혀라!! BannerNo : ' + bannerNo);
+                        row.remove();
+
+                        const jsonData = {
+                            "bannerNo" :bannerNo
+                        };
+
+                        fetch("/lotteshop/banner/delete", {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(jsonData)
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log("삭제가 성공!여기는 banner.html");
+                                } else {
+                                    throw new Error("삭제 실패");
+                                }
+                            })
+                            .catch(err => console.log(err));
+                    }
+                });
+            }
+
         };
+
+
 
     </script>
     <nav>
@@ -62,8 +103,11 @@
                     <option value="search3">유형</option>
                     <option value="search4">제목+내용</option>
                 </select>
+
                 <span ></span>
-                <table border="0">
+                <br>
+                <br>
+                <table class="cs-qna-faq-list" border="0">
                     <tr>
                         <th><input type="checkbox" name="all" id="all"></th>
                         <th>번호</th>
@@ -74,7 +118,7 @@
                         <th>관리</th>
                     </tr>
                     <tr th:each="csNotice, index : ${csNotice.dtoList2}">
-                        <td class="notice-list-checkbox"><input type="checkbox" name="selectedNoList" class="check"/></td>
+                        <td class="faq-list-checkbox"><input type="checkbox" name="selectedNoList" class="check"/></td>
                         <td>[[${csNotice.no}]]</td>
 
                         <td th:if="${csNotice.cate1 == 'customer'}" style="white-space: nowrap;">고객서비스</td>
@@ -98,13 +142,15 @@
                     </tr>
                 </table>
                 <div>
+                    <br>
                     <input type="button" value="선택삭제" id="selectDelete"/>
                 </div>
             </form>
             <div>
                 <a class="cs-write" style="float: right" th:href="@{/admin/cs/notice/register}">공지 작성</a>
             </div>
-            <div class="paging">
+            <br>
+            <div class="paging" style="text-align: center">
                         <span class="prev" th:if="${csNotice.prev}">
                             <a th:href="@{/admin/cs/notice/list(pg=${csNotice.start -1}, cate1=${csNotice.getCate1()} , cate2=${csNotice.getCate2()})}"><&nbsp;이전</a>
                         </span>

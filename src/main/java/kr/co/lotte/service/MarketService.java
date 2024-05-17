@@ -8,6 +8,7 @@ import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.javassist.compiler.ast.Keyword;
 import org.apache.ibatis.javassist.expr.NewArray;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,14 @@ public class MarketService {
     public ProductsDTO selectProduct(int prodno) {
 
         return modelMapper.map(productRepository.findById(prodno).get(), ProductsDTO.class);
+
+    }
+
+    //상품 조회수
+    public  void updateProductSearchCount(int prodno) {
+        Products products = productRepository.findById(prodno).get();
+        products.setSearchCount(products.getSearchCount() + 1);
+        productRepository.save(products);
 
     }
 
@@ -605,5 +614,39 @@ public class MarketService {
                 carts.getCartProdCount());
         map.put("data", price );
         return ResponseEntity.ok().body(map);
+    }
+    @Autowired
+    private KeywordRepository keywordRepository;
+    //키워드 업데이트
+    public void updateKeyword(String keyword){
+
+        List<String> bannedWords = Arrays.asList("시발", "씨발", "ㅗ","닥쳐","엿","년","꺼져","존나","ㅅㅂ","ㄲㅈ","꺼져",
+                "ㅂㅅ","병신","개새끼","애미","애비");
+
+        if (isProfane(keyword , bannedWords)) {
+            return;
+        }
+
+        if(keywordRepository.existsById(keyword)){
+            Search search = keywordRepository.findById(keyword).get();
+            search.setCount(search.getCount()+1);
+            keywordRepository.save(search);
+        }else{
+            Search search = new Search();
+            search.setCount(1);
+            search.setKeyword(keyword);
+            keywordRepository.save(search);
+        }
+
+    }
+
+    // 욕설 필터링 함수
+    private boolean isProfane(String keyword , List<String> bannedWords) {
+        for (String bannedWord : bannedWords) {
+            if (keyword.contains(bannedWord)) {
+                return true; // 욕설이 포함되어 있으면 true 반환
+            }
+        }
+        return false; // 욕설이 없으면 false 반환
     }
 }

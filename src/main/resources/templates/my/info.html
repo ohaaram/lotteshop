@@ -72,9 +72,6 @@
             }
 
 
-
-
-
             const btnChangePassword = document.getElementById('btnChangePassword');
             const formChangePassword = document.formChangePassword;
 
@@ -241,6 +238,31 @@
                     }
                 }
             })
+
+            //탈퇴기능 구현
+            const delUser = document.getElementById('btnWithdraw');
+
+            delUser.onclick = async function (e){
+                e.preventDefault();
+
+                const userConfirmed = confirm('정말로 탈퇴하시겠습니까?');
+                if (userConfirmed) {
+                    const uid = document.getElementById('uid').value;//사용자 아이디
+
+                    console.log('사용자 아이디 : '+uid);
+
+                    //status 0으로 권한을 None으로 변경
+                    const data = await fetchGet(`/lotteshop/my/delUser/${uid}`);
+
+                    if(data.result==="success"){
+
+                        alert("탈퇴가 되었습니다!");
+
+                        window.location.href=`/lotteshop/member/logout`;
+
+                    }
+                }
+            }
         }
 
     </script>
@@ -259,7 +281,7 @@
         <!---배너시작-->
         <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
             <th:block th:each="banner : ${banner5}">
-                <div class="on">
+                <div id="bannerTop" class="on" th:style="'background-color:' + ${banner.color}">
                     <article>
                         <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                            th:data-link="${banner.link}">
@@ -279,7 +301,7 @@
                     <tr>
                         <td>사용자 ID</td>
                         <td>
-                            <input type="text" name="uid" th:value="${user.uid}" readonly/>
+                            <input type="text" id = "uid" name="uid" th:value="${user.uid}" readonly/>
                         </td>
                     </tr>
                     <tr>

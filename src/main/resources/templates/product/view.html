@@ -393,7 +393,7 @@
                         <span class="delivery" th:if="${product.delivery!=0}">배송비 : [[${product.delivery}]]</span>
                         <span>
                             <b class="arrival"
-                               th:text="${#temporals.format(#temporals.createNow().plusDays(2), 'MM-dd')}"
+                               th:text="${#temporals.format(#temporals.createNow().plusDays(3), 'MM-dd')}"
                                style="font-size: 20px"></b> 도착
                             예정
                         </span>
@@ -440,7 +440,7 @@
 
 
                             //Q&A 스크롤 이동//
-                            const QA_view = document.getElementsByClassName('QA_view')[0];
+                            const QA_view = document.getElementsByClassName('view-qna')[0];
                             const info_QA = document.getElementsByClassName('info_QA')[0];
                             info_QA.onclick = function (e) {
                                 e.preventDefault();
@@ -819,6 +819,9 @@
                                 var modal = document.getElementById('productInquiryModal');
                                 // 모달 창 닫기
                                 modal.style.display = 'none';
+
+                                // 첫번째 모달 열기
+                                openModal();
                             }
 
                             // 모달 바깥 클릭 이벤트 핸들러 등록
@@ -830,17 +833,27 @@
                                 }
                             });
 
+                            // 취소 버튼 클릭 이벤트 핸들러 등록
+                            document.querySelector('.qna-product-btnLink-cancel').addEventListener('click', function() {
+                                // 첫 번째 모달 열기
+                                openModal();
+                                // 상품 문의 모달 닫기
+                                closeProductInquiryModal();
+                            });
+
                             // 모달 내의 "닫기" 버튼 클릭 이벤트 핸들러 등록
                             document.querySelector('#productInquiryModal .qna-modal-close').addEventListener('click', closeProductInquiryModal);
 
                             ///////////////////////////////////////////////////////////////////////////////////////////
                             // 상품 문의 모달의 확인 버튼 클릭 이벤트 핸들러
                             ///////////////////////////////////////////////////////////////////////////////////////////
-                            document.querySelector('.qna-product-btnLink').addEventListener('click', function() {
+                            document.querySelector('.qna-product-btnLink').addEventListener('click', function(e) {
                                 // 입력된 내용 가져오기
                                 var inquiryCate = document.querySelector('.product-inquiry-select').value;
                                 var inquiryContent = document.querySelector('.qna-product-textarea').value;
                                 var isStatus2 = document.querySelector('input[type="checkbox"]').checked;
+                                var sellerUid =  e.target.getAttribute('data-sellerUid');
+                                    console.log("sellerUid : " + sellerUid);
                                 try {
                                     var userId = document.getElementById('questionId').value;
                                 }catch (e){
@@ -861,7 +874,8 @@
                                     content: inquiryContent,
                                     status2: isStatus2,
                                     uid: userId,
-                                    prodNo: prodNo
+                                    prodNo: prodNo,
+                                    sellerUid: sellerUid
 
                                 };
 
@@ -872,6 +886,7 @@
 
                                 // 서버 응답 처리
                                 xhr.onload = function() {
+                                    console.log("status : " + 성공인가요);
                                     if (xhr.status === 200) {
                                         // 성공적으로 저장된 경우
                                         alert('상품 문의가 성공적으로 등록되었습니다.');
@@ -885,6 +900,9 @@
 
                                 // 서버로 데이터 전송
                                 xhr.send(JSON.stringify(qnaData));
+
+                                alert('상품  문의가 성공적으로 등록되었습니다.')
+                                location.reload();
                             });
                         }
                     </script>
@@ -921,27 +939,21 @@
                             </select>
                         </nav>
 
-                        <!---배너시작-->
                         <th:block th:if="${banner3 != null and !banner3.isEmpty()}">
                             <th:block th:each="banner : ${banner3}">
-                                <div class="on">
-                                    <article>
-                                        <a class="MainBanner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
-                                           th:data-link="${banner.link}">
-                                            <img class="bannerImg" th:src="@{/uploads/__${banner.img_1200}__}"/>
-                                        </a>
-                                    </article>
-                                </div>
+                                <article>
+                                    <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                                       th:data-link="${banner.link}">
+                                        <img class="bannerImg" th:src="@{/uploads/__${banner.img_456}__}"/>
+                                    </a>
+                                </article>
                             </th:block>
                         </th:block>
-
-                        <th:block th:unless="${banner3 != null and !banner3.isEmpty()}"></th:block>
-                        <!--배너끝-->
-
 
                         <div class="option-container" id="option-container">
 
                         </div>
+
                         <div class="button">
                             <input type="button" class="cart" id="cartSub" value="장바구니"/>
                             <input type="button" class="order" id="cartBuy" value="구매하기"/>
@@ -956,19 +968,17 @@
                     <th:block th:if="${options.size()==1}" th:each="option , index:${options}">
 
                         <!--배너 시작-->
-
                         <th:block th:if="${banner3 != null and !banner3.isEmpty()}">
                             <th:block th:each="banner : ${banner3}">
-                                    <article>
-                                        <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
-                                           th:data-link="${banner.link}">
-                                            <img class="bannerImg" th:src="@{/uploads/__${banner.img_456}__}"/>
-                                        </a>
-                                    </article>
+                                <article>
+                                    <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
+                                       th:data-link="${banner.link}">
+                                        <img class="bannerImg" th:src="@{/uploads/__${banner.img_456}__}"/>
+                                    </a>
+                                </article>
                             </th:block>
                         </th:block>
 
-                        <th:block th:unless="${banner3 != null and !banner3.isEmpty()}"></th:block>
                         <!--배너 끝-->
 
 
@@ -992,6 +1002,7 @@
                         </div>
                     </th:block>
 
+
                 </div>
             </article>
 
@@ -1007,7 +1018,7 @@
                         <!--reviewPage.dtoList.size()-->
                     </div>
                     <div style="width: 220px;height: 40px;display: inline-block">
-                        <a class="info_QA" href="#" style="font-size: xx-large">Q&A</a>&nbsp;&nbsp;
+                        <a class="info_QA" href="#" style="font-size: xx-large">Q&A([[${prodQna.total}]])</a>&nbsp;&nbsp;
                     </div>
                 </nav>
                 <!-- 상품상세페이지 이미지 -->
@@ -1168,13 +1179,12 @@
                                 <span th:text="${#temporals.format(review.rdate,'yyyy.MM.dd')}"
                                       style="color: gray">24.03.22</span><br>
                                 <span th:text="${review.getProdoption()}" style="color: gray"></span>
-
                             </p>
                             <div class="reviewContent">
                                 <p>[[${review.comment}]]</p>
                                 <img th:if="${review.thumbnail} != null" th:src="@{/uploads/__${review.thumbnail}__}"
                                      th:alt="${review.rno}" style="width: 120px; height: 120px ">
-                                <img th:if="${review.thumbnail} == null" th:src="@{/newimage/noReview.png}"
+                                <img th:if="${review.thumbnail} == null" th:src="@{/uploads/strawberry.png}"
                                      th:alt="${review.rno}" style="width: 120px; height: 120px ">
                             </div>
                         </div>
@@ -1182,25 +1192,25 @@
                 </ul>
 
                 <!-- 상품목록 페이지번호 -->
-                <div class="paging" style="text-align: center">
+                <div class="paging" style="text-align: center" th:if="${reviewPage.dtoList.size()>0}">
                         <span class="prev" th:if="${reviewPage.prev}">
                             <a class="pagination-link"
-                               th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1})}"><&nbsp;이전</a>
+                               th:href="@{/product/view(prodno=${product.prodNo}, rpg=${reviewPage.start - 1} ,pg=${prodQna.pg} )}"><&nbsp;이전</a>
                         </span>
                     <span class="num" th:each="num:${#numbers.sequence(reviewPage.start, reviewPage.end)}">
                             <th:block th:if="${num == reviewPage.rpg}">
                                  <a class="pagination-link"
-                                    th:href="@{/product/view( prodno =${reviewPage.getProdno()},rpg=${num})}">[[${num}]]</a>
+                                   style="background-color: grey" th:href="@{/product/view( prodno =${reviewPage.getProdno()},rpg=${num}, pg=${prodQna.pg})}">[[${num}]]</a>
                             </th:block>
 
                             <th:block th:if="${num != reviewPage.rpg}">
                                  <a class="pagination-link"
-                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${num})}">[[${num}]]</a>
+                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${num} , pg=${prodQna.pg})}">[[${num}]]</a>
                             </th:block>
                         </span>
                     <span class="next" th:if="${reviewPage.next}">
                             <a class="pagination-link"
-                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${reviewPage.end+1} )}">다음&nbsp;></a>
+                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, rpg=${reviewPage.end+1} , pg=${prodQna.pg})}">다음&nbsp;></a>
                         </span>
                 </div>
             </div>
@@ -1208,11 +1218,11 @@
             <!-- Q&A 내용 -->
             <br/><br/>
             <article id="view-qna-article" style="width: 953px; height: 100%; ">
-            <div id="view-qna">
+            <div id="view-qna" class="view-qna">
                 <div>
                     <div class="product-qna-title1">
-                        <strong style="margin-left: 20px; font-weight: 600; font-size: 24px;">Q&A</strong><span>(943)</span>
-                        <hr/>
+                        <strong style="margin-left: 20px; font-weight: 600; font-size: 24px;">Q&A</strong><span>([[${prodQna.total}]])</span>
+                        <br/>
                     </div>
                 </div>
                 <div style="font-size: 14px;" class="product-qna-title">
@@ -1225,23 +1235,140 @@
                 </div>
                 <ul>
                     <li>
-                        <div class="product-qna-info">
+                        <div class="product-qna-info" style="margin-left: 10px">
                             <span class="">상품정보</span>
                             <span > :: [[${product.prodName}]]
                                 </span>
                         </div>
                         <div class="product-qna-content">
                             <div>
-                                <p><strong>상품명</strong>:: [[${product.prodName}]]</p>
                                 <ul>
-                                    <li th:each="prodQnas, index : ${prodQna}" class="#" >
-                                        <a><span>Q.</span><a th:text="${prodQnas.content}"></a></a>
-                                    </li>
+                                    <th:block th:if="${prodQna.dtoList4.size()>0}">
+                                        <li th:each="prodQnas, index : ${prodQna.dtoList4}" class="product-qna-content-content" style="margin-left: 15px" >
+                                            <!-- 문의 내용 출력 -->
+
+                                            <th:block th:if="${#authentication.principal != 'anonymousUser'}">
+                                                <th:block th:if="${prodQnas.status2 == 'true' && #authentication.principal.user.uid == prodQnas.uid}">
+                                            <div class="question">
+                                                <span style="font-size: 16px;">Q. </span>
+                                                <span style="font-size: 16px;" th:text="${prodQnas.content}"></span>
+                                            </div>
+
+                                            <!-- 답변이 있는 경우에만 답변 출력 -->
+                                            <div th:if="${prodQnas.answer != null}" class="answer">
+                                                <span style="font-size: 16px;">A. </span>
+                                                <span style="font-size: 16px;" th:text="${prodQnas.answer}"></span>
+                                            </div>
+                                            <!-- 답변이 없는 경우에는 "아직 답변이 달리지 않았습니다." 출력 -->
+                                            <div style="font-size: 16px;" th:unless="${prodQnas.answer != null}" class="no-answer">
+                                                <span style="font-size: 16px;">A. </span>
+                                                아직 답변이 달리지 않았습니다.
+                                            </div>
+                                                </th:block>
+
+                                                <th:block th:if="${prodQnas.status2 == 'true' && #authentication.principal.user.uid != prodQnas.uid}">
+                                                    <div class="question">
+                                                        <span style="font-size: 16px;">Q. </span>
+                                                        <span style="font-size: 16px;" >비밀 글입니다.</span>
+                                                    </div>
+                                                    <!-- 답변이 있는 경우에만 답변 출력 -->
+                                                    <div th:if="${prodQnas.answer != null}" class="answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        <span style="font-size: 16px;" >비밀 답변입니다.</span>
+                                                    </div>
+
+                                                </th:block>
+
+                                                <th:block th:if="${prodQnas.status2 == 'false'}">
+                                                    <div class="question">
+                                                        <span style="font-size: 16px;">Q. </span>
+                                                        <span style="font-size: 16px;" th:text="${prodQnas.content}"></span>
+                                                    </div>
+
+                                                    <!-- 답변이 있는 경우에만 답변 출력 -->
+                                                    <div th:if="${prodQnas.answer != null}" class="answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        <span style="font-size: 16px;" th:text="${prodQnas.answer}"></span>
+                                                    </div>
+                                                    <!-- 답변이 없는 경우에는 "아직 답변이 달리지 않았습니다." 출력 -->
+                                                    <div style="font-size: 16px;" th:unless="${prodQnas.answer != null}" class="no-answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        아직 답변이 달리지 않았습니다.
+                                                    </div>
+                                                </th:block>
+
+                                            </th:block>
+
+                                            <th:block th:if="${#authentication.principal == 'anonymousUser'}">
+
+                                                <th:block th:if="${prodQnas.status2 == 'true' }">
+                                                    <div class="question">
+                                                        <span style="font-size: 16px;">Q. </span>
+                                                        <span style="font-size: 16px;"> 비밀 글입니다.</span>
+                                                    </div>
+                                                    <!-- 답변이 있는 경우에만 답변 출력 -->
+                                                    <div th:if="${prodQnas.answer != null}" class="answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        <span style="font-size: 16px;" > 비밀 답변입니다.</span>
+                                                    </div>
+
+                                                </th:block>
+
+                                                <th:block th:if="${prodQnas.status2 == 'false'}">
+                                                    <div class="question">
+                                                        <span style="font-size: 16px;">Q. </span>
+                                                        <span style="font-size: 16px;" th:text="${prodQnas.content}"></span>
+                                                    </div>
+
+                                                    <!-- 답변이 있는 경우에만 답변 출력 -->
+                                                    <div th:if="${prodQnas.answer != null}" class="answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        <span style="font-size: 16px;" th:text="${prodQnas.answer}"></span>
+                                                    </div>
+                                                    <!-- 답변이 없는 경우에는 "아직 답변이 달리지 않았습니다." 출력 -->
+                                                    <div style="font-size: 16px;" th:unless="${prodQnas.answer != null}" class="no-answer">
+                                                        <span style="font-size: 16px;">A. </span>
+                                                        아직 답변이 달리지 않았습니다.
+                                                    </div>
+                                                </th:block>
+
+                                            </th:block>
+
+                                        </li>
+                                    </th:block>
+                                    <th:block th:if="${prodQna.dtoList4.size()==0}">
+                                        <span style="font-size: 15px; margin-left: 15px">문의 내역이 없습니다.</span>
+                                    </th:block>
+
                                 </ul>
                             </div>
                         </div>
-                        <div></div>
-                        <div></div>
+                        <!-- 상품목록 페이지번호 -->
+                        <div class="paging" style="text-align: center" th:if="${prodQna.dtoList4.size()>0}">
+                        <span class="prev" th:if="${prodQna.prev}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno=${reviewPage.prodno}, pg=${prodQna.start - 1} , rpg=${reviewPage.rpg} )}"><&nbsp;이전</a>
+                        </span>
+                            <span class="num" th:each="num:${#numbers.sequence(prodQna.start, prodQna.end)}">
+                            <th:block th:if="${num == prodQna.pg}" >
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view( prodno =${reviewPage.getProdno()},pg=${num} , rpg=${reviewPage.rpg} )}" style="background-color: grey">[[${num}]]</a>
+                            </th:block>
+
+                            <th:block th:if="${num != prodQna.pg}">
+                                 <a class="pagination-link"
+                                    th:href="@{/product/view(prodno =${reviewPage.getProdno()}, pg=${num} , rpg=${reviewPage.rpg} )}">[[${num}]]</a>
+                            </th:block>
+                        </span>
+                            <span class="next" th:if="${prodQna.next}">
+                            <a class="pagination-link"
+                               th:href="@{/product/view(prodno =${reviewPage.getProdno()}, pg=${prodQna.end+1} , rpg=${reviewPage.rpg}  )}">다음&nbsp;></a>
+                        </span>
+                        </div>
+
+
+                        <br>
+                        <br>
                     </li>
                 </ul>
             </div>
@@ -1333,7 +1460,7 @@
                             </span>
                         </div>
                         <div>
-                            <p>비밀글 하실?</p><input name="status2" type="checkbox" />
+                            <p>비밀글</p><input name="status2" type="checkbox" />
 
                             <th:block th:if="${#authentication.principal != 'anonymousUser'}">
                             <input type="hidden" id="questionId" th:value="${#authentication.principal.user.uid}">
@@ -1348,7 +1475,7 @@
                             </div>
                             <div>
                                 <span>
-                                    <a class="qna-product-btnLink">확인</a>
+                                    <a class="qna-product-btnLink" th:data-sellerUid="${product.sellerUid}">확인</a>
                                 </span>
                             </div>
                         </div>
@@ -1357,8 +1484,6 @@
                     <span class="qna-modal-close">&times;</span>
                 </div>
             </div>
-
-
         </section>
         <!-- 상품 상세페이지 끝 -->
     </main>

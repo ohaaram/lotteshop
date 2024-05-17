@@ -174,8 +174,6 @@
 
                             e.preventDefault();
 
-                            alert("클릭 했으");
-
                             const bannerNo = Banner.getAttribute('data-bannerNo');
                             const link = Banner.getAttribute('data-link');
 
@@ -203,9 +201,36 @@
                                 })
                                 .catch(err => console.log(err))
                         }
+
+                        // 문의하기 출력
+
+                            $(document).ready(function() {
+                            $('#btnQna').click(function() {
+                                var group = 'qna'; // 1:1 문의
+                                updateQnaGroup(group);
+                            });
+
+                            $('#btnProductQna').click(function() {
+                            var group = 'product'; // 상품 문의
+                            updateQnaGroup(group);
+                        });
+
+                            function updateQnaGroup(group) {
+                            $.ajax({
+                            type: 'GET',
+                            url: '/my/home?group=' + group,
+                            success: function(data) {
+                            // 성공적으로 응답을 받았을 때 실행할 코드
+                            $('#qnaSection').html(data); // 응답을 해당 섹션에 업데이트
+                        },
+                            error: function() {
+                            // 오류 발생 시 실행할 코드
+                            console.log('Error occurred while updating Q&A group.');
+                        }
+                        });
+                        }
+                        });
                     }
-
-
                 </script>
 
                 <style>
@@ -334,7 +359,7 @@
                     <!--배너 시작-->
                     <th:block th:if="${banner5 != null and !banner5.isEmpty()}">
                         <th:block th:each="banner : ${banner5}">
-                            <div id="bannerTop" class="on">
+                            <div id="bannerTop" class="on" th:style="'background-color:' + ${banner.color}">
                                 <article>
                                     <a class="Banner" th:href="${banner.link}" th:if="${banner.status} == 1" th:data-bannerNo="${banner.bannerNo}"
                                        th:data-link="${banner.link}">
@@ -428,7 +453,7 @@
                                     <h5>
                                         <span th:each="starIndex : ${#numbers.sequence(1, review.getScore())}"
                                               style="padding-bottom: 10px">
-                           <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                           <svg style="color: #ffd500" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                 fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
   <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
 </svg>
@@ -438,48 +463,79 @@
                                 <td class="date" th:text="${#temporals.format(review.getRdate(),'yyyy-MM-dd')}">2024-12-12</td>
                             </tr>
                             <tr th:if="${reviews.size()==0}">
-                                <td colspan="5" style="text-align: center">작성한 리뷰가 없습니다.</td>
+                                <td colspan="6" style="text-align: center">작성한 리뷰가 없습니다.</td>
                             </tr>
                         </table>
                     </article>
 
                     <article class="qna">
                         <h3>문의내역</h3>
-                        <a th:href="@{#}" class="more">더보기</a>
-                        <table border="0">
-                            <tr>
-                                <th>번호</th>
-                                <th>문의채널</th>
-                                <th>문의유형</th>
-                                <th>제목</th>
-                                <th>작성일</th>
-                                <th>상태</th>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>고객센터</td>
-                                <td>주문/결제</td>
-                                <td>신용카드 결제 중 오류가 난 경우 어떻게 하나요?</td>
-                                <td>2024-12-12</td>
-                                <td><span class="notAnswerYet">검토중</span></td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>고객센터</td>
-                                <td>주문/결제</td>
-                                <td>신용카드 결제 중 오류가 난 경우 어떻게 하나요?</td>
-                                <td>2024-12-12</td>
-                                <td><span class="answered">답변완료</span></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>판매자게시판</td>
-                                <td>배송</td>
-                                <td>배송기간이 보통 얼마나 걸리나요?</td>
-                                <td>2024-12-12</td>
-                                <td><span class="answered">답변완료</span></td>
-                            </tr>
+                        <a th:href="@{/my/qna}" class="more">더보기</a>
+                        <a th:if="${adminCsQna.getGruop() == 'qna'}" th:href="@{/my/home}"  style="border: 1px solid gray; font-size: 15px; padding: 2px; background-color: #ebe5de">1:1 문의하기</a>
+                        <a th:if="${adminCsQna.getGruop() != 'qna'}" th:href="@{/my/home}"  style="border: 1px solid gray; font-size: 15px; padding: 2px">1:1 문의하기</a>
+                        <a th:if="${adminCsQna.getGruop() == 'product'}" th:href="@{/my/home(group = product)}" style="border: 1px solid gray; font-size: 15px;  padding: 2px; background-color: #e9e3dc" >상품 문의</a>
+                        <a th:if="${adminCsQna.getGruop() != 'product'}" th:href="@{/my/home(group = product)}" style="border: 1px solid gray; font-size: 15px;  padding: 2px">상품 문의</a>
+
+                            <th:block th:if="${adminCsQna.getGruop() == 'product'}" >
+                                <table border="0">
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>문의채널</th>
+                                        <th>상품명</th>
+                                        <th>제목</th>
+                                        <th>작성일</th>
+                                        <th>상태</th>
+                                    </tr>
+
+                                    <tr  th:each="prodQna, index : ${adminCsQna.dtoList4}" th:if="${index.index<3}">
+                                        <td class="no" th:text="${prodQna.no}"></td>
+                                        <td class="cate" th:text="${prodQna.cate}"></td>
+                                        <td class="type" th:text="${prodQna.productName}"></td>
+                                        <td class="tit" th:text="${prodQna.content}"></td>
+                                        <td class="date" th:text="${#strings.substring(prodQna.rdate , 0,10)}"> </td>
+                                        <td class="status">
+                                            <th:block th:if="${prodQna.status1 == '답변 대기중'}">
+                                                <p style="font-size: 16px; color: #0D3A46"  th:text="${prodQna.status1}"></p>
+                                            </th:block>
+                                            <th:block th:if="${prodQna.status1 != '답변 대기중'}">
+                                                <p  style="font-size: 16px; color: #4CAF50 "  th:text="${prodQna.status1}"></p>
+                                            </th:block>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </th:block>
+                            <th:block th:if="${adminCsQna.getGruop() != 'product'}">
+                                <table border="0">
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>문의채널</th>
+                                        <th>문의유형</th>
+                                        <th>제목</th>
+                                        <th>작성일</th>
+                                        <th>상태</th>
+                                    </tr>
+                                    <tr  th:each="csQna, index : ${adminCsQna.dtoList3}"  th:if="${index.index<3}">
+                                        <td class="no" th:text="${csQna.no}"></td>
+
+                                        <td class="cate" th:text="${csQna.cate1}"></td>
+                                        <td class="type" th:text="${csQna.cate2}"></td>
+                                        <td class="tit" th:text="${csQna.title}"></td>
+                                        <td class="date" th:text="${#strings.substring(csQna.rdate , 0,10)}"></td>
+
+                                        <td class="status">
+                                            <th:block th:if="${csQna.status == '답변 대기중'}">
+                                                <p style="font-size: 16px; color: #0D3A46"  th:text="${csQna.status}"></p>
+                                            </th:block>
+                                            <th:block th:if="${csQna.status != '답변 대기중'}">
+                                                <p  style="font-size: 16px; color: #4CAF50 "  th:text="${csQna.status}"></p>
+                                            </th:block>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </th:block>
                         </table>
+
                     </article>
 
                     <article class="myinfo">

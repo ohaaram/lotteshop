@@ -9,8 +9,8 @@ let isEmailOk = false;
 let isHpOk = false;
 let isEmailCodeOk = false;
 let isBizRegNumOk = false;
-let isTelOk = false;
 let isFaxOk = false;
+let isTelOk = false;
 let isDNameOk = false;
 
 // 유효성 검사에 사용할 정규표현식
@@ -19,9 +19,9 @@ const rePass = /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{5,16
 const reName = /^(?:\((주)\))?\s*[가-힣]{2,10}$/;
 const reCeo = /^[가-힣]{2,10}$/;
 const reEmail = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
 const reBizRegNum = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/;
 const reTel = /^(0[2-8][0-5]?)-?([1-9]{1}[0-9]{2,3})-?([0-9]{4})$/;
+const reHp = /^01(?:0|1|[6-9])-(?:\d{4})-\d{4}$/;
 const reFax = /^\d{2,3}-\d{3,4}-\d{4}$/;
 
 window.onload = function () {
@@ -553,7 +553,7 @@ window.onload = function () {
         if (!input.value.match(reHp)) {
             input.classList.add('is-invalid');
             resultSellerDHp.classList.add('invalid-feedback');
-            resultSellerDHp.innerText = '전화번호 형식이 맞지 않습니다.';
+            resultSellerDHp.innerText = ' 형식이 맞지 않습니다.';
             isHpOk = false;
             return;
         }
@@ -587,13 +587,13 @@ window.onload = function () {
                 input.classList.add('is-invalid');
 
                 resultSellerDHp.classList.add('invalid-feedback');
-                resultSellerDHp.innerText = '이미 사용중인 휴대폰 번호 입니다.';
+                resultSellerDHp.innerText = '이미 사용중인 휴대전화 번호 입니다.';
                 isHpOk = false;
             } else {
                 input.classList.add('is-valid');
 
                 resultSellerDHp.classList.add('valid-feedback');
-                resultSellerDHp.innerText = '사용 가능한 휴대폰 번호 입니다.';
+                resultSellerDHp.innerText = '사용 가능한 휴대전화 번호 입니다.';
                 isHpOk = true;
             }
         }, 1000);
@@ -633,7 +633,7 @@ window.onload = function () {
         }
 
         if (!isHpOk) {
-            alert('전화번호가 유효하지 않습니다.');
+            alert('휴대전화 번호가 유효하지 않습니다.');
             return false;
         }
 
@@ -643,7 +643,7 @@ window.onload = function () {
         }
 
         if (!isTelOk) {
-            alert('휴대폰이 유효하지 않습니다.');
+            alert('전화번호가 유효하지 않습니다.');
             return false;
         }
 

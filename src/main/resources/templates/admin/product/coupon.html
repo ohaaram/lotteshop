@@ -146,11 +146,14 @@
                         <button id="couponButton">쿠폰 등록</button>
                     </div>
                     <br>
+
+
                     <div style="background-color: #f1f0f0 ; margin-bottom: 0">
                         <br>
-                        <span id="canUse" style="margin-left: 10px;">유효</span>
-                        <span id="end" style="margin-left: 10px;">만료</span>
+                        <span id="canUse" style="margin-left: 10px;cursor: pointer">유효</span>
+                        <span id="end" style="margin-left: 10px;cursor: pointer">만료</span>
                     </div>
+
                     <div style="border: 1px solid #efeeee; height: auto; background-color: #f1f0f0">
                         <!--쿠폰쓰 -->
                         <div th:each="coupon , index:${coupons}" style=" margin-bottom: 10px; margin-top: 50px; display: flex; justify-content: center;">

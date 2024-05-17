@@ -234,7 +234,6 @@ public class ReviewService {
             log.info("review_service - prodNO : " + prodno);
             log.info("review_service - ReviewDTO : " + reviewDTO);
 
-
             Review review = modelMapper.map(reviewDTO, Review.class);
 
             log.info("DTO에서 엔티티로 변환후 : " + review);
@@ -269,7 +268,6 @@ public class ReviewService {
             log.info("새로운 리뷰 세이브 포인트2");
 
             Products product = modelMapper.map(optProd, Products.class);
-
 
             log.info("새로운 리뷰 세이브 포인트3");
 
@@ -317,7 +315,6 @@ public class ReviewService {
     //리뷰이미지 저장
     public ReviewImgDTO uploadReviewImage(MultipartFile file) {
         // 파일을 저장할 경로 설정
-
         String path = new java.io.File(fileUploadPath).getAbsolutePath();
 
         if (!file.isEmpty()) {

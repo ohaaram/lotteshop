@@ -6,6 +6,9 @@ import jakarta.transaction.Transactional;
 import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
 import kr.co.lotte.repository.*;
+import kr.co.lotte.repository.cs.CsFaqRepository;
+import kr.co.lotte.repository.cs.CsQnaRepository;
+import kr.co.lotte.service.cs.CsQnaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -46,7 +49,11 @@ public class MyServiceForGahee {
     private  MemberRepository memberRepository;
     @Autowired
     private CartsRepository cartsRepository;
+    @Autowired
+    private CsQnaRepository csQnaRepository;
 
+    @Autowired
+    private ProductQnaRepository productQnaRepository;
     public List<Points> forPoint(String uid) {
         //최근 주문 내역
         //포인트 적립내역
@@ -203,6 +210,10 @@ public class MyServiceForGahee {
         int point = memberRepository.findById(uid).get().getTotalPoint();
         session.setAttribute("homePoint", point);
         //문의내역 (나중에)
+        int number =csQnaRepository.findAllByWriter(uid).size();
+        number += productQnaRepository.findAllByUid(uid).size();
+
+        session.setAttribute("homeArticle", number);
     }
 
 }

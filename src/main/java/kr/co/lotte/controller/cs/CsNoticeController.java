@@ -102,7 +102,11 @@ public class CsNoticeController {
     // admin.cs.notice 목록에서 삭제
     @GetMapping("/admin/cs/notice/delete")
     public String adminNoticeDelete(int csNoticeNo){
+
+       log.info("csNoticeNo : " + csNoticeNo);
+
         csNoticeService.adminNoticeDelete(csNoticeNo);
+
         return "redirect:/admin/cs/notice/list";
     }
 

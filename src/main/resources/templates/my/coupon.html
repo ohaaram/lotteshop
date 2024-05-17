@@ -9,38 +9,36 @@
         <li ><a th:href="@{/my/order}">전체주문내역</a></li>
         <li><a th:href="@{/my/favorite}">관심상품</a></li>
         <li ><a th:href="@{/my/point}">포인트내역</a></li>
-        <li ><a th:href="@{/my/coupon}">쿠폰</a></li>
-        <li class="on"><a th:href="@{/my/review(uid=${#authentication.principal.username})}">나의리뷰</a></li>
+        <li class="on"><a th:href="@{/my/coupon}">쿠폰</a></li>
+        <li ><a th:href="@{/my/review(uid=${#authentication.principal.username})}">나의리뷰</a></li>
         <li><a th:href="@{/my/qna}">문의하기</a></li>
         <li><a th:href="@{/my/info}">나의설정</a></li>
     </ul>
     <section>
         <script>
-            window.onload=function (){
 
-                window.onload = function (){
+                window.onload = function () {
 
 
-                const canUse = document.getElementById('canUse');
-                const end = document.getElementById('end');
-                const used = document.getElementById('used');
+                    const canUse = document.getElementById('canUse');
+                    const end = document.getElementById('end');
+                    const used = document.getElementById('used');
 
-                canUse.onclick=function (e){
-                    e.preventDefault();
-                    document.location.href='/lotteshop/my/coupon?state=0';
+                    canUse.onclick = function (e) {
+                        e.preventDefault();
+                        document.location.href = '/lotteshop/my/coupon?state=0';
+                    }
+
+                    end.onclick = function (e) {
+                        e.preventDefault();
+                        document.location.href = '/lotteshop/my/coupon?state=1';
+                    }
+
+                    used.onclick = function (e) {
+                        e.preventDefault();
+                        document.location.href = '/lotteshop/my/coupon?state=2';
+                    }
                 }
-
-                end.onclick=function (e){
-                    e.preventDefault();
-                    document.location.href='/lotteshop/my/coupon?state=1';
-                }
-
-                used.onclick=function (e){
-                    e.preventDefault();
-                    document.location.href='/lotteshop/my/coupon?state=2';
-                }
-
-            }
         </script>
 
         <article>

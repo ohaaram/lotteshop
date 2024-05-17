@@ -19,6 +19,8 @@ public class QProductQna extends EntityPathBase<ProductQna> {
 
     public static final QProductQna productQna = new QProductQna("productQna");
 
+    public final StringPath answer = createString("answer");
+
     public final StringPath cate = createString("cate");
 
     public final StringPath content = createString("content");

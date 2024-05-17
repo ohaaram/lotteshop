@@ -57,7 +57,10 @@ public class MemberController {
 
     //회원가입 페이지 매핑
     @GetMapping("/member/register")
-    public String register() {
+    public String register(HttpSession session) {
+        if(session.getAttribute("terms") == null){
+            return "redirect:/member/signup";
+        }
         return "/member/register";
     }
 
@@ -168,6 +171,7 @@ public class MemberController {
     //회원가입 진행
     @PostMapping("/member/register")
     public String register(HttpSession session, HttpServletRequest req, UserDTO userDTO, Model model) {
+
         userDTO.setRegip(req.getRemoteAddr());
         userDTO.setSms((String) session.getAttribute("sms"));
 
@@ -195,6 +199,7 @@ public class MemberController {
 
         //session 값 설정
         session.setAttribute("sms", agree4);
+        session.setAttribute("terms", "yes");
         return "redirect:/member/register";
     }
 
@@ -211,14 +216,19 @@ public class MemberController {
     }
 
     @PostMapping("/member/signupseller")
-    public String signupSeller() {
+    public String signupSeller(HttpSession session) {
+        session.setAttribute("termsSeller","yes");
+
         return "redirect:/member/registerseller";
     }
 
     //판매자 회원가입 페이지 매핑
     @GetMapping("/member/registerseller")
-    public String registerSeller() {
-        return "/member/registerseller";
+    public String registerSeller(HttpSession session) {
+        if(session.getAttribute("termsSeller") == null){
+            return "redirect:/member/signupseller";
+        }
+        return "/member/registerSeller";
     }
 
     @PostMapping("/member/registerseller")

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/admin/layout/adminLayout.html}">
+
+<section id="admin-cs-faq" layout:fragment="content">
+    <nav>
+        <h3>문의하기 답변</h3>
+        <p>
+            HOME > 고객센터 > <strong>문의하기</strong>
+        </p>
+    </nav>
+    <article>
+        <form th:action="@{/admin/cs/qna/reply2}" method="post">
+            <input type="hidden" name="no" th:value="${adminProdQna.no}" />
+            <table>
+                <tbody>
+                <tr>
+                    <td>유형</td>
+                    <td th:if="${adminProdQna.cate == 'info'}" style="white-space: nowrap;">상품정보</td>
+                    <td th:if="${adminProdQna.cate == 'size'}" style="white-space: nowrap;">사이즈/용량</td>
+                    <td th:if="${adminProdQna.cate == 'use'}" style="white-space: nowrap;">사용설명</td>
+                    <td th:if="${adminProdQna.cate == 'color'}" style="white-space: nowrap;">디자인/색상</td>
+                    <td th:if="${adminProdQna.cate == 'etc'}" style="white-space: nowrap;">기타</td>
+                </tr>
+                <tr>
+                    <td>내용</td>
+                    <td th:text="${adminProdQna.content}" style="width: 90%; height: 150px;"></td>
+                </tr>
+                <tr>
+                    <td>답변</td>
+                    <td>
+                        <textarea name="answer" cols="100" rows="10" th:text="${adminProdQna.answer}"></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="text-align: right; margin-top: 50px">
+                <a th:href="@{/admin/cs/qna/delete(qnaNo=${adminProdQna.no})}"><input type="button" value="삭제" />
+                    <input type="submit" value="답변등록" />
+                    <a th:href="@{/admin/cs/qna/list}"><input type="button" value="목록"  /></a>
+                </a>
+            </div>
+
+        </form>
+    </article>
+
+
+
+    <!-- 상품목록 컨텐츠 끝 -->
+</section>
+<!--내용 끝-->
+</html>

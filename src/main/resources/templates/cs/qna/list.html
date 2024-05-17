@@ -101,13 +101,14 @@
               <td th:text="${#strings.substring(csQna.writer, 0, 3)} + '****'"></td>
               <td th:text="${#temporals.format(csQna.rdate, 'yyyy-MM-dd')}"></td>
               <td th:if="${csQna.status == '검토중'}" th:text="${csQna.status}"></td>
-              <td th:if="${csQna.status == '답변완료'}" th:text="${csQna.status}" style="color: #4CAF50;"></td>
+              <td th:if="${csQna.status == '답변 완료'}" th:text="${csQna.status}" style="color: #4CAF50;"></td>
             </tr>
           </table>
 
           <th:block th:if="${#authentication.principal != 'anonymousUser'}">
             <input type="hidden" id="userId" th:value="${#authentication.principal.user.uid}">
           </th:block>
+          <br><br><br>
           <a th:href="@{/cs/qna/write}" id="question" class="btnWrite">문의하기</a>
           <div class="paging">
                         <span class="prev" th:if="${csQna.prev}">

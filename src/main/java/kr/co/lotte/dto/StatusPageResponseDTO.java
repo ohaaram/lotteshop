@@ -13,7 +13,7 @@ import java.util.List;
 public class StatusPageResponseDTO {
 
 
-    private List<Seller_statusDTO> dtoList;
+    private List<SellerDTO> dtoList;
     private int rpg;
     private int size;
     private int total;
@@ -23,7 +23,7 @@ public class StatusPageResponseDTO {
     private boolean prev, next;
 
     @Builder
-    public StatusPageResponseDTO(CsFaqPageRequestDTO pageRequestDTO, List<Seller_statusDTO> dtoList , int total){
+    public StatusPageResponseDTO(CsFaqPageRequestDTO pageRequestDTO, List<SellerDTO> dtoList , int total){
         this.rpg = pageRequestDTO.getPg();
         this.size = pageRequestDTO.getSize();
         this.total = total;

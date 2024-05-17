@@ -96,6 +96,17 @@ header > .logo > div > form {
   width: 370px;
   height: 45px;
 }
+
+header > .logo > div > div {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: 250px;
+  margin-top: -12px;
+  display: inline-block;
+  width: 370px;
+  height: 70px;
+}
 header > .logo > div > form > input {
   position: absolute;
   width: 100%;

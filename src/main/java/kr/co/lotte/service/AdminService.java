@@ -1,15 +1,19 @@
 package kr.co.lotte.service;
 
 import com.querydsl.core.Tuple;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import jakarta.transaction.Transactional;
 import kr.co.lotte.repository.ProductsRepository;
 import kr.co.lotte.dto.*;
 import kr.co.lotte.entity.*;
 import kr.co.lotte.mapper.TermsMapper;
 import kr.co.lotte.repository.*;
+import kr.co.lotte.repository.cs.CsQnaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -21,11 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.PanelUI;
-
 import org.springframework.data.domain.Pageable;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -33,7 +34,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,14 +70,19 @@ public class AdminService {
     @Autowired
     private VisitorRepository visitorRepository;
     @Autowired
-    private final Seller_statusRepository seller_statusRepository;
+    private final SellerRepository seller_statusRepository;
     @Autowired
     private TermsRepository termsRepository;
     @Autowired
     private TermsMapper termsMapper;
+    @Autowired
+    private CsQnaRepository csQnaRepository;
+    @Autowired
+    private ProductQnaRepository productQnaRepository;
+
 
     //mainPage 띄우자
-    public Map<String, Integer> Formain() {
+    public Map<String, Integer> Formain(HttpSession session) {
         Map<String, Integer> map = new HashMap<>();
         //주문업무
         int ready = 0;
@@ -120,7 +125,13 @@ public class AdminService {
         String formattedDate = currentDate.format(formatter);
         int visitors = visitorRepository.findById(formattedDate).get().getVisitCount();
 
-        //신규게시물 (미완)
+        //신규게시물 (건수)
+        int article = 0;
+        int totalCsQna = csQnaRepository.findAll().size();
+        totalCsQna += productQnaRepository.findAll().size();
+
+        session.setAttribute("adminArticle", totalCsQna);
+
         //고객 문의 (미완)
 
         //주문업무현황
@@ -178,7 +189,6 @@ public class AdminService {
             }
         }
 
-
         //회원가입
         int users = memberRepository.findAll().size();
 
@@ -188,7 +198,14 @@ public class AdminService {
         String formattedDate = currentDate.format(formatter);
         int visitors = visitorRepository.findById(formattedDate).get().getVisitCount();
 
-        //신규게시물
+        // 신규게시물
+        int totalArticle = 0;
+
+        List<ProductQna> prodQnas = productQnaRepository.findBySellerUid(storUid);
+        for (ProductQna prodQna : prodQnas) {
+            totalArticle += prodQna.getNo();
+        }
+
         map.put("count", count);
         map.put("total", total);
         map.put("user", users);
@@ -196,7 +213,7 @@ public class AdminService {
         map.put("delivery", delivery);
         map.put("delete", delete);
         map.put("allDelete", allDelete);
-
+        map.put("totalArticle", totalArticle);
         map.put("visitors", visitors);
         return map;
     }
@@ -324,6 +341,10 @@ public class AdminService {
             }
         }
         products.setRegProdDate(old.getRegProdDate());
+
+        List<SubProducts> subProducts = subProductsRepository.findAllByProdNo(products.getProdNo());
+        products.setProdPrice(subProducts.get(0).getProdPrice());
+
         productsRepository.save(products);
 
         Map<String, Integer> map = new HashMap<>();
@@ -841,9 +862,16 @@ public class AdminService {
 
     }
 
+    //에러 메세지 출력을 위한 함수
+    public class SomeException extends Exception {
+        public SomeException(String message) {
+            super(message);
+        }
+    }
+
 
     //배너의 유효성 검사(시간, 날짜 등)->검사 후 유효하다면 status를 1로 저장해줌(DB서치)
-    public BannerDTO findById(String bno) {
+    public BannerDTO findById(String bno) throws SomeException{
 
         int bNo = Integer.parseInt(bno);
 
@@ -909,7 +937,7 @@ public class AdminService {
 
                 log.info("banner2 실패! : " + banner2);
 
-                return null;
+                throw new SomeException("기간 범위에 포함되지 않습니다.");
             }
         } else if (position.equals("MAIN2") && count < 5) {
             // 현재 날짜와 시간이 배너의 기간에 포함되어 있는지 확인
@@ -938,7 +966,7 @@ public class AdminService {
 
                 log.info("banner2 실패! : " + banner2);
 
-                return null;
+                throw new SomeException("기간 범위에 포함되지 않습니다.");
             }
         } else {
 
@@ -951,7 +979,8 @@ public class AdminService {
             bannerRepository.save(banner2);//status 변환한거 저장
 
             log.info("banner2 실패! : " + banner2);
-            return null;
+
+            throw new SomeException("활성화는 한번에 하나만 가능합니다.");
         }
     }
 
@@ -1038,17 +1067,18 @@ public class AdminService {
 
         Pageable pageable = pageRequestDTO.getPageable("status_id");
 
-        Page<Tuple> pageSeller_Status = seller_statusRepository.seller_status(pageRequestDTO, pageable);
+        Page<Tuple> pageSeller_Status = sellerRepository.seller_status(pageRequestDTO, pageable);
 
-        List<Seller_statusDTO> dtoList = pageSeller_Status.getContent().stream()
+        List<SellerDTO> dtoList = pageSeller_Status.getContent().stream()
                 .map(tuple -> {
 
                     log.info("tuple : " + tuple);
 
-                    Seller_statusDTO dto = new Seller_statusDTO();
+                    SellerDTO dto = new SellerDTO();
                     dto.setSellerUid((String) tuple.get(0, String.class)); // 첫 번째 요소는 문자열로 캐스팅하여 id에 설정
                     dto.setOrderCount(tuple.get(1, Long.class)); // 두 번째 요소는 정수로 캐스팅하여 status에 설정
                     dto.setTotalPrice(tuple.get(2, Integer.class));
+                    dto.setRole(tuple.get(3, String.class));
 
                     log.info("service - page - sellerDTO : " + dto);
 
@@ -1241,5 +1271,31 @@ public class AdminService {
 
         map.put("result", "1");
         return ResponseEntity.ok().body(map);
+    }
+
+    //아직 허가가 나지 않은 판매자들의 리스트를 불러옴
+    public List<Seller> waitingSellers(){
+
+        List<Seller> sellerList = sellerRepository.waitingSellers();//role이 TEMP를 가진 판매자를 출력
+
+        log.info("sellerList : "+sellerList);
+
+        return sellerList;
+
+    }
+    
+    //판매자들의 role을 바꿈
+    public Seller changeRole(String uid){
+
+        Optional<Seller> optSeller = sellerRepository.findById(uid);
+
+        Seller sellers = modelMapper.map(optSeller,Seller.class);
+
+        if(sellers!=null) {
+
+            sellers.setRole("MANAGER");
+        }
+
+        return sellers;
     }
 }

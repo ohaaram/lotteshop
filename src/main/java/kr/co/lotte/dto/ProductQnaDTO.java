@@ -21,6 +21,7 @@ public class ProductQnaDTO {
     private String status1;
     private String cate;
     private String content;
+    private String answer;
     private String status2;
     private String rdate;
 

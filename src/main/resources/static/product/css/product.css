@@ -1503,7 +1503,7 @@
     align-items: center;
     padding: 15px 0;
     border-bottom: 1px solid #eee;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.57;
 }
 
@@ -1532,17 +1532,45 @@
     display: block;
     color: #5F5D6A;
     unicode-bidi: isolate;
+    margin-bottom: 2px; /* 간격을 조정하려면 여기를 수정합니다. */
 }
 
+/* 상품 문의 목록 스타일 */
 #view-qna .product-qna-content {
-    margin-top: 80px;
-    padding-bottom: 80px;
-    padding-top: 60px;
+    margin-top: 10px; /* 기존 80px에서 변경 */
+    padding-bottom: 10px; /* 기존 80px에서 변경 */
+    padding-top: 10px; /* 기존 60px에서 변경 */
     background-repeat: no-repeat;
     background-position: center 0;
     background-size: 60px auto;
 }
 
+/* 상품 문의 내용 스타일 */
+#view-qna .product-qna-content-content {
+    font-size: 48px; /* 폰트 크기를 20px로 변경 */
+    line-height: 1.47;
+    word-break: break-all;
+    padding: 10px 0; /* 상하 여백을 좀 줄여줍니다. */
+    border-bottom: 1px solid #eee;
+    list-style: none;
+    position: relative; /* 상대 위치 지정 */
+}
+
+/* 답변 스타일 */
+.answer {
+    background-color: #F4F1E2; /* 답변 배경색 */
+    padding: 10px;
+    border-radius: 5px; /* 박스의 모서리를 둥글게 만듭니다. */
+    margin-top: 10px; /* 답변과 문의 사이 간격 조정 */
+}
+/* 아직 답변이 달리지 않은 경우 스타일 */
+.no-answer {
+    background-color: #F4F1E2; /* 답변 배경색 */
+    font-style: italic;
+    color: #888; /* 회색으로 표시 */
+    border-radius: 5px; /* 박스의 모서리를 둥글게 만듭니다. */
+    margin-top: 10px; /* 답변과 문의 사이 간격 조정 */
+}
 /* 모달 스타일 */
 .qna-modal {
     display: none; /* 초기에는 보이지 않도록 설정 */

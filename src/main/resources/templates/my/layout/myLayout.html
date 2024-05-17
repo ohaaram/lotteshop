@@ -56,7 +56,7 @@
                     <li><a th:href="@{/my/order}">주문내역<span class="delivery" th:text="${session.homeOrder}"></span></a></li>
                     <li><a th:href="@{/my/coupon}">할인쿠폰<span class="coupon" th:text="${session.homeCoupon}"></span></a></li>
                     <li><a th:href="@{/my/point}">포인트<span class="point" th:text="${#numbers.formatInteger(session.homePoint, 1, 'COMMA') }"></span></a></li>
-                    <li><a th:href="@{/my/qna}">문의내역<span class="qna">1</span></a></li>
+                    <li><a th:href="@{/my/qna}">문의내역<span class="qna" th:text="${session.homeArticle}"></span></a></li>
                 </ol>
             </div>
         </nav>
@@ -245,10 +245,10 @@
         <!-- 상품평쓰기 팝업 끝 -->
     <footer>
         <ul>
-            <li><a th:href="@{#}">회사소개</a></li>
-            <li><a th:href="@{#}">서비스이용약관</a></li>
-            <li><a th:href="@{#}">개인정보처리방침</a></li>
-            <li><a th:href="@{#}">전자금융거래약관</a></li>
+            <li><a th:href="@{/company/index}">회사소개</a></li>
+            <li><a th:href="@{/policy/buyer}">서비스이용약관</a></li>
+            <li><a th:href="@{/policy/privacy}">개인정보처리방침</a></li>
+            <li><a th:href="@{/policy/finance}">전자금융거래약관</a></li>
         </ul>
         <div>
             <p><img th:src="@{/my/images/footer_logo.png}" alt="로고"></p>

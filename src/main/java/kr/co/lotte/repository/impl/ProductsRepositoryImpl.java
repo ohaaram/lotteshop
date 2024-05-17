@@ -58,8 +58,6 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
             }
         }
 
-
-
         QueryResults<com.querydsl.core.Tuple> results = jpaQueryFactory.select(qProducts, subProducts)
                 .from(subProducts)
                 .join(qProducts)
@@ -489,4 +487,8 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+
+
+    //메인왼쪽 상단의 카테고리(히트상품.추천상품.최신상품.할인상품)
+
 }

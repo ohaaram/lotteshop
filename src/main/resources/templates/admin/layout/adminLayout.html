@@ -80,8 +80,9 @@
                 <li th:if="${#authentication.principal.user.role == 'ADMIN'}">
                     <a href="#"><i class="fa fa-users" aria-hidden="true"></i>회원관리</a>
                     <ol>
-                        <li><a href="#">회원현황</a></li>
-                        <li><a href="#">포인트관리</a></li>
+
+                        <li><a th:href="@{/admin/member/list}">회원현황</a></li>
+
                     </ol>
                 </li>
                 <li>
@@ -103,12 +104,13 @@
                     <a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>고객센터</a>
                     <ol>
                         <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/cs/notice/list}">공지사항 관리</a></li>
-                        <li><a th:href="@{/admin/cs/qna/list}">QNA 관리</a></li>  <!--manager, admin 다르게 -->
+                        <li ><a th:href="@{/admin/cs/qna/list}">QNA 관리</a></li>  <!--manager, admin 다르게 -->
                         <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/cs/faq/list}">FAQ 관리</a></li>
                     </ol>
                 </li>
-                <li>
-                    <a href="#"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>블로그관리</a>
+                <li th:if="${#authentication.principal.user.role == 'ADMIN'}">
+
+                    <a href="#" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i>블로그관리</a>
                     <ol>
                         <li th:if="${#authentication.principal.user.role == 'ADMIN'}"><a th:href="@{/admin/blogList}">이동하기</a></li>
                     </ol>

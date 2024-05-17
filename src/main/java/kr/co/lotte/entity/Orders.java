@@ -25,7 +25,6 @@ public class Orders {
     private int orderNo;
     private String userId;
     private int orderTotalPrice;
-    private String orderAddr;
     private int itemDiscount;
     @CreationTimestamp
     private Date orderDate;
@@ -33,7 +32,6 @@ public class Orders {
     private String sendName;
 
     private String zip;
-    private String orderState;
     private String addr1;
     private String addr2;
     private String payment;

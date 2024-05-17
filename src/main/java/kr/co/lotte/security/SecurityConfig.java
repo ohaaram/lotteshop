@@ -47,7 +47,7 @@ public class SecurityConfig {
 
         // 로그아웃 설정
         httpSecurity.logout(logout -> logout
-                .invalidateHttpSession(true)
+                .invalidateHttpSession(true) 
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
                 .logoutSuccessUrl("/member/login?success=300"));
 

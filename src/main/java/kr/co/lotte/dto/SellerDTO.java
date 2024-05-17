@@ -28,4 +28,7 @@ public class SellerDTO {
         private String role;
         private String grade;
 
+        private Long orderCount;
+        private Integer totalPrice;
+
 }
