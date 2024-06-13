@@ -1,6 +1,9 @@
 # 4조 LotteON 쇼핑몰 프로젝트
 
-<img src="https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841" width="400" height="300">
+<img src="https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841" width="400" height="300" style="margin: 10px;">
+<img src="https://github.com/ohaaram/lotteshop/assets/22510560/c7ac6530-e976-4c36-9424-6bc4854370a9" width="400" height="300" style="margin: 10px;">
+<img src="https://github.com/ohaaram/lotteshop/assets/22510560/abc04875-472a-4e5b-bc24-964843a6827f" width="400" height="300" style="margin: 10px;">
+
 
 ### 프로젝트 개요
  1) 프로젝트 주제 : 설계 요구서를 바탕으로 lotte-on 홈 쇼핑 웹 사이트 구현
