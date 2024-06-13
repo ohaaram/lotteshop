@@ -1,14 +1,5 @@
 # 4조 LotteON 쇼핑몰 프로젝트
 
-![image](https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841)
-
-
-
-
-
-
-
-
 ### 프로젝트 개요
  1) 프로젝트 주제 : 설계 요구서를 바탕으로 lotte-on 홈 쇼핑 웹 사이트 구현
  2) 프로젝트 기간 : 2024-05-15 ~ 2024-05-17
@@ -52,3 +43,6 @@
 
 1.0.0-RELEASE : 최종본 업로드
 
+
+
+![image](https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841)
