@@ -45,4 +45,5 @@
 
 
 
-![image](https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841)
+<img src="https://github.com/ohaaram/lotteshop/assets/22510560/a69d2075-1a36-4262-9a0e-cd90576ec841" width="400" height="400">
+
